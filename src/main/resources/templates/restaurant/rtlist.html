@@ -5,508 +5,508 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>검색 결과</title>
     <link rel="stylesheet"><style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-        h2 {
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+    }
+    h2 {
         margin-top: 20px;
-        }
-        h4 {
+    }
+    h4 {
         margin: 0px;
         margin-bottom: 5px;
         font-size: 14px;
-        }
-        h5 {
+    }
+    h5 {
         margin-top: 10px;
-        }
-        a {
-            text-decoration: none; /* 밑줄 제거 */
-            color: black; /* 기존 색상 유지 */
-            margin: 0px;
-        }
-        a:hover {
-            text-decoration: none; /* 호버 시에도 밑줄 제거 */
-            color: inherit;
-        }
-.container-fluid {
-    padding: 0 20px;
-    margin: 0 auto;
-    max-width: 1050px;
-    display: flex;
-    gap: 20px; /* 필터 박스와 메인 콘텐츠 사이의 간격 */
-}
-        .navbar {
-            background-color: #343A40;
-            color: white;
-            padding: 15px; /* 기존 패딩 유지 */
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-        }
-        .navbar .nav-container {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            padding-left: 15%; /* 왼쪽 패딩 20% */
-        }
-        .navbar-brand-group {
-            display: flex;
-            align-items: center;
-            margin-right: 56.5%;
-        }
-        .navbar-brand {
-            font-size: 1.2rem;
-            text-decoration: none;
-            color: inherit;
-            z-index: 10;
-        }
-        .navbar-nav {
-            display: flex;
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-        .nav-item {
-            margin-left: 20px;
-        }
-        .nav-link {
-            text-decoration: none;
-            color: inherit;
-        }
-        .nav-link:hover {
-            color: #FF6347;
-        }
-        .nav-link.active {
-            color: #FF6347;
-        }
-        .navbar-toggler {
-            background-color: transparent;
-            border: none;
-            padding: 0;
-            cursor: pointer;
-            display: none;
-            margin-left: 10px;
-        }
-        .navbar-toggler span {
-            display: block;
-            width: 25px;
-            height: 3px;
-            background-color: white;
-            margin: 5px 0;
-        }
-        .search-section {
-            height: 85%;
-            text-align: center;
-            width: 40%;
-        }
-        .search-container {
-            position: absolute; /* 절대 위치로 설정 */
-            right: 31%; /* 오른쪽 끝으로 위치 */
-            top: 57.5%; /* 세로 중앙 정렬 */
-            transform: translateY(-50%); /* 세로 중앙 정렬 보정 */
-            display: flex; /* 내부 아이템 정렬을 위한 flex */
-            width: 108%; /* 가로 크기 조정 */
-            max-width: 1700px; /* 최대 가로 크기 설정 (필요에 따라 조정) */
-            margin-left: 10px; /* 왼쪽 여백 자동 조정 */
-        }
-        .search-input {
-            width: 80%;
-            line-height: 28px;
-            padding: 0 1rem;
-            padding-left: 2.5rem;
-            border: 2px solid transparent;
-            border-radius: 8px;
-            outline: none;
-            background-color: #F3F3F4;
-            color: #0D0C22;
-            transition: .3s ease;
-            margin-left: 65%;
-        }
-        .search-input::placeholder {
-            color: #9E9EA7;
-        }
-        .search-input:focus, input:hover {
-            outline: none;
-            border-color: rgba(234, 76, 137, 0.4);
-            background-color: #fff;
-            box-shadow: 0 0 0 4px rgb(234 76 137/ 10%);
-        }
-        .search-intro {
-            font-size: 1.5rem;
-            color: #FFFFFF;
-            margin-top: 1rem;
-            margin-left: 5%;
-        }
-        .search-icon {
-            position: absolute;
-            left: 66%;
-            top: 50%;
-            transform: translateY(-50%);
-            fill: #9E9EA7;
-            width: 1rem;
-            height: 1rem;
-        }
-        .filter-box, content-wrapper {
-            margin-right: 18px;
-            margin-top: 18px;
-        }
-        .content-wrapper {
-            display: flex;
-            width: 99.5%;
-        }
-.filter-box {
-    border: none;
-    border-radius: 12px;
-    padding: 20px;
-    background-color: #FFFFFF;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    width: 180px; /* 필터 박스의 고정 너비 */
-}
-
-/* 필터 제목 스타일 */
-.filter-box h5 {
-    font-size: 18px;
-    font-weight: 600;
-    color: #333333;
-    margin-bottom: 15px;
-    border-bottom: 2px solid #EAEAEA;
-    padding-bottom: 5px;
-}
-
-/* 필터 항목 스타일 */
-.filter-content {
-    display: flex;
-    flex-direction: column;
-    gap: 10px; /* 항목 간의 간격 */
-}
-
-.form-check {
-    display: flex;
-    align-items: center;
-    position: relative;
-    padding: 5px 0;
-    cursor: pointer;
-}
-
-.form-check-input {
-    display: none; /* 기본 체크박스 숨기기 */
-}
-
-.form-check-label {
-    font-size: 13px;
-    color: #333;
-    margin-left: 25px; /* 체크박스와 텍스트 간의 간격 */
-    line-height: 16px; /* 체크박스와 텍스트의 수직 정렬을 맞추기 위해 설정 */
-}
-
-/* 커스텀 체크박스 스타일 */
-.checkmark {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%);
-    height: 16px;
-    width: 16px;
-    background-color: white;
-    border-radius: 4px;
-    border: 1px solid #D8D8D8;
-    transition: background-color 0.3s, box-shadow 0.3s;
-}
-
-/* 체크 표시 */
-.checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
-    left: 5px;
-    transform: translateY(-50%);
-    width: 4px; /* 체크 표시의 너비 조정 */
-    height: 10px; /* 체크 표시의 높이 조정 */
-    border: solid white;
-    border-width: 0 3px 3px 0;
-    transform: rotate(45deg);
-}
-
-/* 체크된 상태 스타일 */
-.form-check-input:checked + .checkmark {
-    background-color: #A4A4A4;
-}
-
-.form-check-input:checked + .checkmark:after {
-    display: block;
-}
-
-@keyframes checkAnim {
-    0% {
-        height: 0;
     }
-    100% {
-        height: 0px;
+    a {
+        text-decoration: none; /* 밑줄 제거 */
+        color: black; /* 기존 색상 유지 */
+        margin: 0px;
     }
-}
+    a:hover {
+        text-decoration: none; /* 호버 시에도 밑줄 제거 */
+        color: inherit;
+    }
+    .container-fluid {
+        padding: 0 20px;
+        margin: 0 auto;
+        max-width: 1050px;
+        display: flex;
+        gap: 20px; /* 필터 박스와 메인 콘텐츠 사이의 간격 */
+    }
+    .navbar {
+        background-color: #343A40;
+        color: white;
+        padding: 15px; /* 기존 패딩 유지 */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+    }
+    .navbar .nav-container {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding-left: 15%; /* 왼쪽 패딩 20% */
+    }
+    .navbar-brand-group {
+        display: flex;
+        align-items: center;
+        margin-right: 56.5%;
+    }
+    .navbar-brand {
+        font-size: 1.2rem;
+        text-decoration: none;
+        color: inherit;
+        z-index: 10;
+    }
+    .navbar-nav {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    .nav-item {
+        margin-left: 20px;
+    }
+    .nav-link {
+        text-decoration: none;
+        color: inherit;
+    }
+    .nav-link:hover {
+        color: #FF6347;
+    }
+    .nav-link.active {
+        color: #FF6347;
+    }
+    .navbar-toggler {
+        background-color: transparent;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        display: none;
+        margin-left: 10px;
+    }
+    .navbar-toggler span {
+        display: block;
+        width: 25px;
+        height: 3px;
+        background-color: white;
+        margin: 5px 0;
+    }
+    .search-section {
+        height: 85%;
+        text-align: center;
+        width: 40%;
+    }
+    .search-container {
+        position: absolute; /* 절대 위치로 설정 */
+        right: 31%; /* 오른쪽 끝으로 위치 */
+        top: 57.5%; /* 세로 중앙 정렬 */
+        transform: translateY(-50%); /* 세로 중앙 정렬 보정 */
+        display: flex; /* 내부 아이템 정렬을 위한 flex */
+        width: 108%; /* 가로 크기 조정 */
+        max-width: 1700px; /* 최대 가로 크기 설정 (필요에 따라 조정) */
+        margin-left: 10px; /* 왼쪽 여백 자동 조정 */
+    }
+    .search-input {
+        width: 80%;
+        line-height: 28px;
+        padding: 0 1rem;
+        padding-left: 2.5rem;
+        border: 2px solid transparent;
+        border-radius: 8px;
+        outline: none;
+        background-color: #F3F3F4;
+        color: #0D0C22;
+        transition: .3s ease;
+        margin-left: 65%;
+    }
+    .search-input::placeholder {
+        color: #9E9EA7;
+    }
+    .search-input:focus, input:hover {
+        outline: none;
+        border-color: rgba(234, 76, 137, 0.4);
+        background-color: #fff;
+        box-shadow: 0 0 0 4px rgb(234 76 137/ 10%);
+    }
+    .search-intro {
+        font-size: 1.5rem;
+        color: #FFFFFF;
+        margin-top: 1rem;
+        margin-left: 5%;
+    }
+    .search-icon {
+        position: absolute;
+        left: 66%;
+        top: 50%;
+        transform: translateY(-50%);
+        fill: #9E9EA7;
+        width: 1rem;
+        height: 1rem;
+    }
+    .filter-box, content-wrapper {
+        margin-right: 18px;
+        margin-top: 18px;
+    }
+    .content-wrapper {
+        display: flex;
+        width: 99.5%;
+    }
+    .filter-box {
+        border: none;
+        border-radius: 12px;
+        padding: 20px;
+        background-color: #FFFFFF;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        width: 180px; /* 필터 박스의 고정 너비 */
+    }
 
-/* 필터 박스 토글 버튼 */
-.btn-toggle {
-    background: #F8F9FA;
-    border: 1px solid #E0E0E0;
-    border-radius: 5px;
-    color: #333;
-    font-size: 14px;
-    font-weight: 500;
-    padding: 4px 15px;
-    cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
-    margin-top: 10px;
-    width: 100%; /* 버튼 너비를 100%로 설정하여 부모 요소에 맞게 조정 */
-}
+    /* 필터 제목 스타일 */
+    .filter-box h5 {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333333;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #EAEAEA;
+        padding-bottom: 5px;
+    }
 
-.btn-toggle:hover {
-    background: #E0E0E0;
-}
+    /* 필터 항목 스타일 */
+    .filter-content {
+        display: flex;
+        flex-direction: column;
+        gap: 10px; /* 항목 간의 간격 */
+    }
 
-.main-content {
-    flex: 1; /* 남은 공간을 차지하도록 설정 */
-}
+    .form-check {
+        display: flex;
+        align-items: center;
+        position: relative;
+        padding: 5px 0;
+        cursor: pointer;
+    }
 
-        .results-container {
-            border-radius: 10px;
-            width: 100%;
-            margin-top: 18px;
-            padding: 15px;
-            background-color: white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .sort-container {
-                        border-bottom: 2px solid #ddd;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-        }
-        .sort-buttons {
-            display: flex;
-            align-items: center;
-        }
-        .sort-label {
-            font-weight: bold;
-            color: #343A40;
-            margin-right: 10px;
-        }
-        .btn-sort {
-            font-size: 0.9rem;
-            padding: 5px 10px;
-            border-radius: 50px;
-            margin-left: 5px;
-        }
-        .ang {
-        	margin-left: 1px;
-            border-bottom: 2px solid #ddd;
-        	display: flex;
-        }
-        .text-description {
-        	margin-top: 10px;
-        	font-size: 14px;
-        }
-        .card {
-            display: flex;
-            flex-direction: row;
-            margin-bottom: 15px;
-            border: none;
-            border-radius: 5px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-        .card-body {
-            padding-left: 20px;
-            padding-right: 20px;
-            width: calc(100% - 240px); /* 이미지 너비를 제외한 나머지 공간을 차지 */
-            height: 240px;
-        }
-        .card-img-left {
-            width: 240px; /* 이미지 너비 고정 */
-            height: 240px; /* 이미지 높이 고정 */
-            object-fit: cover; /* 이미지 비율 유지하면서 자르기 */
-            display: block;
-            border-radius: 5px;
-        }
-.card-footer {
-    background-color: transparent;
-    border-top: none;
-    display: flex; /* 한 줄에 표시 */
-    justify-content: space-between; /* 양쪽 끝으로 배치 */
-    align-items: center; /* 세로 중앙 정렬 */
-    padding-top: 20px; /* 약간의 위쪽 여백 */
-    margin-top: 11%;
-}
+    .form-check-input {
+        display: none; /* 기본 체크박스 숨기기 */
+    }
 
-.card-footer .card-text  {
-	
-    margin: 0; /* 여백 제거 */
-    font-size: 15px; /* 폰트 크기 조절 (원하는 대로 수정 가능) */
-}
+    .form-check-label {
+        font-size: 13px;
+        color: #333;
+        margin-left: 25px; /* 체크박스와 텍스트 간의 간격 */
+        line-height: 16px; /* 체크박스와 텍스트의 수직 정렬을 맞추기 위해 설정 */
+    }
 
-.card-distance{
-    margin: 0; /* 여백 제거 */
-    font-size: 12px; /* 폰트 크기 조절 (원하는 대로 수정 가능) */
-}
+    /* 커스텀 체크박스 스타일 */
+    .checkmark {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        height: 16px;
+        width: 16px;
+        background-color: white;
+        border-radius: 4px;
+        border: 1px solid #D8D8D8;
+        transition: background-color 0.3s, box-shadow 0.3s;
+    }
 
-        .btn-custom {
-            background-color: #F2F2F2;
-            border: none;
-            border-radius: 10px;
-            color: black;
-            font-size: 10px;
-            padding: 7px 10px;
-            transition: background-color 0.3s;
-        }
-        .btn-custom:hover {
-            background-color:#BDBDBD;
-        }
-        .card-title {
-        	font-size: 22px;
-        	height:20px;
-        	margin-bottom: 10px;
-        }
-        .badge {
-        	color: #787878;
-        	margin-bottom: 10px;
-        }
-		#pagination {
-            display: flex;
-            align-items: center;
-            margin-left: auto;
-        }
-        #map {
-            width: 100%;
-            height: 400px;
-            margin-bottom: 20px;
-        }
+    /* 체크 표시 */
+    .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+        left: 5px;
+        transform: translateY(-50%);
+        width: 4px; /* 체크 표시의 너비 조정 */
+        height: 10px; /* 체크 표시의 높이 조정 */
+        border: solid white;
+        border-width: 0 3px 3px 0;
+        transform: rotate(45deg);
+    }
 
-        /* InfoWindow 크기 및 닫기 버튼 숨김 */
-        .gm-style-iw {
-            width: 200px !important;  /* 너비 조정 */
-            max-width: 200px !important;  /* 최대 너비 조정 */
-            max-height: 100px !important;  /* 최대 높이 조정 */
+    /* 체크된 상태 스타일 */
+    .form-check-input:checked + .checkmark {
+        background-color: #A4A4A4;
+    }
+
+    .form-check-input:checked + .checkmark:after {
+        display: block;
+    }
+
+    @keyframes checkAnim {
+        0% {
+            height: 0;
         }
-        /* 닫기 버튼 숨기기 */
-        .gm-ui-hover-effect {
-            display: none !important;
+        100% {
+            height: 0px;
         }
+    }
+
+    /* 필터 박스 토글 버튼 */
+    .btn-toggle {
+        background: #F8F9FA;
+        border: 1px solid #E0E0E0;
+        border-radius: 5px;
+        color: #333;
+        font-size: 14px;
+        font-weight: 500;
+        padding: 4px 15px;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+        margin-top: 10px;
+        width: 100%; /* 버튼 너비를 100%로 설정하여 부모 요소에 맞게 조정 */
+    }
+
+    .btn-toggle:hover {
+        background: #E0E0E0;
+    }
+
+    .main-content {
+        flex: 1; /* 남은 공간을 차지하도록 설정 */
+    }
+
+    .results-container {
+        border-radius: 10px;
+        width: 100%;
+        margin-top: 18px;
+        padding: 15px;
+        background-color: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .sort-container {
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 15px;
+        margin-bottom: 25px;
+    }
+    .sort-buttons {
+        display: flex;
+        align-items: center;
+    }
+    .sort-label {
+        font-weight: bold;
+        color: #343A40;
+        margin-right: 10px;
+    }
+    .btn-sort {
+        font-size: 0.9rem;
+        padding: 5px 10px;
+        border-radius: 50px;
+        margin-left: 5px;
+    }
+    .ang {
+        margin-left: 1px;
+        border-bottom: 2px solid #ddd;
+        display: flex;
+    }
+    .text-description {
+        margin-top: 10px;
+        font-size: 14px;
+    }
+    .card {
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 15px;
+        border: none;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+    .card-body {
+        padding-left: 20px;
+        padding-right: 20px;
+        width: calc(100% - 240px); /* 이미지 너비를 제외한 나머지 공간을 차지 */
+        height: 240px;
+    }
+    .card-img-left {
+        width: 240px; /* 이미지 너비 고정 */
+        height: 240px; /* 이미지 높이 고정 */
+        object-fit: cover; /* 이미지 비율 유지하면서 자르기 */
+        display: block;
+        border-radius: 5px;
+    }
+    .card-footer {
+        background-color: transparent;
+        border-top: none;
+        display: flex; /* 한 줄에 표시 */
+        justify-content: space-between; /* 양쪽 끝으로 배치 */
+        align-items: center; /* 세로 중앙 정렬 */
+        padding-top: 20px; /* 약간의 위쪽 여백 */
+        margin-top: 11%;
+    }
+
+    .card-footer .card-text  {
+
+        margin: 0; /* 여백 제거 */
+        font-size: 15px; /* 폰트 크기 조절 (원하는 대로 수정 가능) */
+    }
+
+    .card-distance{
+        margin: 0; /* 여백 제거 */
+        font-size: 12px; /* 폰트 크기 조절 (원하는 대로 수정 가능) */
+    }
+
+    .btn-custom {
+        background-color: #F2F2F2;
+        border: none;
+        border-radius: 10px;
+        color: black;
+        font-size: 10px;
+        padding: 7px 10px;
+        transition: background-color 0.3s;
+    }
+    .btn-custom:hover {
+        background-color:#BDBDBD;
+    }
+    .card-title {
+        font-size: 22px;
+        height:20px;
+        margin-bottom: 10px;
+    }
+    .badge {
+        color: #787878;
+        margin-bottom: 10px;
+    }
+    #pagination {
+        display: flex;
+        align-items: center;
+        margin-left: auto;
+    }
+    #map {
+        width: 100%;
+        height: 400px;
+        margin-bottom: 20px;
+    }
+
+    /* InfoWindow 크기 및 닫기 버튼 숨김 */
+    .gm-style-iw {
+        width: 200px !important;  /* 너비 조정 */
+        max-width: 200px !important;  /* 최대 너비 조정 */
+        max-height: 100px !important;  /* 최대 높이 조정 */
+    }
+    /* 닫기 버튼 숨기기 */
+    .gm-ui-hover-effect {
+        display: none !important;
+    }
 
 
-        /* 로딩 화면 스타일 */
-        .loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.9); /* 배경색과 투명도 조절 */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999; /* 다른 모든 요소 위에 표시 */
-        }
+    /* 로딩 화면 스타일 */
+    .loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.9); /* 배경색과 투명도 조절 */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999; /* 다른 모든 요소 위에 표시 */
+    }
 
-        .panWrapper {
-            width: 200px;
-            height: fit-content;
-            position: relative;
-            display: flex;
-            align-items: flex-start;
-            justify-content: flex-end;
-            flex-direction: column;
-            gap: 20px;
-        }
+    .panWrapper {
+        width: 200px;
+        height: fit-content;
+        position: relative;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-end;
+        flex-direction: column;
+        gap: 20px;
+    }
 
-        .pan {
-            display: flex;
-            align-items: flex-start;
-            justify-content: flex-start;
-            width: 100%;
-            height: fit-content;
-            animation: cooking 1.7s infinite;
-        }
+    .pan {
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+        width: 100%;
+        height: fit-content;
+        animation: cooking 1.7s infinite;
+    }
 
-        @keyframes cooking {
-            0% {
-                transform: rotate(0deg);
-                transform-origin: top right;
-            }
-            10% {
-                transform: rotate(-4deg);
-                transform-origin: top right;
-            }
-            50% {
-                transform: rotate(20deg);
-            }
-            100% {
-                transform: rotate(0deg);
-            }
+    @keyframes cooking {
+        0% {
+            transform: rotate(0deg);
+            transform-origin: top right;
         }
+        10% {
+            transform: rotate(-4deg);
+            transform-origin: top right;
+        }
+        50% {
+            transform: rotate(20deg);
+        }
+        100% {
+            transform: rotate(0deg);
+        }
+    }
 
-        .food {
-            position: absolute;
-            width: 40%;
-            height: 6px;
-            background: linear-gradient(to bottom, rgb(82, 33, 33), rgb(200, 106, 106));
-            left: 10px;
-            border-radius: 50%;
-            animation: flip 1.7s infinite;
-            z-index: 2;
-        }
+    .food {
+        position: absolute;
+        width: 40%;
+        height: 6px;
+        background: linear-gradient(to bottom, rgb(82, 33, 33), rgb(200, 106, 106));
+        left: 10px;
+        border-radius: 50%;
+        animation: flip 1.7s infinite;
+        z-index: 2;
+    }
 
-        @keyframes flip {
-            0% {
-                transform: translateY(0px) rotate(0deg);
-            }
-            50% {
-                transform: translateY(-100px) rotate(180deg);
-            }
-            100% {
-                transform: translateY(0px) rotate(360deg);
-            }
+    @keyframes flip {
+        0% {
+            transform: translateY(0px) rotate(0deg);
         }
+        50% {
+            transform: translateY(-100px) rotate(180deg);
+        }
+        100% {
+            transform: translateY(0px) rotate(360deg);
+        }
+    }
 
-        .panBase {
-            z-index: 3;
-            width: 50%;
-            height: 22px;
-            border-bottom-left-radius: 40px;
-            border-bottom-right-radius: 40px;
-            background: linear-gradient(to top, rgb(3, 156, 156), rgb(10, 191, 191));
-        }
+    .panBase {
+        z-index: 3;
+        width: 50%;
+        height: 22px;
+        border-bottom-left-radius: 40px;
+        border-bottom-right-radius: 40px;
+        background: linear-gradient(to top, rgb(3, 156, 156), rgb(10, 191, 191));
+    }
 
-        .panHandle {
-            width: 40%;
-            background: linear-gradient(to bottom, rgb(18, 18, 18), rgb(74, 74, 74));
-            height: 10px;
-            border-radius: 10px;
-        }
+    .panHandle {
+        width: 40%;
+        background: linear-gradient(to bottom, rgb(18, 18, 18), rgb(74, 74, 74));
+        height: 10px;
+        border-radius: 10px;
+    }
 
-        .panShadow {
-            width: 70px;
-            height: 8px;
-            background-color: rgba(0, 0, 0, 0.21);
-            margin-left: 15px;
-            border-radius: 10px;
-            animation: shadow 1.7s infinite;
-            filter: blur(5px);
-        }
+    .panShadow {
+        width: 70px;
+        height: 8px;
+        background-color: rgba(0, 0, 0, 0.21);
+        margin-left: 15px;
+        border-radius: 10px;
+        animation: shadow 1.7s infinite;
+        filter: blur(5px);
+    }
 
-        @keyframes shadow {
-            0% {
-                transform: scaleX(0.7);
-            }
-            50% {
-                transform: scaleX(1);
-            }
-            100% {
-                transform: scaleX(0.7);
-            }
+    @keyframes shadow {
+        0% {
+            transform: scaleX(0.7);
         }
-    </style>
+        50% {
+            transform: scaleX(1);
+        }
+        100% {
+            transform: scaleX(0.7);
+        }
+    }
+</style>
 
 </head>
 
@@ -609,6 +609,18 @@
     // 로딩 화면을 제어하기 위한 플래그
     let windowLoaded = false;
     let ajaxLoaded = false;
+    let currentPage = 0;
+    let isLoading = false;
+    let totalPages = 1;
+    let currentKeyword = $('#searchText').val();
+    let currentSortBy = "default";
+    let userLatitude = null;
+    let userLongitude = null;
+    let map;
+    let markers = [];
+    let infoWindows = [];
+    let restaurantCount = 0; // 정렬 순서 번호
+
     // 로딩 화면을 숨기는 함수 (두 플래그가 모두 true일 때)
     function hideLoaderIfReady() {
         if (windowLoaded && ajaxLoaded) {
@@ -622,76 +634,241 @@
         windowLoaded = true;
         hideLoaderIfReady();
     };
+    // 전역 스코프에 initMap 정의
+    function initMap() {
+        const initialCenter = { lat: 37.5665, lng: 126.9780 }; // 서울 시청
+        map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 15,
+            center: initialCenter,
+        });
+
+        // 사용자 위치 가져오기
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    userLatitude = position.coords.latitude;
+                    userLongitude = position.coords.longitude;
+
+                    // 지도 중심을 사용자 위치로 변경
+                    map.setCenter({ lat: userLatitude, lng: userLongitude });
+
+                    // 사용자 위치 마커 추가
+                    new google.maps.Marker({
+                        position: { lat: userLatitude, lng: userLongitude },
+                        map: map,
+                        title: "사용자 위치",
+                        icon: {
+                            path: google.maps.SymbolPath.CIRCLE,
+                            scale: 8,
+                            fillColor: "#00F",
+                            fillOpacity: 0.8,
+                            strokeColor: "#00F",
+                            strokeWeight: 2
+                        }
+                    });
+
+                    // 초기 데이터 로드
+                    loadRestaurants();
+                },
+                (error) => {
+                    console.error("위치 정보를 가져올 수 없습니다.", error);
+                    // 위치 정보를 가져올 수 없는 경우 기본 위치에서 로드
+                    loadRestaurants();
+                }
+            );
+        } else {
+            console.error("위치 정보를 지원하지 않는 브라우저입니다.");
+            // 위치 정보를 지원하지 않는 경우 기본 위치에서 로드
+            loadRestaurants();
+        }
+    }
+
+    // 전역 스코프에 loadRestaurants 함수 정의
+    function loadRestaurants(append = false) {
+        if (isLoading) return;
+        isLoading = true;
+
+        $.ajax({
+            url: '/api/restaurants/search',
+            type: 'GET',
+            data: {
+                keyword: currentKeyword,
+                page: currentPage,
+                size: 10,
+                sortBy: currentSortBy,
+                latitude: userLatitude,
+                longitude: userLongitude
+            },
+            success: function(data) {
+                if (data && data._embedded && Array.isArray(data._embedded.restaurantDtoList)) {
+                    renderRestaurants(data, append);
+                    if (append) {
+                        currentPage++;  // 추가 모드일 때만 페이지 번호 증가
+                    } else {
+                        currentPage = 1;
+                    }
+                    if (data.page && data.page.totalPages) {
+                        totalPages = data.page.totalPages;
+                    }
+
+                    // 초기 Ajax 로드 완료 플래그 설정
+                    if (!append) {
+                        ajaxLoaded = true;
+                        hideLoaderIfReady();
+                    }
+                } else {
+                    console.error("유효하지 않은 응답 데이터: ", data);
+                }
+                isLoading = false;
+            },
+            error: function(error) {
+                console.error("레스토랑 로딩 중 오류 발생:", error);
+                isLoading = false;
+            }
+        });
+    }
+
+
+    function renderRestaurants(data, append = false) {
+        if (data._embedded && Array.isArray(data._embedded.restaurantDtoList)) {
+            let restaurants = data._embedded.restaurantDtoList;
+            let html = '';
+
+            restaurants.forEach(function(restaurant) {
+                restaurantCount++; // 정렬 순서 번호 증가
+                let imageUrl = restaurant.imageUrls && restaurant.imageUrls.length > 0
+                    ? `/restaurant/display?filename=${restaurant.imageUrls[0]}`
+                    : 'default_image_url.jpg';
+
+                html += `
+                            <div class="col-12 mb-4">
+                                <div class="card" data-latitude="${restaurant.latitude}" data-longitude="${restaurant.longitude}" data-maincategory="${restaurant.mainCategory}">
+                                    <a href="/restaurant/rtread/${restaurant.id}">
+                                        <img src="${imageUrl}" alt="Restaurant Image" class="card-img-left">
+                                    </a>
+                                    <div class="card-body">
+                                        <a href="/restaurant/rtread?id=${restaurant.id}">
+                                            <h2 class="card-title">${restaurant.name}</h2>
+                                        </a>
+                                        <h5 class="badge bg-primary"> # ${restaurant.categories} </h5>
+                                        <h4 class="text">${restaurant.address}</h4>
+                                        <small class="text-muted">${restaurant.description}</small>
+                                        <div class="card-footer">
+                                            <h3 class="card-text">★${restaurant.average_rating}</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+
+                // 지도에 마커 추가
+                addMarker(restaurant, restaurantCount);
+            });
+
+            if(append) {
+                $('#restaurantList').append(html);
+            } else {
+                $('#restaurantList').html(html);
+            }
+        } else {
+            console.error("유효하지 않은 데이터 구조: ", data);
+        }
+    }
+    function renderRestaurants(data, append = false) {
+        if (data._embedded && Array.isArray(data._embedded.restaurantDtoList)) {
+            let restaurants = data._embedded.restaurantDtoList;
+            let html = '';
+
+            restaurants.forEach(function(restaurant) {
+                restaurantCount++; // 정렬 순서 번호 증가
+                let imageUrl = restaurant.imageUrls && restaurant.imageUrls.length > 0
+                    ? `/restaurant/display?filename=${restaurant.imageUrls[0]}`
+                    : 'default_image_url.jpg';
+
+                html += `
+                            <div class="col-12 mb-4">
+                                <div class="card" data-latitude="${restaurant.latitude}" data-longitude="${restaurant.longitude}" data-maincategory="${restaurant.mainCategory}">
+                                    <a href="/restaurant/rtread/${restaurant.id}">
+                                        <img src="${imageUrl}" alt="Restaurant Image" class="card-img-left">
+                                    </a>
+                                    <div class="card-body">
+                                        <a href="/restaurant/rtread?id=${restaurant.id}">
+                                            <h2 class="card-title">${restaurant.name}</h2>
+                                        </a>
+                                        <h5 class="badge bg-primary"> # ${restaurant.categories} </h5>
+                                        <h4 class="text">${restaurant.address}</h4>
+                                        <small class="text-muted">${restaurant.description}</small>
+                                        <div class="card-footer">
+                                            <h3 class="card-text">★${restaurant.average_rating}</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+
+                // 지도에 마커 추가
+                addMarker(restaurant, restaurantCount);
+            });
+
+            if(append) {
+                $('#restaurantList').append(html);
+            } else {
+                $('#restaurantList').html(html);
+            }
+        } else {
+            console.error("유효하지 않은 데이터 구조: ", data);
+        }
+    }
+
+    // 마커 추가 함수
+    function addMarker(restaurant, count) {
+        if (!map) return;
+
+        const position = { lat: restaurant.latitude, lng: restaurant.longitude };
+        const marker = new google.maps.Marker({
+            position: position,
+            map: map,
+            title: restaurant.name
+        });
+
+        const infowindow = new google.maps.InfoWindow({
+            content: `
+                        <strong style="cursor:pointer;" onclick="window.location.href='/restaurant/rtread/${restaurant.id}'">
+                            ${count}. ${restaurant.name}
+                        </strong><br>
+                        <span>카테고리: ${restaurant.categories}</span>
+                    `,
+            disableAutoPan: true
+        });
+
+        // InfoWindow를 항상 열어둡니다.
+        infowindow.open(map, marker);
+
+        // 마커를 저장하여 나중에 필터링할 수 있도록 설정
+        marker.content = restaurant;
+        markers.push(marker);
+        infoWindows.push(infowindow);
+    }
+
+    // 기존 마커 및 InfoWindow 제거 함수
+    function clearMarkers() {
+        markers.forEach(marker => marker.setMap(null));
+        markers = [];
+
+        infoWindows.forEach(infoWindow => infoWindow.close());
+        infoWindows = [];
+    }
+
+
+
 
     $(document).ready(function() {
 
-        console.log("ge")
-        let currentPage = 0;
-        let isLoading = false;
-        let totalPages = 1;
-        let currentKeyword = $('#searchText').val();
-        let currentSortBy = "default";
-        let userLatitude = null;
-        let userLongitude = null;
-        let map;
-        let markers = [];
-        let infoWindows = [];
-        let restaurantCount = 0; // 정렬 순서 번호
-
-        // Define initMap inside document ready and attach to window
-        window.initMap = function() {
-            const initialCenter = { lat: 37.5665, lng: 126.9780 }; // 서울 시청
-            map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 15,
-                center: initialCenter,
-            });
-
-            // 사용자 위치 가져오기
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        userLatitude = position.coords.latitude;
-                        userLongitude = position.coords.longitude;
-
-                        // 지도 중심을 사용자 위치로 변경
-                        map.setCenter({ lat: userLatitude, lng: userLongitude });
-
-                        // 사용자 위치 마커 추가
-                        new google.maps.Marker({
-                            position: { lat: userLatitude, lng: userLongitude },
-                            map: map,
-                            title: "사용자 위치",
-                            icon: {
-                                path: google.maps.SymbolPath.CIRCLE,
-                                scale: 8,
-                                fillColor: "#00F",
-                                fillOpacity: 0.8,
-                                strokeColor: "#00F",
-                                strokeWeight: 2
-                            }
-                        });
-                        console.log("ge2")
-
-                        // 초기 데이터 로드
-                        loadRestaurants();
-                    },
-                    (error) => {
-                        console.error("위치 정보를 가져올 수 없습니다.", error);
-                        // 위치 정보를 가져올 수 없는 경우 기본 위치에서 로드
-                        loadRestaurants();
-                    }
-                );
-            } else {
-                console.error("위치 정보를 지원하지 않는 브라우저입니다.");
-                // 위치 정보를 지원하지 않는 경우 기본 위치에서 로드
-                loadRestaurants();
-            }
-        }
 
         // 무한 스크롤
-        $(window).scroll(function() {
-            if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
-                if(!isLoading && currentPage < totalPages) {
+        $(window).scroll(function () {
+            if ($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+                if (!isLoading && currentPage < totalPages) {
                     loadMoreRestaurants();
                 }
             }
@@ -714,7 +891,7 @@
         }
 
         // 검색 입력 이벤트
-        $('#searchText').on('keyup', function(e) {
+        $('#searchText').on('keyup', function (e) {
             if (e.key === 'Enter') {
                 currentKeyword = $(this).val();
                 currentPage = 0;  // 페이지 번호 초기화
@@ -726,7 +903,7 @@
         });
 
         // 정렬 버튼 클릭 이벤트
-        $('#sort-distance').click(function() {
+        $('#sort-distance').click(function () {
             currentSortBy = "distance";
             currentPage = 0;  // 페이지 번호 초기화
             restaurantCount = 0; // 정렬 순서 초기화
@@ -735,7 +912,7 @@
             loadRestaurants(false);  // 새로운 정렬 결과 로드
         });
 
-        $('#sort-rating').click(function() {
+        $('#sort-rating').click(function () {
             currentSortBy = "rating";
             currentPage = 0;  // 페이지 번호 초기화
             restaurantCount = 0; // 정렬 순서 초기화
@@ -764,7 +941,7 @@
         }
 
         // 필터 토글 기능
-        $('#toggleCategory, #toggleAmbiance, #togglePurpose').click(function() {
+        $('#toggleCategory, #toggleAmbiance, #togglePurpose').click(function () {
             const $button = $(this);
             const $target = $button.closest('.filter-content').find('.form-check').slice(3);
             $target.slideToggle();
@@ -776,12 +953,12 @@
             let selectedCategories = [];
 
             // 체크된 카테고리 수집
-            $('.form-check-input:checked').each(function() {
+            $('.form-check-input:checked').each(function () {
                 selectedCategories.push($(this).data('category'));
             });
 
             // 필터링 로직 적용
-            $('.card').each(function() {
+            $('.card').each(function () {
                 let cardCategory = $(this).data('maincategory');
 
                 if (selectedCategories.length === 0 || selectedCategories.includes(cardCategory)) {
@@ -803,7 +980,7 @@
         }
 
         // 카테고리 체크박스 변경 이벤트
-        $('#categoryFilters').on('change', '.form-check-input', function() {
+        $('#categoryFilters').on('change', '.form-check-input', function () {
             filterRestaurants();
         });
 
@@ -814,139 +991,6 @@
         function loadMoreRestaurants() {
             loadRestaurants(true);  // true를 전달하여 추가 모드로 설정
         }
-
-        // 레스토랑 로드 함수
-        function loadRestaurants(append = false) {
-            if (isLoading) return;
-            isLoading = true;
-
-            $.ajax({
-                url: '/api/restaurants/search',
-                type: 'GET',
-                data: {
-                    keyword: currentKeyword,
-                    page: currentPage,
-                    size: 10,
-                    sortBy: currentSortBy,
-                    latitude: userLatitude,
-                    longitude: userLongitude
-                },
-                success: function(data) {
-                    if (data && data._embedded && Array.isArray(data._embedded.restaurantDtoList)) {
-                        renderRestaurants(data, append);
-                        if (append) {
-                            currentPage++;  // 추가 모드일 때만 페이지 번호 증가
-                        } else {
-                            currentPage = 1;
-                        }
-                        // totalPages가 API로부터 제공되면 업데이트
-                        if (data.page && data.page.totalPages) {
-                            totalPages = data.page.totalPages;
-                        }
-
-                        // 초기 Ajax 로드 완료 플래그 설정
-                        if (!append) {
-                            ajaxLoaded = true;
-                            hideLoaderIfReady();
-                        }
-                    } else {
-                        console.error("유효하지 않은 응답 데이터: ", data);
-                    }
-                    isLoading = false;
-                },
-                error: function(error) {
-                    console.error("레스토랑 로딩 중 오류 발생:", error);
-                    isLoading = false;
-                }
-            });
-        }
-
-        // 레스토랑 렌더링 함수
-        function renderRestaurants(data, append = false) {
-            if (data._embedded && Array.isArray(data._embedded.restaurantDtoList)) {
-                let restaurants = data._embedded.restaurantDtoList;
-                let html = '';
-
-                restaurants.forEach(function(restaurant) {
-                    restaurantCount++; // 정렬 순서 번호 증가
-                    let imageUrl = restaurant.imageUrls && restaurant.imageUrls.length > 0
-                        ? `/restaurant/display?filename=${restaurant.imageUrls[0]}`
-                        : 'default_image_url.jpg';
-
-                    html += `
-                            <div class="col-12 mb-4">
-                                <div class="card" data-latitude="${restaurant.latitude}" data-longitude="${restaurant.longitude}" data-maincategory="${restaurant.mainCategory}">
-                                    <a href="/restaurant/rtread/${restaurant.id}">
-                                        <img src="${imageUrl}" alt="Restaurant Image" class="card-img-left">
-                                    </a>
-                                    <div class="card-body">
-                                        <a href="/restaurant/rtread?id=${restaurant.id}">
-                                            <h2 class="card-title">${restaurant.name}</h2>
-                                        </a>
-                                        <h5 class="badge bg-primary"> # ${restaurant.categories} </h5>
-                                        <h4 class="text">${restaurant.address}</h4>
-                                        <small class="text-muted">${restaurant.description}</small>
-                                        <div class="card-footer">
-                                            <h3 class="card-text">★${restaurant.average_rating}</h3>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-
-                    // 지도에 마커 추가
-                    addMarker(restaurant, restaurantCount);
-                });
-
-                if(append) {
-                    $('#restaurantList').append(html);
-                } else {
-                    $('#restaurantList').html(html);
-                }
-            } else {
-                console.error("유효하지 않은 데이터 구조: ", data);
-            }
-        }
-
-        // 마커 추가 함수
-        function addMarker(restaurant, count) {
-            if (!map) return;
-
-            const position = { lat: restaurant.latitude, lng: restaurant.longitude };
-            const marker = new google.maps.Marker({
-                position: position,
-                map: map,
-                title: restaurant.name
-            });
-
-            const infowindow = new google.maps.InfoWindow({
-                content: `
-                        <strong style="cursor:pointer;" onclick="window.location.href='/restaurant/rtread/${restaurant.id}'">
-                            ${count}. ${restaurant.name}
-                        </strong><br>
-                        <span>카테고리: ${restaurant.categories}</span>
-                    `,
-                disableAutoPan: true
-            });
-
-            // InfoWindow를 항상 열어둡니다.
-            infowindow.open(map, marker);
-
-            // 마커를 저장하여 나중에 필터링할 수 있도록 설정
-            marker.content = restaurant;
-            markers.push(marker);
-            infoWindows.push(infowindow);
-        }
-
-        // 기존 마커 및 InfoWindow 제거 함수
-        function clearMarkers() {
-            markers.forEach(marker => marker.setMap(null));
-            markers = [];
-
-            infoWindows.forEach(infoWindow => infoWindow.close());
-            infoWindows = [];
-        }
-
         // 필터 데이터 로드 함수
         function loadFilters() {
             const categories = ['한식', '중식', '일식', '양식', '아시안', '패스트푸드', '디저트'];
@@ -958,11 +1002,12 @@
             renderFilters('purposeFilters', purposes);
         }
     });
+
 </script>
 
 
 
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=initMap"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=initMap" async defer ></script>
 
 </body>
 </html>
