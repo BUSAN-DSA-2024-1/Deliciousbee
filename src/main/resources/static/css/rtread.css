@@ -3,19 +3,6 @@ body {
 	font-family: 'Noto Sans KR', sans-serif;
 }
 
-.navbar {
-	background-color: #61686c !important;
-	color: white;
-	padding: 15px;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
-
-.nav-link {
-	color: white !important;
-}
-
 .card-img-top {
 	height: 300px;
 	object-fit: cover;
@@ -217,9 +204,9 @@ body {
 	width: 8px;
 	height: 8px;
 	margin-bottom: 1px;
-	border-radius: 50%; 
+	border-radius: 50%;
 	border: 2px solid #505050;
-	position: relative; 
+	position: relative;
 }
 
 .form-check {

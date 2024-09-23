@@ -1,89 +1,4 @@
-body, html {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    background-color: #FFF5EE;
-    height: 100%;
-}
-
-/* Header Styles */
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-}
-
-.logo img {
-    width: 30px;
-    height: 30px;
-    margin-right: 10px;
-}
-
-.logo span {
-    font-size: 24px;
-    color: #000;
-}
-
-.login-btn {
-    background-color: #FFF;
-    border: 1px solid #FF6347;
-    color: #FF6347;
-    padding: 5px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-
-
-/* 반응형 - 작은 화면에서 메뉴는 이전과 동일하게 동작 */
-@media (max-width: 768px) {
-    .navbar .container {
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-
-    .navbar-toggler {
-        display: block;
-    }
-
-    .navbar-nav {
-        flex-direction: column;
-        position: absolute;
-        top: 100%;
-        right: 0;
-        background-color: #343a40;
-        width: 200px;
-        padding: 10px;
-        display: none;
-    }
-
-    .navbar-nav.show {
-        display: flex;
-    }
-
-    .intro-content {
-        flex-direction: column;
-        align-items: center;
-        transform: translateY(0);
-    }
-
-    .search-container, .restaurant-card {
-        width: 90%;
-        max-width: 100%;
-        margin: 10px 0;
-        transform: scale(1);
-    }
-}
-
-
-
-
+/* Navbar Styles */
 .navbar {
     background-color: #61686c;
     color: white;
@@ -93,7 +8,7 @@ header {
     align-items: center;
 }
 
-.navbar .container {
+.navbar .nav-container {
     display: flex;
     align-items: center;
     width: 100%;
@@ -151,4 +66,229 @@ header {
     height: 3px;
     background-color: white;
     margin: 5px 0;
+}
+
+/* Tooltip Container for User Menu */
+.tooltip-container {
+    position: relative;
+    display: inline-block;
+    font-family: "Arial", sans-serif;
+    overflow: visible;
+    background-color: #61686c;
+    color: white;
+    margin-left: 20px;
+}
+
+.tooltip-container .button-content {
+    background: none;
+    color: inherit;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.tooltip-container .text {
+    font-size: inherit;
+    font-weight: inherit;
+    margin-right: 0;
+    text-shadow: none;
+}
+
+/* Tooltip Styles */
+.tooltip-content {
+    position: absolute;
+    top: 102%;
+    left: 50%;
+    transform: translateX(-50%) scale(0.8);
+    background: white;
+    border-radius: 15px;
+    padding: 22px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+            opacity 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+            transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+            visibility 0.5s ease;
+    z-index: 100;
+    pointer-events: none;
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.tooltip-container:hover .tooltip-content {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) scale(1);
+    pointer-events: auto;
+}
+
+/* Social Icons in Tooltip */
+.infos {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 45px;
+    border-radius: 7%;
+    background: #f0f0f0;
+    transition:
+            transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+            background 0.3s ease,
+            box-shadow 0.4s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+    color: black;
+    text-decoration: none;
+}
+
+.info:hover {
+    transform: translateY(-5px) scale(1.1);
+}
+
+.info:active {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal for Login */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.form-container {
+    width: 350px;
+    height: 450px;
+    background-color: #fff;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    border-radius: 10px;
+    box-sizing: border-box;
+    padding: 20px 30px;
+    margin: 15% auto;
+}
+
+.title {
+    text-align: center;
+    font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+    margin: 10px 0 30px 0;
+    font-size: 28px;
+    font-weight: 800;
+}
+
+.form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-bottom: 15px;
+}
+
+.input {
+    border-radius: 20px;
+    border: 1px solid #c0c0c0;
+    outline: 0 !important;
+    box-sizing: border-box;
+    padding: 12px 15px;
+}
+
+.form-btn {
+    padding: 10px 15px;
+    font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+    border-radius: 20px;
+    border: 0 !important;
+    outline: 0 !important;
+    background: teal;
+    color: white;
+    cursor: pointer;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.form-btn:active {
+    box-shadow: none;
+}
+
+/* Social Login Button Styles */
+.social-login-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 40px;
+    padding: 10px 15px;
+    border-radius: 20px;
+    border: 2px solid #747474;
+    cursor: pointer;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
+    rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+    background-color: white;
+    box-sizing: border-box;
+}
+
+.social-login-img {
+    width: auto;
+    height: 100%;
+}
+
+.social-login-button:hover {
+    background-color: #f0f0f0;
+}
+
+.social-login-button:active {
+    box-shadow: none;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Sign-up and Forgot Password Links */
+.sign-up-label {
+    margin: 0;
+    font-size: 10px;
+    color: #747474;
+    font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+    text-align: center;
+    margin-top: 5%;
+}
+
+.sign-up-link {
+    margin-left: 1px;
+    font-size: 11px;
+    text-decoration: underline;
+    text-decoration-color: teal;
+    color: teal;
+    cursor: pointer;
+    font-weight: 800;
+    font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 }
