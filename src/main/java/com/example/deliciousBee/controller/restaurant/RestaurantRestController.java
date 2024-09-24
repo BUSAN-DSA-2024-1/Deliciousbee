@@ -53,7 +53,7 @@ public class RestaurantRestController {
             @RequestParam(value = "sortBy", required = false, defaultValue = "default") String sortBy,
             @RequestParam(value = "latitude", required = false) Double userLatitude,
             @RequestParam(value = "longitude", required = false) Double userLongitude,
-            @RequestParam(value = "radius", required = false, defaultValue = "0.5") Double radius, // 반경 추가 (기본값 0.5km)
+            @RequestParam(value = "radius", required = false, defaultValue = "6.0") Double radius, // 반경 추가 (기본값 0.5km)
             PagedResourcesAssembler<RestaurantDto> assembler) {
 
         Page<RestaurantDto> restaurants = restaurantService.searchRestaurants(keyword, pageable, sortBy, userLatitude, userLongitude, radius);
