@@ -168,20 +168,20 @@ public class RestaurantController {
 		return "restaurant/rtread";
 	}
 
-	@GetMapping("rtdelete")
-	public String remove(@AuthenticationPrincipal BeeMember loginMember,
-			@RequestParam(name = "id", required = false) Long id) {
+		@GetMapping("rtdelete")
+		public String remove(@AuthenticationPrincipal BeeMember loginMember,
+				@RequestParam(name = "id", required = false) Long id) {
 
-		Restaurant restaurant = restaurantService.findRestaurant(id);
+			Restaurant restaurant = restaurantService.findRestaurant(id);
 
-		if (restaurant == null || !restaurant.getMember().getMember_id().equals(loginMember.getMember_id())) {
+			if (restaurant == null || !restaurant.getMember().getMember_id().equals(loginMember.getMember_id())) {
+				return "redirect:/";
+			}
+
+			restaurantService.deleteRestaurant(restaurant.getId());
+
 			return "redirect:/";
 		}
-
-		restaurantService.deleteRestaurant(restaurant.getId());
-
-		return "redirect:/";
-	}
 
 	@GetMapping("rtupdate")
 	public String rtUpdate(@AuthenticationPrincipal BeeMember loginMember, @RequestParam(name = "id") Long id,

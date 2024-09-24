@@ -202,8 +202,8 @@ body {
 
 a.today_visitor {
 	transition: color 0.3s ease; /* 부드러운 전환 효과 추가 */
-	font-weight: normal;
-	cursor:  pointer; /* 커서를 기본값으로 변경 */
+  font-weight: normal;
+  cursor:  pointer; /* 커서를 기본값으로 변경 */
 }
 
 .today_visitor:hover {
@@ -345,9 +345,9 @@ a.today_visitor {
 	background-color: rgba(0, 0, 0, 0.4);
 	z-index: 100; /* 다른 요소보다 위에 표시 */
 	overflow: auto; /* 스크롤 가능하도록 설정 */
-	border-radius: 10px; /* 모달창 테두리 둥글게 */
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 추가 */
-	backdrop-filter: blur(5px); /* 배경 blur 효과 추가 (지원 브라우저에서만 적용) */
+	 border-radius: 10px; /* 모달창 테두리 둥글게 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 추가 */
+  backdrop-filter: blur(5px); /* 배경 blur 효과 추가 (지원 브라우저에서만 적용) */
 }
 
 .image-modal-content {
@@ -361,75 +361,75 @@ a.today_visitor {
 	display: flex; /* flexbox 사용 */
 	flex-wrap: wrap; /* 여러 줄 허용 */
 	justify-content: center; /* 가운데 정렬 */
-	overflow-y: auto; /* 4장 이상일 경우 스크롤바 생성 */
-	border-radius: 10px;
-	background-color: #f8f8f8;
+	 overflow-y: auto; /* 4장 이상일 경우 스크롤바 생성 */
+	  border-radius: 10px;
+	  background-color: #f8f8f8;
 
 }
 
 .image-modal-content img {
-	width: 250px; /* 이미지 너비 고정 */
-	height: 250px; /* 이미지 높이 고정 */
-	margin: 10px;
-	object-fit: cover; /* 이미지 비율 유지하며 채우기 */
-	border-radius: 5px; /* 이미지 테두리 둥글게 */
-	transition: transform 0.2s; /* 이미지 호버 효과 추가 */
+	 width: 250px; /* 이미지 너비 고정 */
+    height: 250px; /* 이미지 높이 고정 */
+    margin: 10px;
+    object-fit: cover; /* 이미지 비율 유지하며 채우기 */
+    border-radius: 5px; /* 이미지 테두리 둥글게 */
+  transition: transform 0.2s; /* 이미지 호버 효과 추가 */
 }
 
 .image-modal-content img:hover {
-	transform: scale(1.05); /* 이미지 약간 확대 */
+  transform: scale(1.05); /* 이미지 약간 확대 */
 }
 
 
 .close-modal {
-	position: absolute;
-	top: 10px;
-	right: 15px;
-	font-size: 25px; /* 크기 조정 */
-	font-weight: bold;
-	color: black;/* 흰색으로 변경 */
-	cursor: pointer;
-	z-index: 10; /* z-index 값을 배경 이미지보다 높게 설정 */
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 25px; /* 크기 조정 */
+  font-weight: bold;
+  color: black;/* 흰색으로 변경 */
+  cursor: pointer;
+  z-index: 10; /* z-index 값을 배경 이미지보다 높게 설정 */
 }
 
 
 .close-modal:hover {
-	color: red;
+  color: red;
 }
 
 /* 큰 이미지 모달 스타일 */
 #largeImageModal {
-	display: none;
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background-color: rgba(0, 0, 0, 0.5);
-	z-index: 101; /* 기존 모달보다 높은 z-index */
-	border-radius: 10px; /* 모달창 테두리 둥글게 */
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 추가 */
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 101; /* 기존 모달보다 높은 z-index */
+   border-radius: 10px; /* 모달창 테두리 둥글게 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 추가 */
 }
 
 #largeImageModal #largeImage {
-	margin: 20px; /* 이미지 주변에 여백 추가 */
+  margin: 20px; /* 이미지 주변에 여백 추가 */
 }
 .large-image-modal-content {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	background-color: white;
-	padding: 20px;
-	text-align: center;
-	border-radius: 10px; /* 컨텐츠 영역 테두리 둥글게 */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  text-align: center;
+   border-radius: 10px; /* 컨텐츠 영역 테두리 둥글게 */
 }
 
 #largeImage {
-	max-width: 1000px;
-	max-height: 1000px;
-	border-radius: 5px; /* 이미지 테두리 둥글게 */
-	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* 이미지에 그림자 효과 추가 */
+  max-width: 1000px;
+  max-height: 1000px;
+  border-radius: 5px; /* 이미지 테두리 둥글게 */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* 이미지에 그림자 효과 추가 */
 }
 
 
@@ -834,10 +834,8 @@ a {
 	color: white;
 }
 
-
-/* Navbar Styles */
 .navbar {
-	background-color: #61686c;
+	background-color: #343a40;
 	color: white;
 	padding: 15px;
 	display: flex;
@@ -845,7 +843,7 @@ a {
 	align-items: center;
 }
 
-.navbar .nav-container {
+.navbar .container {
 	display: flex;
 	align-items: center;
 	width: 100%;
@@ -866,4 +864,358 @@ a {
 
 .navbar-nav {
 	display: flex;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.nav-item {
+	margin-left: 20px;
+}
+
+.nav-link {
+	text-decoration: none;
+	color: inherit;
+}
+
+.nav-link:hover {
+	color: #FF6347;
+}
+
+.nav-link.active {
+	color: #FF6347;
+}
+
+.navbar-toggler {
+	background-color: transparent;
+	border: none;
+	padding: 0;
+	cursor: pointer;
+	display: none;
+	margin-left: 10px;
+}
+
+.navbar-toggler span {
+	display: block;
+	width: 25px;
+	height: 3px;
+	background-color: white;
+	margin: 5px 0;
+}
+
+.modal {
+	display: none;
+	position: fixed;
+	z-index: 10;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	background-color: rgba(0, 0, 0, 0.4);
+}
+
+.follow-modal-content {
+	background-image: url("/myPageImage/honey3.jpg");
+	background-size: 100% 100%; /* 가로 세로 모두 100%로 설정 */
+	background-repeat: no-repeat;
+	background-position: center;
+	background-color: #fefefe;
+	margin: 15% auto;
+	padding: 20px;
+	border: 1px solid #61686c;
+	width: 30%; /* 모달 넓이 조절 */
+	border-radius: 10px; /* 모서리 둥글게 */
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	margin: 15% auto; /* 그림자 효과 */
+	position: relative;
+}
+
+.follow-modal-content h3 {
+	text-align: center;
+	margin-bottom: 20px;
+	color: #333; /* 어두운 텍스트 색상 */
+	font-family: 'Arial Rounded MT Bold', sans-serif; /* 둥근 폰트 */
+}
+
+.follow-modal-content ul {
+	list-style: none;
+	padding: 0;
+}
+
+.follow-modal-content li {
+	padding: 10px;
+	border-bottom: 1px solid #ddd; /* 각 항목 사이 구분선 */
+	text-align: left;
+}
+
+.follow-modal-content li a {
+	text-align: center;
+	color: #333; /* 어두운 텍스트 색상 */
+	text-decoration: none; /* 밑줄 제거 */
+	font-weight: bold; /* 굵은 글씨 */
+	display: block; /* 링크를 전체 너비로 */
+}
+
+.follow-modal-content li a:hover {
+	text-decoration: underline; /* 마우스 호버 시 밑줄 */
+	color: #FFA500; /* 주황색 */
+}
+
+/* 오늘의 방문자 목록 모달 스타일 */
+.visit-modal-content {
+	background-image: url("/myPageImage/honey.jpg");
+	background-size: 100% 100%; /* 가로 세로 모두 100%로 설정 */
+	background-repeat: no-repeat;
+	background-position: center;
+	width: auto; /* width를 auto로 설정하여 이미지 크기에 맞춤 */
+	margin-left: auto; /* 좌우 여백 자동 조정 */
+	margin-right: auto; /* 좌우 여백 자동 조정 */
+	background-color: #fff;
+	margin: 15% auto;
+	padding: 20px;
+	border: 2px solid #61686c; /* 주황색 테두리 추가 */
+	width: 30%;
+	border-radius: 12px;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+	overflow-y: auto;
+	max-height: 400px;
+	  position: relative;
+}
+
+.visit-modal-content h3 {
+	font-size: 1.2em;
+	margin-bottom: 15px;
+	color: #333;
+	text-align: center;
+	font-family: 'Arial Rounded MT Bold', sans-serif;
+	border-bottom: 1px solid #61686c; /* 제목 아래 주황색 선 추가 */
+	padding-bottom: 10px; /* 제목 아래 여백 추가 */
+}
+
+.visit-modal-content ul {
+	list-style: none;
+	padding: 0;
+}
+
+.visit-modal-content li {
+	padding: 8px 0;
+	border-bottom: 1px solid #0d0c22;
+	text-align: center;
+	background-color: #f9f9f9; /* 밝은 회색 배경 추가 */
+	margin-bottom: 5px; /* 아래쪽 여백 추가 */
+	border-radius: 5px; /* 둥근 모서리 추가 */
+}
+
+.visit-modal-content li:last-child {
+	border-bottom: none;
+	margin-bottom: 0; /* 마지막 항목 아래 여백 제거 */
+}
+
+.visit-modal-content a {
+	text-decoration: none;
+	color: #007bff;
+	transition: color 0.3s;
+	font-weight: bold;
+}
+
+.visit-modal-content a:hover {
+	color: #FFA500;
+}
+
+.form-container {
+	width: 350px;
+	height: 400px;
+	background-color: #fff;
+	box-shadow: rgba(0, 0, 0, 0.1) 0px 5px 15px;
+	border-radius: 10px;
+	box-sizing: border-box;
+	padding: 20px 30px;
+	margin: 15% auto;
+}
+
+.title {
+	text-align: center;
+	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+	margin: 10px 0 30px 0;
+	font-size: 28px;
+	font-weight: 800;
+}
+
+.form {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+	margin-bottom: 15px;
+}
+
+.input {
+	border-radius: 20px;
+	border: 1px #c0c0c0;
+	outline: 0 !important;
+	box-sizing: border-box;
+	padding: 12px 15px;
+}
+
+.page-link {
+	text-decoration: underline;
+	margin: 0;
+	text-align: end;
+	color: #747474;
+	text-decoration-color: #747474;
+}
+
+.page-link-label {
+	cursor: pointer;
+	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+	font-size: 9px;
+	font-weight: 700;
+}
+
+.page-link-label:hover {
+	color: #000;
+}
+
+.form-btn {
+	padding: 10px 15px;
+	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+	border-radius: 20px;
+	border: 0 !important;
+	outline: 0 !important;
+	background: teal;
+	color: white;
+	cursor: pointer;
+	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.form-btn:active {
+	box-shadow: none;
+}
+
+.sign-up-label {
+	margin: 0;
+	font-size: 10px;
+	color: #747474;
+	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+	text-align: center;
+	margin-top: 5%;
+}
+
+.sign-up-link {
+	margin-left: 1px;
+	font-size: 11px;
+	text-decoration: underline;
+	text-decoration-color: teal;
+	color: teal;
+	cursor: pointer;
+	font-weight: 800;
+	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}
+
+.buttons-container {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	margin-top: 20px;
+	gap: 15px;
+}
+
+.more-button {
+	background-color: sliver; /* 버튼 배경색 */
+	color: black; /* 버튼 글자색 */
+	margin-left: 5px;
+	padding: 4px; /* 버튼 여백 */
+	text-align: center; /* 글자 가운데 정렬 */
+	text-decoration: none; /* 밑줄 제거 */
+	border: none;
+	display: inline-block; /* 인라인 블록 요소로 설정 */
+	border-radius: 5px; /* 둥근 모서리 */
+	font-size: 10px; /* 글자 크기 */
+	cursor: pointer; /* 마우스 커서 변경 */
+	transition: background-color 0.3s; /* 배경색 전환 효과 */
+	margin-bottom: 6px;
+
+}
+
+.more-button:hover {
+	background-color: orange; /* 오렌지색 배경 */
+}
+
+.google-login-button {
+	border-radius: 20px;
+	box-sizing: border-box;
+	padding: 10px 15px;
+	box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06)
+		0px 0px 0px 1px;
+	cursor: pointer;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+	font-size: 11px;
+	gap: 5px;
+	border: 2px solid #747474;
+}
+
+.google-icon {
+	font-size: 18px;
+	margin-bottom: 1px;
+}
+
+.close {
+	color: black;
+	float: right;
+	font-size: 28px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.close:hover, .close:focus {
+	color: red;
+	text-decoration: none;
+	cursor: pointer;
+	text-decoration: none;
+}
+
+/* 반응형 - 작은 화면에서 메뉴는 이전과 동일하게 동작 */
+@media ( max-width : 768px) {
+	.navbar .container {
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+	.navbar-toggler {
+		display: block;
+	}
+	.navbar-nav {
+		flex-direction: column;
+		position: absolute;
+		top: 100%;
+		right: 0;
+		background-color: #343a40;
+		width: 200px;
+		padding: 10px;
+		display: none;
+	}
+	.navbar-nav.show {
+		display: flex;
+	}
+	.intro-content {
+		flex-direction: column;	
+		align-items: center;
+		transform: translateY(0);
+	}
+	.search-container, .restaurant-card {
+		width: 90%;
+		max-width: 100%;
+		margin: 10px 0;
+		transform: scale(1);
+	}
 }

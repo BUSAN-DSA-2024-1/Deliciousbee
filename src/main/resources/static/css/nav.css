@@ -1,6 +1,6 @@
 /* Navbar Styles */
 .navbar {
-    background-color: #61686c;
+    background-color: #61686c !important;
     color: white;
     padding: 15px;
     display: flex;
