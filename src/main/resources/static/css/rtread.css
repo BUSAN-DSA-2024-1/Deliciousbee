@@ -217,5 +217,7 @@ body {
 	font-size: 14px;
 }
 
-.nav-review-paging {
-}
+.nav-review-paging ul {
+	display: flex;
+	justify-content: center; /* flexbox를 사용한 정렬 */
+  }

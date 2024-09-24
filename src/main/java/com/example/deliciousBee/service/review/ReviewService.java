@@ -8,7 +8,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -79,9 +81,13 @@ public class ReviewService {
 		restaurantRepository.save(restaurant);
 	}
 
-	public Page<Review> getReviewsByRestaurantIdWithFiles(Long restaurantId, String memberId, Pageable pageable) {
+	public Page<Review> getReviewsByRestaurantIdWithFiles(Long restaurantId, String memberId, Pageable pageable,
+			String sortBy) {
 
-		Page<Review> reviews = reviewRepository.findByRestaurantId(restaurantId, pageable);
+		Sort sort = Sort.by(Sort.Direction.DESC, sortBy);
+		Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+
+		Page<Review> reviews = reviewRepository.findByRestaurantId(restaurantId, sortedPageable);
 		List<Long> reportedReviewIds = reportRepository.findReportedReviewId(memberId);
 
 		List<Review> filteredReviews = reviews.stream().filter(review -> !reportedReviewIds.contains(review.getId()))
@@ -95,7 +101,7 @@ public class ReviewService {
 		// filteredReviews를 Page<Review>로 변환
 		Page<Review> pageFilteredReviews = new PageImpl<>(filteredReviews, pageable, reviews.getTotalElements());
 
-		return pageFilteredReviews; // 변환된 Page<Review> 객체 반환
+		return pageFilteredReviews;
 	}
 
 	// 좋아요 로직
@@ -207,14 +213,14 @@ public class ReviewService {
 	}
 
 	// 리뷰 정렬 로직
-	public Page<Review> sortReview(String sort, Long restaurantId, String memberId, Pageable pageable) {
+	public Page<Review> sortReview(Long restaurantId, String memberId, Pageable pageable, String sortBy) {
 		List<Long> reportedReviewIds = reportRepository.findReportedReviewId(memberId);
-		Page<Review> reviews = switch (sort) {
+		Page<Review> reviews = switch (sortBy) {
 		case "rating" -> reviewRepository.findAllByRestaurant_IdOrderByRatingDesc(restaurantId, pageable); // 특정 식당 ID로
 		// 필터링
 		case "visitDate" -> reviewRepository.findAllByRestaurant_IdOrderByVisitDateDesc(restaurantId, pageable);
 		case "likeCount" -> reviewRepository.findAllByRestaurant_IdOrderByLikeCountDesc(restaurantId, pageable);
-		default -> getReviewsByRestaurantIdWithFiles(restaurantId, memberId, pageable);
+		default -> getReviewsByRestaurantIdWithFiles(restaurantId, memberId, pageable, sortBy);
 		};
 
 		List<Review> filteredReviews = reviews.stream().filter(review -> !reportedReviewIds.contains(review.getId()))
@@ -225,9 +231,7 @@ public class ReviewService {
 			review.setCanEdit(memberId.equals(review.getBeeMember().getMember_id()));
 		}
 
-		// filteredReviews를 Page<Review>로 변환
 		Page<Review> pageFilteredReviews = new PageImpl<>(filteredReviews, pageable, reviews.getTotalElements());
-
 		return pageFilteredReviews;
 	}
 
@@ -238,10 +242,5 @@ public class ReviewService {
 	public Page<Review> findAll(Pageable pageable) {
 		return reviewRepository.findAll(pageable);
 	}
-	
-	
-
-
-
 
 }
