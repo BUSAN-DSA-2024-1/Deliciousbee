@@ -114,7 +114,7 @@
     }
     .search-input {
         width: 80%;
-        line-height: 28px;
+        line-height: 30px;
         padding: 0 1rem;
         padding-left: 2.5rem;
         border: 2px solid transparent;
@@ -124,6 +124,7 @@
         color: #0D0C22;
         transition: .3s ease;
         margin-left: 65%;
+        margin-bottom: 7px;
     }
     .search-input::placeholder {
         color: #9E9EA7;
@@ -143,7 +144,7 @@
     .search-icon {
         position: absolute;
         left: 66%;
-        top: 50%;
+        top: 40%;
         transform: translateY(-50%);
         fill: #9E9EA7;
         width: 1rem;
@@ -323,6 +324,16 @@
         width: calc(100% - 240px); /* 이미지 너비를 제외한 나머지 공간을 차지 */
         height: 240px;
     }
+    .title-report {
+    	display: flex; 
+    	justify-content: space-between; 
+    	width: 100%;
+    	height: 30px;
+    }
+    .update-btn {
+    	display: inline-block;
+    	z-index: 500;
+    }
     .card-img-left {
         width: 240px; /* 이미지 너비 고정 */
         height: 240px; /* 이미지 높이 고정 */
@@ -364,6 +375,7 @@
         background-color:#BDBDBD;
     }
     .card-title {
+    	
         font-size: 22px;
         height:20px;
         margin-bottom: 10px;
@@ -728,7 +740,6 @@
         });
     }
 
-
     function renderRestaurants(data, append = false) {
         if (data._embedded && Array.isArray(data._embedded.restaurantDtoList)) {
             let restaurants = data._embedded.restaurantDtoList;
@@ -747,59 +758,15 @@
                                         <img src="${imageUrl}" alt="Restaurant Image" class="card-img-left">
                                     </a>
                                     <div class="card-body">
-                                        <a href="/restaurant/rtread?id=${restaurant.id}">
-                                            <h2 class="card-title">${restaurant.name}</h2>
-                                        </a>
+                                    	<a href="/restaurant/rtread?id=${restaurant.id}">
+                                        	<h2 class="card-title">${restaurant.name}</h2>
+                                    	</a>
                                         <h5 class="badge bg-primary"> # ${restaurant.categories} </h5>
                                         <h4 class="text">${restaurant.address}</h4>
                                         <small class="text-muted">${restaurant.description}</small>
                                         <div class="card-footer">
                                             <h3 class="card-text">★${restaurant.average_rating}</h3>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-
-                // 지도에 마커 추가
-                addMarker(restaurant, restaurantCount);
-            });
-
-            if(append) {
-                $('#restaurantList').append(html);
-            } else {
-                $('#restaurantList').html(html);
-            }
-        } else {
-            console.error("유효하지 않은 데이터 구조: ", data);
-        }
-    }
-    function renderRestaurants(data, append = false) {
-        if (data._embedded && Array.isArray(data._embedded.restaurantDtoList)) {
-            let restaurants = data._embedded.restaurantDtoList;
-            let html = '';
-
-            restaurants.forEach(function(restaurant) {
-                restaurantCount++; // 정렬 순서 번호 증가
-                let imageUrl = restaurant.imageUrls && restaurant.imageUrls.length > 0
-                    ? `/restaurant/display?filename=${restaurant.imageUrls[0]}`
-                    : 'default_image_url.jpg';
-
-                html += `
-                            <div class="col-12 mb-4">
-                                <div class="card" data-latitude="${restaurant.latitude}" data-longitude="${restaurant.longitude}" data-maincategory="${restaurant.mainCategory}">
-                                    <a href="/restaurant/rtread/${restaurant.id}">
-                                        <img src="${imageUrl}" alt="Restaurant Image" class="card-img-left">
-                                    </a>
-                                    <div class="card-body">
-                                        <a href="/restaurant/rtread?id=${restaurant.id}">
-                                            <h2 class="card-title">${restaurant.name}</h2>
-                                        </a>
-                                        <h5 class="badge bg-primary"> # ${restaurant.categories} </h5>
-                                        <h4 class="text">${restaurant.address}</h4>
-                                        <small class="text-muted">${restaurant.description}</small>
-                                        <div class="card-footer">
-                                            <h3 class="card-text">★${restaurant.average_rating}</h3>
+                                    	<button class="update-btn" title="가게정보가 잘못됐어요">신고</button>
                                         </div>
                                     </div>
                                 </div>
@@ -940,10 +907,21 @@
             document.getElementById(elementId).innerHTML = html;
         }
 
-        // 필터 토글 기능
-        $('#toggleCategory, #toggleAmbiance, #togglePurpose').click(function () {
-            const $button = $(this);
-            const $target = $button.closest('.filter-content').find('.form-check').slice(3);
+        // 필터 토글
+        $('#toggleCategory').click(function () {
+            const $target = $('#categoryFilters .form-check').slice(3);
+            $target.slideToggle();
+            $(this).text($target.is(':visible') ? '접기' : '펼쳐보기');
+        });
+
+        $('#toggleAmbiance').click(function () {
+            const $target = $('#ambianceFilters .form-check').slice(3);
+            $target.slideToggle();
+            $(this).text($target.is(':visible') ? '접기' : '펼쳐보기');
+        });
+
+        $('#togglePurpose').click(function () {
+            const $target = $('#purposeFilters .form-check').slice(3);
             $target.slideToggle();
             $(this).text($target.is(':visible') ? '접기' : '펼쳐보기');
         });
