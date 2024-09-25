@@ -1,6 +1,7 @@
 package com.example.deliciousBee.model.review;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,6 +78,8 @@ public class Review {
     @Enumerated(EnumType.STRING)
     private ReportReason reportReason;
     
+    private LocalDateTime modifiedAt;
+    
     @Transient
     @JsonProperty
     private boolean canEdit;
@@ -102,5 +105,13 @@ public class Review {
 	@JsonIgnore
 	@JoinColumn(name = "restaurant_id")
 	private Restaurant restaurant;
+	
+	@Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        return result;
+    }
 
 }

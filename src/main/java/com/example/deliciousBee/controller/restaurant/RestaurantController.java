@@ -11,6 +11,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -137,6 +138,7 @@ public class RestaurantController {
 	@GetMapping("/rtread/{restaurant_id}")
 	public String read(@AuthenticationPrincipal BeeMember loginMember,
 			@PathVariable("restaurant_id") Long restaurant_id, Model model,
+			@RequestParam(name = "sortBy", defaultValue = "modifiedAt") String sortBy,
 			@RequestParam(name = "page", defaultValue = "0") int page) { // 페이징 처리를 위한 page 파라미터 추가
 
 		if (loginMember == null) {
@@ -152,9 +154,10 @@ public class RestaurantController {
 
 		// 리뷰 정보 가져오기
 		String memberId = loginMember.getMember_id();
-		Pageable pageable = PageRequest.of(page, 5); // 페이지당 5개 리뷰로 설정
-		Page<Review> reviewsByRestaurant = reviewService.getReviewsByRestaurantIdWithFiles(restaurant_id, memberId, pageable);
-		log.info("reviewsByRestaurant:{}", reviewsByRestaurant);
+		Sort sort = Sort.by(Sort.Direction.DESC, sortBy); 
+		Pageable pageable = PageRequest.of(page, 5, sort);
+		log.info("********************************pageable:{}", pageable);
+		Page<Review> reviewsByRestaurant = reviewService.sortReview(restaurant_id, memberId, pageable, sortBy);
 		model.addAttribute("reviewsByRestaurant", reviewsByRestaurant.getContent()); 
 		model.addAttribute("currentPage", page); 
 		model.addAttribute("totalPages", reviewsByRestaurant.getTotalPages()); 
@@ -165,20 +168,20 @@ public class RestaurantController {
 		return "restaurant/rtread";
 	}
 
-	@GetMapping("rtdelete")
-	public String remove(@AuthenticationPrincipal BeeMember loginMember,
-			@RequestParam(name = "id", required = false) Long id) {
+		@GetMapping("rtdelete")
+		public String remove(@AuthenticationPrincipal BeeMember loginMember,
+				@RequestParam(name = "id", required = false) Long id) {
 
-		Restaurant restaurant = restaurantService.findRestaurant(id);
+			Restaurant restaurant = restaurantService.findRestaurant(id);
 
-		if (restaurant == null || !restaurant.getMember().getMember_id().equals(loginMember.getMember_id())) {
+			if (restaurant == null || !restaurant.getMember().getMember_id().equals(loginMember.getMember_id())) {
+				return "redirect:/";
+			}
+
+			restaurantService.deleteRestaurant(restaurant.getId());
+
 			return "redirect:/";
 		}
-
-		restaurantService.deleteRestaurant(restaurant.getId());
-
-		return "redirect:/";
-	}
 
 	@GetMapping("rtupdate")
 	public String rtUpdate(@AuthenticationPrincipal BeeMember loginMember, @RequestParam(name = "id") Long id,

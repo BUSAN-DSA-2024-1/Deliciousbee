@@ -1,10 +1,10 @@
 package com.example.deliciousBee.service.restaurant;
 
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import io.jsonwebtoken.io.IOException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @Slf4j
@@ -122,10 +123,38 @@ public class RestaurantService {
         }
 
     }
+
     @Transactional
     public void deleteRestaurant(Long id) {
-        restaurantRepository.deleteById(id);
+        // 레스토랑 조회
+        Restaurant restaurant = restaurantRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid restaurant Id:" + id));
+
+        // 레스토랑 ID로 연관된 파일 목록 조회
+        List<RestaurantAttachedFile> attachedFiles = fileRepository.findFilesByRestaurantId(id);
+
+        // GCS에서 파일 삭제
+        for (RestaurantAttachedFile attachedFile : attachedFiles) {
+            try {
+                // FileService의 deleteFile 메서드를 이용해 GCS에서 파일 삭제
+                boolean deleted = fileService.deleteFile(attachedFile.getSaved_filename());
+                if (!deleted) {
+                    throw new RuntimeException("Failed to delete file from GCS: " + attachedFile.getSaved_filename());
+                }
+            } catch (IOException e) {
+                // 파일 삭제 실패 시 예외 처리
+                e.printStackTrace();
+                throw new RuntimeException("Failed to delete file from GCS: " + attachedFile.getSaved_filename(), e);
+            }
+        }
+
+        // 데이터베이스에서 파일 기록 삭제
+        fileRepository.deleteAll(attachedFiles);
+
+        // 레스토랑 삭제
+        restaurantRepository.delete(restaurant);
     }
+
 
     // 카테고리
     public List<Restaurant> findByCategory(String category) {
@@ -162,7 +191,7 @@ public class RestaurantService {
 
         // 기본 반경 값 설정 (500m)
         if (radius == null) {
-            radius = 0.5; // 반경을 km 단위로 설정 (0.5km = 500m)
+            radius = 6.0; // 반경을 km 단위로 설정 (0.5km = 500m)
         }
 
         if (keyword == null || keyword.isEmpty()) {
@@ -171,6 +200,8 @@ public class RestaurantService {
                 restaurants = restaurantRepository.findAllWithinRadius(userLatitude, userLongitude, radius, pageable);
             } else if ("distance".equals(sortBy) && userLatitude != null && userLongitude != null && radius <= 0) {
                 restaurants = restaurantRepository.findAllSortedByDistance(userLatitude, userLongitude, pageable);
+            } else if ("rating".equals(sortBy)) { // 평점순 정렬 추가
+                restaurants = restaurantRepository.findAllSortedByRating(pageable);
             } else {
                 restaurants = restaurantRepository.findAll(pageable);
             }
@@ -180,6 +211,8 @@ public class RestaurantService {
                 restaurants = restaurantRepository.searchByNameOrMenuNameWithinRadius(keyword, userLatitude, userLongitude, radius, pageable);
             } else if ("distance".equals(sortBy) && userLatitude != null && userLongitude != null && radius <= 0) {
                 restaurants = restaurantRepository.searchByNameOrMenuNameSortedByDistance(keyword, userLatitude, userLongitude, pageable);
+            } else if ("rating".equals(sortBy)) { // 평점순 정렬 추가
+                restaurants = restaurantRepository.searchByNameOrMenuNameSortedByRating(keyword, pageable);
             } else {
                 restaurants = restaurantRepository.searchByNameOrMenuName(keyword, pageable);
             }
@@ -198,7 +231,6 @@ public class RestaurantService {
 
 
 
-
     private Double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         double R = 6371; // 지구의 반지름 (단위: km)
         double dLat = Math.toRadians(lat2 - lat1);
@@ -211,5 +243,20 @@ public class RestaurantService {
 
         return distanceKm * 1000; // 거리 (단위: m)
     }
+
+    public List<RestaurantAttachedFile> saveFiles(List<MultipartFile> files, Restaurant restaurant) throws IOException {
+        List<RestaurantAttachedFile> attachedFiles = new ArrayList<>();
+
+        for (MultipartFile file : files) {
+            // 단일 파일을 저장하고 리스트에 추가
+            RestaurantAttachedFile attachedFile = fileService.saveFile(file, restaurant);
+            if (attachedFile != null) {
+                attachedFiles.add(attachedFile);
+            }
+        }
+
+        return attachedFiles;  // List<RestaurantAttachedFile> 반환
+    }
+
 
 }

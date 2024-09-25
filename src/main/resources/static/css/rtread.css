@@ -217,8 +217,6 @@ body {
 	font-size: 14px;
 }
 
-.nav-review-paging {
-}
 
 /* 메뉴 컨테이너 스타일 */
 .menu-date  {
@@ -353,3 +351,7 @@ body {
     transform: scale(1);
   }
 }
+.nav-review-paging ul {
+	display: flex;
+	justify-content: center; /* flexbox를 사용한 정렬 */
+  }

@@ -19,6 +19,9 @@ public interface RtFileRepository extends JpaRepository<RestaurantAttachedFile, 
 
 	RestaurantAttachedFile findByRestaurant(Restaurant restaurant);
 
+
+
+
 //	RestaurantAttachedFile findById(Long id);
 //	
 //	void saveAll(List<RestaurantAttachedFile> attachedFile);

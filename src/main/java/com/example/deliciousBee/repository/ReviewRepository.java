@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.member.BeeMember;
@@ -34,4 +35,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
 	// 방문 날짜 순
 	List<Review> findByBeeMemberOrderByVisitDateDesc(BeeMember beeMember);
+
 }

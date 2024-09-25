@@ -730,6 +730,10 @@
                     }
                 } else {
                     console.error("유효하지 않은 응답 데이터: ", data);
+                    // 사용자에게 결과가 없음을 알리는 UI 업데이트
+                    if (!append) {
+                        $('#restaurantList').html('<p>검색 결과가 없습니다.</p>');
+                    }
                 }
                 isLoading = false;
             },
@@ -879,7 +883,7 @@
             loadRestaurants(false);  // 새로운 정렬 결과 로드
         });
 
-        $('#sort-rating').click(function () {
+        $('#sort-rating').click(function () { // 평점순 버튼 클릭 시
             currentSortBy = "rating";
             currentPage = 0;  // 페이지 번호 초기화
             restaurantCount = 0; // 정렬 순서 초기화

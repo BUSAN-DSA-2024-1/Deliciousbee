@@ -3,7 +3,6 @@ package com.example.deliciousBee.controller.review;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,11 +11,11 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,7 +30,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.file.AttachedFile;
 import com.example.deliciousBee.model.keyWord.KeyWord;
 import com.example.deliciousBee.model.keyWord.ReviewKeyWord;
@@ -47,6 +45,7 @@ import com.example.deliciousBee.service.menu.MenuService;
 import com.example.deliciousBee.service.restaurant.RestaurantService;
 import com.example.deliciousBee.service.review.ReviewService;
 import com.example.deliciousBee.util.FileService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Storage;
@@ -69,15 +68,14 @@ public class ReviewController {
 	private final RestaurantService restaurantService;
 	private final MenuService menuService;
 	private final ReviewKeyWordService reviewKeyWordService;
+	private final ObjectMapper objectMapper;
 
 	@PostMapping("write/{restaurant_id}")
 	public String postWriteReview(@Validated @ModelAttribute("writeForm") ReviewWriteForm reviewWriteForm,
-			BindingResult result
-			,@RequestParam(name = "file", required = false) MultipartFile[] files
-			,@RequestParam(value = "reviewMenuList", required = false) List<Long> reviewMenuListIds
-			,@AuthenticationPrincipal BeeMember loginMember
-			,@PathVariable(name = "restaurant_id") Long restaurant_id
-			,@RequestParam(value = "keywords", required = false) List<Long> selectedKeywords) {
+			BindingResult result, @RequestParam(name = "file", required = false) MultipartFile[] files,
+			@RequestParam(value = "reviewMenuList", required = false) List<Long> reviewMenuListIds,
+			@AuthenticationPrincipal BeeMember loginMember, @PathVariable(name = "restaurant_id") Long restaurant_id,
+			@RequestParam(value = "keywords", required = false) List<Long> selectedKeywords) {
 
 		if (loginMember == null) {
 			return "redirect:/login";
@@ -103,7 +101,7 @@ public class ReviewController {
 				}
 			}
 		}
-		
+
 		// 리뷰 메뉴 등록
 		List<ReviewMenu> reviewMenus = new ArrayList<>();
 		// 기존 메뉴 목록 처리
@@ -124,34 +122,34 @@ public class ReviewController {
 			reviewMenu.setCustomMenuName(reviewWriteForm.getCustomMenuName());
 			reviewMenus.add(reviewMenu);
 		}
-		
+
 		review.setReviewMenuList(reviewMenus);
 		reviewService.saveReview(review, attachedFiles);
-		
+
 		// 카테고리 처리
 		if (selectedKeywords != null) {
-	        selectedKeywords.forEach(keywordId -> {
-	            KeyWord keyword = reviewKeyWordService.findById(keywordId);
-	            ReviewKeyWord reviewKeyWord = new ReviewKeyWord(review, keyword, null); 
-	            reviewKeyWordService.save(reviewKeyWord);
-	
-	            List<ReviewKeyWord> existingkeywords = review.getKeywords();
-	            existingkeywords.add(reviewKeyWord);
-	            review.setKeywords(existingkeywords);
-	        });
-	    }
-		
-		if(reviewWriteForm.getCustomKeywordName() != null && !reviewWriteForm.getCustomKeywordName().isEmpty()) {
+			selectedKeywords.forEach(keywordId -> {
+				KeyWord keyword = reviewKeyWordService.findById(keywordId);
+				ReviewKeyWord reviewKeyWord = new ReviewKeyWord(review, keyword, null);
+				reviewKeyWordService.save(reviewKeyWord);
 
-            ReviewKeyWord reviewKeyWord = new ReviewKeyWord(review, null, reviewWriteForm.getCustomKeywordName()); 
-            reviewKeyWordService.save(reviewKeyWord);
-
-            List<ReviewKeyWord> existingKeywords = review.getKeywords();
-            existingKeywords.add(reviewKeyWord);
-            review.setKeywords(existingKeywords);
-			
+				List<ReviewKeyWord> existingkeywords = review.getKeywords();
+				existingkeywords.add(reviewKeyWord);
+				review.setKeywords(existingkeywords);
+			});
 		}
-		
+
+		if (reviewWriteForm.getCustomKeywordName() != null && !reviewWriteForm.getCustomKeywordName().isEmpty()) {
+
+			ReviewKeyWord reviewKeyWord = new ReviewKeyWord(review, null, reviewWriteForm.getCustomKeywordName());
+			reviewKeyWordService.save(reviewKeyWord);
+
+			List<ReviewKeyWord> existingKeywords = review.getKeywords();
+			existingKeywords.add(reviewKeyWord);
+			review.setKeywords(existingKeywords);
+
+		}
+
 		return "redirect:/restaurant/rtread/" + restaurant_id;
 	}
 
@@ -284,21 +282,24 @@ public class ReviewController {
 
 	@GetMapping("/allreview/{restaurant_id}/sort")
 	@ResponseBody
-	public Page<Review> getSortAllReview(
-			 @PathVariable("restaurant_id") Long restaurant_id
+	public ResponseEntity<Map<String, Object>> getSortAllReview(@PathVariable("restaurant_id") Long restaurant_id
 			,@RequestParam(required = false, defaultValue = "modifiedAt", value = "sortBy") String sortBy
 			,@AuthenticationPrincipal BeeMember loginMember
-			,@RequestParam(defaultValue = "0") int page) {
+			,@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
 		try {
 			String memberId = loginMember.getMember_id();
-			PageRequest pageble = PageRequest.of(page, 5);
-			return reviewService.sortReview(sortBy, restaurant_id, memberId, pageble);
+			PageRequest pageble = PageRequest.of(page - 1, 5);
+			Page<Review> reviews = reviewService.sortReview(restaurant_id, memberId, pageble, sortBy);
+			Map<String, Object> response = new HashMap<>();
+	        response.put("reviews", reviews.getContent());
+	        response.put("currentPage", reviews.getNumber() + 1); 
+	        response.put("totalPages", reviews.getTotalPages());
+	        return ResponseEntity.ok(response);
+
 		} catch (Exception e) {
 			log.error("서버 처리 중 오류 발생", e);
-			return null;
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
-
 	}
-	
-	
+
 }

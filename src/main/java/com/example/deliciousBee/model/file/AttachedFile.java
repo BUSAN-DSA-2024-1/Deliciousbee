@@ -35,4 +35,12 @@ public class AttachedFile {
 		this.saved_filename = saved_filename;
 		this.file_size = file_size;
 	}
+	
+	@Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((attachedFile_id == null) ? 0 : attachedFile_id.hashCode());
+        return result;
+    }
 }
