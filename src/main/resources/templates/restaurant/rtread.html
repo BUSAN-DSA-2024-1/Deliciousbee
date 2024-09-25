@@ -101,16 +101,9 @@
         <div class="d-flex">
           <h3 style="margin-right: auto;">Review List</h3>
           <div class="d-flex-magin" style="display: flex;">
-            <button type="button" class="btn btn-secondary btn-sm ml-2" th:onclick="latestList('likeCount')"
-              th:data-sort-by="'likeCount'">좋아요
-              많은순</button>
-            <button type="button" class="btn btn-secondary btn-sm ml-2" th:onclick="latestList('rating')"
-              th:data-sort-by="'rating'">평점
-              많은순</button>
-            <button type="button" class="btn btn-secondary btn-sm ml-2" th:onclick="latestList('visitDate')"
-              th:data-sort-by="'visitDate'">최신순</button>
-            <button type="button" class="btn btn-dark ml-2" data-toggle="modal" data-target="#reviewModal">Write
-              Review</button>
+            <button id="sort-by-rating" class="btn btn-secondary btn-sm ml-2">Sort by Rating</button>
+            <button id="sort-by-latest" class="btn btn-secondary btn-sm ml-2">Sort by Date</button>
+            <button id="sort-by-likes" class="btn btn-secondary btn-sm ml-2">Sort by Likes</button>
           </div>
         </div>
 
@@ -354,44 +347,20 @@
                     </div>
                   </div>
                 </div>
-
-
               </div>
-
             </div>
-            <!-- Review Paging -->
-            <th:block th:if="${reviewsByRestaurant.size() > 0}">
-              <nav aria-label="Page navigation example" class="nav-review-paging">
-                <ul class="pagination" id="review-pagination">
-                  <!-- 이전 페이지 -->
-                  <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
-                    <a class="page-link"
-                      th:href="@{/allreview/{restaurant_id}/sort(restaurant_id=${restaurant.id}, page=${currentPage - 1}, sortBy=${sortBy})}"
-                      aria-label="Previous" th:data-sort-by="${sortBy}">
-                      <span aria-hidden="true">«</span>
-                    </a>
-                  </li>
-                  <!-- 페이지 번호 -->
-                  <li class="page-item" th:each="page : ${#numbers.sequence(1, totalPages)}">
-                    <a class="page-link"
-                      th:href="@{/allreview/{restaurant_id}/sort(restaurant_id=${restaurant.id}, page=${page}, sortBy=${sortBy})}"
-                      th:text="${page}" th:data-sort-by="${sortBy}"
-                      th:classappend="${page == currentPage} ? 'active'"></a>
-                  </li>
-                  <!-- 다음 페이지 -->
-                  <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
-                    <a class="page-link"
-                      th:href="@{/allreview/{restaurant_id}/sort(restaurant_id=${restaurant.id}, page=${currentPage + 1}, sortBy=${sortBy})}"
-                      aria-label="Next" th:data-sort-by="${sortBy}">
-                      <span aria-hidden="true">»</span>
-                    </a>
-                  </li>
-                </ul>
-              </nav>
-            </th:block>
+            
+
           </div>
+          
         </div>
 
+        <!-- Review Paging -->
+        <nav aria-label="Page navigation example" class="nav-review-paging">
+          <ul class="pagination" id="review-pagination" name="review-pagination">
+            <!-- 페이지네이션 버튼은 JavaScript 코드에서 동적으로 생성됩니다. -->
+          </ul>
+        </nav>
       </div>
 
       <div class="col-lg-4">
@@ -557,186 +526,217 @@
         }
       });
     }
+    // ----------------------------------------------------------------------------------------------------
+    function latestList(sortBy, page) {
+      const restaurantId = /*[[${restaurant.id}]]*/ ''; // 레스토랑 ID
+      const pageUrl = `/review/allreview/${restaurantId}/sort`; // 서버 API URL
 
-    function latestList(sortBy) {
-      const restaurantId = /*[[${restaurant.id}]]*/ '';
       $.ajax({
-        url: '/review/allreview/' + restaurantId + '/sort/',
+        url: pageUrl,
         type: 'GET',
-        data: { sortBy: sortBy },
+        data: {
+          page: page, // 현재 페이지 번호
+          sortBy: sortBy // 정렬 기준
+        },
+        xhrFields: {
+          withCredentials: true
+        },
         success: function (response) {
           console.log(response);
           const reviewsContainer = $('.restaurantCard');
           reviewsContainer.empty();
-          response.forEach(function (review) {
-            let attachedFileHTML = '';
-            if (review.attachedFile && review.attachedFile.length > 0) {
-              review.attachedFile.forEach(function (file) {
-                attachedFileHTML += `
-                  <div>
-                	<img src="/review/display?filename=${file.saved_filename}" alt="Review Image" class="card-img-top">
-                  </div>
-                `;
-              });
-            }
-            const reviewHTML = `
-              <div class="col-lg-12">
-                <div class="card mb-4">
-                  <div class="card-header">
-                    User Info
-                    <h3>${review.userName}</h3>
-                  </div>
-                  ${attachedFileHTML}
-                  <div class="card-body">
-                    <div class="small text-muted">${review.createDate}</div>
-                    <h2 class="card-title">${review.reviewContents}</h2>
-                    <div class="rating" data-review-id="${review.id}">
-                      <div class="stars" data-rating="${review.rating}"></div>
-                    </div>
-                    <div class="button-container">
-                      <input type="hidden" class="review-id" value="${review.id}">
-                      <button type="button" class="btn btn-success mr-2 like-button" onclick="likeReview(this)" data-review-id="${review.id}">
-                        좋아요 <span class="like-count">${review.likeCount}</span>
-                      </button>
-                      <button type="button" class="btn btn-outline-danger mr-2" data-toggle="modal" data-target="#reportModal" th:data-review-id="${review.id}" onclick="showReportReasons(this)">신고</button>
-                      ${review.canEdit ? `
-                        <a class="btn btn-outline-secondary mr-2" href="/review/update/${review.id}">수정</a>
-                        <button type="button" class="btn btn-outline-secondary mr-2" data-bs-toggle="button" onclick="deleteReview(this)">삭제</button>
-                      ` : ''}
-                    </div>
-                    <div class="button-container">
-                      ${reviewKeywordHTML}
-                    </div>
+          window.totalPages = response.totalPages;
+          window.currentPage = response.currentPage;
 
+          // 서버에서 받은 리뷰 목록을 렌더링
+          if (Array.isArray(response.reviews)) {
+            response.reviews.forEach(function (review) {
+              // 첨부파일 처리 
+              let attachedFileHTML = '';
+              if (review.attachedFile && review.attachedFile.length > 0) {
+                review.attachedFile.forEach(function (file) {
+                  attachedFileHTML += `
+                <div>
+                  <img src="/review/display?filename=${file.saved_filename}" alt="Review Image" class="card-img-top">
+                </div>
+              `;
+                });
+              }
+              // 키워드 처리
+              let reviewKeywordHTML = '';
+              review.keywords.forEach(function (keyword) {
+                reviewKeywordHTML += `
+                  <div class="review-keyword">
+                      <i class="review-keyword-icon"></i>
+                      <span>${keyword.keyWord.keywordName}</span>
+                  </div>
+              `;
+              });
+              // 메뉴 처리
+              let reviewMenuHTML = '';
+              if (review.reviewMenuList && review.reviewMenuList.length > 0) {
+                review.reviewMenuList.forEach(function (menu) {
+                  reviewMenuHTML += `
+                    <span>Menu : </span>
+                    <button type="button" class="btn menu-button" name="menu-button">
+                      ${menu.menu != null ? menu.menu.name : ''}
+                      ${menu.customMenuName != null ? menu.customMenuName : ''}
+                    </button>
+                  `
+                });
+              }
+
+              const reviewHTML = `
+                <div class="col-lg-12">
+                  <div class="card mb-4">
+                    <div class="card-header">
+                      User Info
+                      <h3>${review.userName}</h3>
+                      <hr>
+                      ${reviewMenuHTML}
+                    </div>
+                    ${attachedFileHTML}
+                    <div class="card-body">
+                      <div class="small text-muted">${review.createDate}</div>
+                      <h2 class="card-title">${review.reviewContents}</h2>
+                      <div class="rating" data-review-id="${review.id}">
+                        <div class="stars" data-rating="${review.rating}"></div>
+                      </div>
+                      <div>
+                        ${review.kindRating === 1 ? '응대 : 나쁨 / ' : ''}
+                        ${review.kindRating === 2 ? '응대 : 보통 / ' : ''}
+                        ${review.kindRating === 3 ? '응대 : 좋음 / ' : ''}
+                        ${review.kindRating === null || review.kindRating === undefined ? '평점 없음 / ' : ''}
+
+                        ${review.priceRating === 1 ? '가격 : 나쁨 / ' : ''}
+                        ${review.priceRating === 2 ? '가격 : 보통 / ' : ''}
+                        ${review.priceRating === 3 ? '가격 : 좋음 / ' : ''}
+                        ${review.priceRating === null || review.priceRating === undefined ? '평점 없음 / ' : ''}
+
+                        ${review.tasteRating === 1 ? '음식 : 나쁨' : ''}
+                        ${review.tasteRating === 2 ? '음식 : 보통' : ''}
+                        ${review.tasteRating === 3 ? '음식 : 좋음' : ''}
+                        ${review.tasteRating === null || review.tasteRating === undefined ? '평점 없음' : ''}
+                      </div>
+                      <div class="button-container">
+                        <input type="hidden" class="review-id" value="${review.id}">
+                        <button type="button" class="btn btn-success mr-2 like-button" onclick="likeReview(this)" data-review-id="${review.id}">
+                          좋아요 <span class="like-count">${review.likeCount}</span>
+                        </button>
+                        <button type="button" class="btn btn-outline-danger mr-2" data-toggle="modal" data-target="#reportModal" th:data-review-id="${review.id}" onclick="showReportReasons(this)">신고</button>
+                        ${review.canEdit ? `
+                          <a class="btn btn-outline-secondary mr-2" href="/review/update/${review.id}">수정</a>
+                          <button type="button" class="btn btn-outline-secondary mr-2" data-bs-toggle="button" onclick="deleteReview(this)">삭제</button>
+                        ` : ''}
+                      </div>
+                      <div class="button-container">
+                        ${reviewKeywordHTML}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
               `;
-            reviewsContainer.append(reviewHTML);
+              reviewsContainer.append(reviewHTML);
+            });
+
+            // 페이징 버튼 생성
+            paginationHTML = `
+              <nav aria-label="Page navigation example" class="nav-review-paging">
+                <ul class="pagination" id="review-pagination">
+                  <li class="page-item" id="previous-page">
+                    <a class="page-link" href="#" aria-label="Previous" data-sort-by="${sortBy}">
+                      <span aria-hidden="true">«</span>
+                    </a>
+                  </li>
+                  ${Array.from({ length: totalPages }, (_, index) => index + 1).map(page => `
+                    <li class="page-item" ${page === currentPage ? 'class="active"' : ''}>
+                      <a class="page-link" href="#" data-page="${page}" data-sort-by="${sortBy}">${page}</a>
+                    </li>
+                  `).join('')}
+                  <li class="page-item" id="next-page">
+                    <a class="page-link" href="#" aria-label="Next" data-sort-by="${sortBy}">
+                      <span aria-hidden="true">»</span>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            `;
+            
             setStarRatings();
-          });
+            updatePagination(sortBy);
+          } else {
+            console.error("Response is not an array:", response);
+          }
         },
         error: function (xhr, status, error) {
           console.error('AJAX 요청 실패:', status, error);
+          console.error('응답 내용:', xhr.responseText);
         }
       });
     }
+
+    function updatePagination(sortBy) {
+      console.log("Updating pagination. Total pages:", window.totalPages, "Current page:", window.currentPage);
+
+      if (!window.totalPages || window.totalPages <= 1) {
+        $('#review-pagination').empty();
+        return;
+      }
+
+      let paginationHTML = `
+        <nav aria-label="Page navigation" class="nav-review-paging">
+          <ul class="pagination justify-content-center" id="review-pagination">
+            <li class="page-item ${window.currentPage === 1 ? 'disabled' : ''}">
+              <a class="page-link" href="#" data-page="${window.currentPage - 1}" data-sort-by="${sortBy}">Previous</a>
+            </li>
+      `;
+
+      // 페이지 번호 버튼 생성 (for 루프 사용)
+      for (let i = 1; i <= window.totalPages; i++) {
+        paginationHTML += `
+        <li class="page-item ${i === window.currentPage ? 'active' : ''}">
+          <a class="page-link" href="#" data-page="${i}" data-sort-by="${sortBy}">${i}</a>
+        </li>
+      `;
+      }
+
+      paginationHTML += `
+            <li class="page-item ${window.currentPage === window.totalPages ? 'disabled' : ''}">
+              <a class="page-link" href="#" data-page="${window.currentPage + 1}" data-sort-by="${sortBy}">Next</a>
+            </li>
+          </ul>
+        </nav>
+      `;
+      console.log(paginationHTML);
+      $('#review-pagination').html(paginationHTML);
+    }
+
+    
 
     $(document).ready(function () {
-      $('#review-pagination a').click(function (event) {
+      // 초기 리뷰 목록 로드 (좋아요 순, 1페이지)
+      latestList('likeCount', 1);
+
+      $(document).on('click', '#review-pagination a', function (event) {
         event.preventDefault();
-
-        // 현재 페이지 번호를 가져옵니다.
-        const currentPage = parseInt($(this).closest('.pagination').find('.active').text());
-        let newPage;
-
-        // 이전 페이지와 다음 페이지를 계산합니다.
-        if ($(this).attr('id') === 'previous-page') {
-          newPage = currentPage > 1 ? currentPage - 1 : 1; // 최소 1로 설정 (페이지는 1부터 시작)
-        } else if ($(this).attr('id') === 'next-page') {
-          newPage = currentPage + 1; // 다음 페이지
-        } else {
-          newPage = parseInt($(this).text()); // 클릭한 페이지 번호로 설정
+        const newPage = parseInt($(this).data('page'));
+        const sortBy = $(this).data('sort-by');
+        if (newPage > 0 && newPage <= window.totalPages) {
+          latestList(sortBy, newPage);
         }
+      });
 
-        const restaurantId = /*[[${restaurant.id}]]*/ ''; // 서버에서 restaurantId를 가져옵니다.
-        const sortBy = getUrlParameter('sortBy') || 'modifiedAt'; // 기본값 설정
-
-        // 페이지 URL 생성
-        const pageUrl = `/review/allreview/${restaurantId}/sort`;
-        console.log(pageUrl);
-        $.ajax({
-          url: pageUrl,
-          type: 'GET',
-          data: {
-            page: newPage,
-            sortBy: sortBy
-          },
-          xhrFields: {
-            withCredentials: true // 쿠키를 포함하여 요청
-          },
-          success: function (response) {
-            console.log(response);
-            const reviewsContainer = $('.restaurantCard');
-            reviewsContainer.empty();
-
-            // response가 배열인지 확인
-            if (Array.isArray(response.reviews)) { // response.reviews 수정
-              response.reviews.forEach(function (review) { // response.reviews 수정
-                let attachedFileHTML = '';
-                if (review.attachedFile && review.attachedFile.length > 0) {
-                  review.attachedFile.forEach(function (file) {
-                    attachedFileHTML += `
-                  <div>
-                    <img src="/review/display?filename=${file.saved_filename}" alt="Review Image" class="card-img-top">
-                  </div>
-                `;
-                  });
-                }
-
-                let reviewKeywordHTML = '';
-                review.keywords.forEach(function (keyword) {
-                  reviewKeywordHTML += `
-                    <div class="review-keyword">
-                        <i class="review-keyword-icon"></i>
-                        <span>${keyword.keyWord.keywordName}</span>
-                    </div>
-                `;
-                });
-                const reviewHTML = `
-              <div class="col-lg-12">
-                <div class="card mb-4">
-                  <div class="card-header">
-                    User Info
-                    <h3>${review.userName}</h3>
-                  </div>
-                  ${attachedFileHTML}
-                  <div class="card-body">
-                    <div class="small text-muted">${review.createDate}</div>
-                    <h2 class="card-title">${review.reviewContents}</h2>
-                    <div class="rating" data-review-id="${review.id}">
-                      <div class="stars" data-rating="${review.rating}"></div>
-                    </div>
-                    <div class="button-container">
-                      <input type="hidden" class="review-id" value="${review.id}">
-                      <button type="button" class="btn btn-success mr-2 like-button" onclick="likeReview(this)" data-review-id="${review.id}">
-                        좋아요 <span class="like-count">${review.likeCount}</span>
-                      </button>
-                      <button type="button" class="btn btn-outline-danger mr-2" data-toggle="modal" data-target="#reportModal" th:data-review-id="${review.id}" onclick="showReportReasons(this)">신고</button>
-                      ${review.canEdit ? `
-                        <a class="btn btn-outline-secondary mr-2" href="/review/update/${review.id}">수정</a>
-                        <button type="button" class="btn btn-outline-secondary mr-2" data-bs-toggle="button" onclick="deleteReview(this)">삭제</button>
-                      ` : ''}
-                    </div>
-                    <div class="button-container">
-                      ${reviewKeywordHTML}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            `;
-                reviewsContainer.append(reviewHTML);
-              });
-              setStarRatings();
-            } else {
-              console.error("Response is not an array:", response);
-            }
-          },
-          error: function (xhr, status, error) {
-            console.error('AJAX 요청 실패:', status, error);
-            console.error('응답 내용:', xhr.responseText);
-          }
-        });
+      // Sorting button click events
+      $('#sort-by-rating').click(function () {
+        latestList('rating', 1);
+      });
+      $('#sort-by-latest').click(function () {
+        latestList('visitDate', 1);
+      });
+      $('#sort-by-likes').click(function () {
+        latestList('likeCount', 1);
       });
     });
-
-    function getUrlParameter(name) {
-      name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-      const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-      const results = regex.exec(location.search);
-      return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-    }
-
 
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=initMap"
