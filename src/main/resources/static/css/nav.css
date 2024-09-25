@@ -1,80 +1,123 @@
 /* Navbar Styles */
 .navbar {
-    background-color: #61686c !important;
-    color: white;
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.navbar .nav-container {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    padding-left: 15%;
-}
-
-.navbar-brand-group {
-    display: flex;
-    align-items: center;
-    margin-right: 56.5%;
-}
-
-.navbar-brand {
-    font-size: 1.2rem;
-    text-decoration: none;
-    color: inherit;
-}
-
-.navbar-nav {
-    display: flex;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.nav-item {
-    margin-left: 20px;
-}
-
-.nav-link {
-    text-decoration: none;
-    color: inherit;
-}
-
-.nav-link:hover {
-    color: #FF6347;
-}
-
-.nav-link.active {
-    color: #FF6347;
-}
-
-.navbar-toggler {
-    background-color: transparent;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    display: none;
-    margin-left: 10px;
-}
-
-.navbar-toggler span {
-    display: block;
-    width: 25px;
-    height: 3px;
-    background-color: white;
-    margin: 5px 0;
-}
-
+        background-color: #343A40;
+        color: white;
+        padding: 15px; /* 기존 패딩 유지 */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+    }
+    .navbar .nav-container {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding-left: 15%; /* 왼쪽 패딩 20% */
+    }
+    .navbar-brand-group {
+        display: flex;
+        align-items: center;
+        margin-right: 56.5%;
+    }
+    .navbar-brand {
+        font-size: 1.2rem;
+        text-decoration: none;
+        color: inherit;
+        z-index: 10;
+    }
+    .navbar-nav {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    .nav-item {
+        margin-left: 20px;
+    }
+    .nav-link {
+        text-decoration: none;
+        color: inherit;
+    }
+    .nav-link:hover {
+        color: #FF6347;
+    }
+    .nav-link.active {
+        color: #FF6347;
+    }
+    .navbar-toggler {
+        background-color: transparent;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        display: none;
+        margin-left: 10px;
+    }
+    .navbar-toggler span {
+        display: block;
+        width: 25px;
+        height: 3px;
+        background-color: white;
+        margin: 5px 0;
+    }
+    .search-section {
+        height: 85%;
+        text-align: center;
+        width: 40%;
+    }
+    .search-container {
+        position: absolute; /* 절대 위치로 설정 */
+        right: 31%; /* 오른쪽 끝으로 위치 */
+        top: 57.5%; /* 세로 중앙 정렬 */
+        transform: translateY(-50%); /* 세로 중앙 정렬 보정 */
+        display: flex; /* 내부 아이템 정렬을 위한 flex */
+        width: 108%; /* 가로 크기 조정 */
+        max-width: 1700px; /* 최대 가로 크기 설정 (필요에 따라 조정) */
+        margin-left: 10px; /* 왼쪽 여백 자동 조정 */
+    }
+    .search-input {
+        width: 80%;
+        line-height: 30px;
+        padding: 0 1rem;
+        padding-left: 2.5rem;
+        border: 2px solid transparent;
+        border-radius: 8px;
+        outline: none;
+        background-color: #F3F3F4;
+        color: #0D0C22;
+        transition: .3s ease;
+        margin-left: 65%;
+        margin-bottom: 7px;
+    }
+    .search-input::placeholder {
+        color: #9E9EA7;
+    }
+    .search-input:focus, input:hover {
+        outline: none;
+        border-color: rgba(234, 76, 137, 0.4);
+        background-color: #fff;
+        box-shadow: 0 0 0 4px rgb(234 76 137/ 10%);
+    }
+    .search-intro {
+        font-size: 1.5rem;
+        color: #FFFFFF;
+        margin-top: 1rem;
+        margin-left: 5%;
+    }
+    .search-icon {
+        position: absolute;
+        left: 66%;
+        top: 40%;
+        transform: translateY(-50%);
+        fill: #9E9EA7;
+        width: 1rem;
+        height: 1rem;
+    }
 /* Tooltip Container for User Menu */
 .tooltip-container {
     position: relative;
     display: inline-block;
     font-family: "Arial", sans-serif;
     overflow: visible;
-    background-color: #61686c;
     color: white;
     margin-left: 20px;
 }
@@ -90,6 +133,7 @@
 .tooltip-container .text {
     font-size: inherit;
     font-weight: inherit;
+    background-color: #343A40 !important;
     margin-right: 0;
     text-shadow: none;
 }
@@ -163,7 +207,6 @@
 .modal {
     display: none;
     position: fixed;
-    z-index: 1;
     left: 0;
     top: 0;
     width: 100%;

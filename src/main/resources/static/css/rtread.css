@@ -217,6 +217,140 @@ body {
 	font-size: 14px;
 }
 
+
+/* 메뉴 컨테이너 스타일 */
+.menu-date  {
+    display: flex;
+    justify-content: space-between; /* 양쪽 끝으로 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+}
+
+.menu-container {
+    position: relative;
+    display: inline-block;
+}
+
+.menu-button1 {
+    background-color: transparent; 
+    border: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.dropmenu-mother {
+	width: 80px;
+	cursor: pointer;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    width: 30px !important; 
+    left: 30%; 
+    top: 100%;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px; /* 패딩을 없애서 크기를 줄임 */
+    list-style: none;
+    margin: 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    text-align: center; /* 글씨를 가운데 정렬 */
+}
+
+/* 드롭다운 메뉴 항목 스타일 */
+.dropdown-menu li {
+    padding: 8px 0; /* 패딩을 수직으로만 설정하여 크기를 줄임 */
+}
+
+/* 드롭다운 메뉴 링크 스타일 */
+.dropdown-menu li a {
+    text-decoration: none;
+    color: #333;
+    display: block;
+    width: 100%; /* 전체 너비를 사용하여 클릭 가능 영역을 넓힘 */
+    text-align: center; /* 링크의 글씨를 가운데 정렬 */
+}
+
+/* 드롭다운 항목 hover 스타일 */
+.dropdown-menu li:hover {
+    background-color: #f0f0f0;
+}
+
+/* 메뉴 버튼 클릭 시 드롭다운 메뉴 표시 */
+.menu-container.open .dropdown-menu {
+    display: flex;
+    
+}
+
+.heart input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.heart {
+  display: block;
+  position: relative;
+  cursor: pointer;
+  font-size: 20px;
+  user-select: none;
+  transition: 100ms;
+}
+
+.checkmark {
+  top: 0;
+  left: 0;
+  height: 2em;
+  width: 2em;
+  transition: 100ms;
+  animation: dislike_effect 400ms ease;
+}
+
+.heart input:checked ~ .checkmark path {
+  fill: #FF5353;
+  stroke-width: 0;
+}
+
+.heart input:checked ~ .checkmark {
+  animation: like_effect 400ms ease;
+}
+
+.heart:hover {
+  transform: scale(1.1);
+}
+
+@keyframes like_effect {
+  0% {
+    transform: scale(0);
+  }
+
+  50% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes dislike_effect {
+  0% {
+    transform: scale(0);
+  }
+
+  50% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
 .nav-review-paging ul {
 	display: flex;
 	justify-content: center; /* flexbox를 사용한 정렬 */
