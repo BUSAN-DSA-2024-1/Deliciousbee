@@ -241,32 +241,27 @@
 
 </div>
 
-
-<div id="reviewModal" class="review-modal-container" style="display: none;">
-    <p class="reviewUp-title">리뷰 관리</p>
-    <form class="review-modal-inner-form">
-        <p class="modal-title">이름</p>
-        <input type="text" class="modal-input" placeholder="이름" readonly>
-        <p class="modal-title">리뷰 내용</p>
-        <textarea class="inputbox" placeholder="리뷰내용" readonly></textarea>
-        <div class="modal-image-container">
-            <img class="modal-image" />
-            <img class="modal-image" />
-            <img class="modal-image" />
-            <img class="modal-image" />
-        </div>
-        <div class="reviewupdate-container">
-            <button type="button" class="form-btn approve-btn">승인</button>
-            <button type="button" class="form-btn delete-btn">삭제</button>
-            <button type="button" class="form-btn" onclick="closeModal()">닫기</button>
-        </div>
-    </form>
+<!-- 레스토랑 신고 관리 모달 -->
+<div id="restaurantReportModal" class="restaurant-report-modal-container" style="display: none;">
+    <p class="modal-title">레스토랑 신고 관리</p>
+    <div class="modal-content">
+        <p><strong>신고 내용:</strong> <span id="reportContent"></span></p>
+        <p><strong>레스토랑명:</strong> <span id="restaurantName"></span></p>
+        <p><strong>신고자:</strong> <span id="reporterName"></span></p>
+        <p><strong>신고 날짜:</strong> <span id="reportDate"></span></p>
+        <p><strong>신고 상태:</strong> <span id="reportStatus"></span></p>
+    </div>
+    <div class="modal-actions">
+        <button class="approve-btn" onclick="updateReportStatus(currentRestaurantReportId, 'RESOLVED')">승인</button>
+        <button class="reject-btn" onclick="updateReportStatus(currentRestaurantReportId, 'REJECTED')">거부</button>
+        <button class="close-btn" onclick="closeRestaurantReportModal()">닫기</button>
+    </div>
 </div>
 
 <script>
-    let currentReportId = null; // 현재 관리 중인 신고 ID
-    let currentReviewId = null; // 현재 관리 중인 리뷰 ID
-    // 로그인 모달 제어
+    let currentRestaurantReportId = null; // 현재 관리 중인 레스토랑 신고 ID
+
+    // 로그인 모달 제어 (기존 코드 유지)
     document.addEventListener('DOMContentLoaded', function() {
         var loginButton = document.getElementById('loginButton');
         if (loginButton) {
@@ -284,18 +279,19 @@
         }
     });
 
-    // 닫기 버튼 클릭 시 모달 닫기
+    // 닫기 버튼 클릭 시 모달 닫기 (기존 코드 수정)
     function closeModal() {
         document.getElementById('loginModal').style.display = 'none';
     }
 
-    // 모달 외부 영역 클릭 시 모달 닫기
+    // 모달 외부 영역 클릭 시 모달 닫기 (기존 코드 유지)
     window.onclick = function(event) {
         let modal = document.getElementById('loginModal');
         if (event.target == modal) {
             modal.style.display = 'none';
         }
     }
+
     function loadContent(contentType) {
 
         // 활성화된 탭 버튼 스타일 변경
@@ -310,7 +306,6 @@
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        // 'Authorization': `Bearer ${token}` // 제거
                     },
                     credentials: 'include' // 쿠키 포함
                 })
@@ -331,7 +326,7 @@
                                     <td>${restaurant.name}</td>
                                     <td>${restaurant.address}</td>
                                     <td><a href="/restaurant/rtread/${restaurant.id}" class="btn btn-primary">보기</a></td>
-                                    <td><button onclick="approveRestaurant(${restaurant.id})">승인</button></td>
+                                    <td><button onclick="approveRestaurant(${restaurant.id})" class="btn btn-success">승인</button></td>
                                 </tr>
                             `;
                             });
@@ -369,7 +364,6 @@
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        // 'Authorization': `Bearer ${token}` // 제거
                     },
                     credentials: 'include' // 쿠키 포함
                 })
@@ -389,7 +383,7 @@
                                     <td>${report.reviewId}</td>
                                     <td>${report.reason}</td>
                                     <td>${report.reportDate}</td>
-                                   <td><button onclick="openModal(${report.id}, ${report.reviewId})" data-report-id="${report.id}">관리</button></td>
+                                   <td><button onclick="openReviewModal(${report.id}, ${report.reviewId})" data-report-id="${report.id}">관리</button></td>
                                 </tr>
                             `;
                             });
@@ -421,12 +415,11 @@
                     });
                 break;
             case 'reportedRestaurants':
-                // AJAX 요청 (해당 엔드포인트가 있다면 추가)
-                fetch('/admin/reports/restaurants/all', { // 예시 엔드포인트
+                // AJAX 요청
+                fetch('/admin/restaurant-reports', { // 올바른 엔드포인트로 수정
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        // 'Authorization': `Bearer ${token}` // 제거
                     },
                     credentials: 'include' // 쿠키 포함
                 })
@@ -441,30 +434,35 @@
                         if (data.success) {
                             let rows = '';
                             data.reports.forEach(report => {
-                                rows += `
+                                console.log('Processing report:', report); // 디버깅용 로그
+                                if (report && report.id) {
+                                    rows += `
                                 <tr>
                                     <td>${report.restaurantId}</td>
-                                    <td>${report.name}</td>
+                                    <td>${report.restaurantName}</td>
                                     <td>${report.reportDate}</td>
                                     <td><button onclick="handleReport(${report.id}, ${report.restaurantId})">관리</button></td>
                                 </tr>
                             `;
+                                } else {
+                                    console.error('Invalid report data:', report);
+                                }
                             });
                             const content = `
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>레스토랑 ID</th>
-                                        <th>레스토랑명</th>
-                                        <th>신고일</th>
-                                        <th>관리</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${rows}
-                                </tbody>
-                            </table>
-                        `;
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>레스토랑 ID</th>
+                                    <th>레스토랑명</th>
+                                    <th>신고일</th>
+                                    <th>관리</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${rows}
+                            </tbody>
+                        </table>
+                    `;
                             document.getElementById('content').innerHTML = content;
                         } else {
                             // 오류 처리
@@ -482,12 +480,10 @@
         }
     }
 
-
-
     function approveRestaurant(restaurantId){
         // 사용자에게 승인 확인
         if (confirm("승인하시겠습니까?")) {
-            fetch(`/admin/restaurant/approve/${restaurantId}`, { method: 'POST' })
+            fetch(`/admin/restaurants/${restaurantId}/approve`, { method: 'POST' })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -510,7 +506,9 @@
         }
     }
 
-    function openModal(reportId, reviewId) { // reviewId 인자 추가
+    // ===================== 리뷰 관리 모달 관련 함수 ===================== //
+
+    function openReviewModal(reportId, reviewId) { // reviewId 인자 추가
         currentReportId = reportId;
         currentReviewId = reviewId;
         console.log(reviewId); // 이 값을 확인해보세요
@@ -557,6 +555,7 @@
                 const moreButton = document.createElement("button");
                 moreButton.textContent = "더보기";
                 moreButton.classList.add("more-button");
+                moreButton.style.marginTop = "10px"; // 간격 조절
 
                 // 더보기 버튼 클릭 이벤트 처리
                 let currentStartIndex = initialDisplayCount;
@@ -608,7 +607,6 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    // 'Authorization' 헤더 제거
                 },
                 credentials: 'include' // 쿠키 포함
             })
@@ -642,7 +640,6 @@
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    // 'Authorization' 헤더 제거
                 },
                 credentials: 'include',
             })
@@ -669,11 +666,107 @@
         }
     }
 
+    // ===================== 레스토랑 신고 관리 모달 관련 함수 ===================== //
+    function handleReport(reportId, restaurantId) {
+        openRestaurantReportModal(reportId);
+    }
+    function openRestaurantReportModal(reportId) {
+        currentRestaurantReportId = reportId;
+        console.log("Selected Report ID:", reportId); // 디버깅용 로그
 
-    // 모달 닫기 함수
-    function closeModal() {
-        const reviewModal = document.getElementById("reviewModal");
-        reviewModal.style.display = "none";
+        // 모달 표시
+        const restaurantReportModal = document.getElementById("restaurantReportModal");
+        restaurantReportModal.style.display = "block";
+
+        // 전달받은 reportId 사용하여 상세 정보 가져오기
+        fetch(`/admin/restaurant-reports`, { method: 'GET' }) // 모든 레스토랑 신고 중 하나를 선택
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const report = data.reports.find(r => r.id === reportId);
+                    if (report) {
+                        document.getElementById("reportContent").innerText = report.reportContent;
+                        document.getElementById("restaurantName").innerText = report.restaurantName;
+                        document.getElementById("reporterName").innerText = report.reporterId ? report.reporterId : "익명";
+                        document.getElementById("reportDate").innerText = new Date(report.reportDate).toLocaleString();
+                        document.getElementById("reportStatus").innerText = report.status;
+                    } else {
+                        alert("해당 레스토랑 신고를 찾을 수 없습니다.");
+                        closeRestaurantReportModal();
+                    }
+                } else {
+                    alert("레스토랑 신고 상세 정보를 가져오는데 실패했습니다.");
+                    console.error('Error fetching restaurant report details:', data.message);
+                }
+            })
+            .catch(error => {
+                alert("오류가 발생했습니다. 다시 시도해주세요.");
+                console.error('오류 발생:', error);
+            });
+    }
+
+    function updateReportStatus(reportId, newStatus) {
+        if (confirm(`신고 상태를 ${newStatus}으로 변경하시겠습니까?`)) {
+            fetch(`/admin/restaurant-reports/${reportId}/status?status=${newStatus}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include'
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw err; });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        alert("신고 상태가 성공적으로 업데이트되었습니다.");
+                        closeRestaurantReportModal();
+                        loadContent('reportedRestaurants');
+                    } else {
+                        alert("신고 상태 업데이트에 실패했습니다. 다시 시도해주세요.");
+                        console.error('업데이트 실패:', data.message);
+                    }
+                })
+                .catch(error => {
+                    alert("오류가 발생했습니다. 다시 시도해주세요.");
+                    console.error('오류 발생:', error);
+                });
+        }
+    }
+
+    function deleteRestaurantReport(reportId) {
+        if (confirm("레스토랑 신고를 삭제하시겠습니까?")) {
+            fetch(`/admin/restaurant-reports/${reportId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("레스토랑 신고가 성공적으로 삭제되었습니다.");
+                        loadContent('reportedRestaurants');
+                    } else {
+                        alert("레스토랑 신고 삭제에 실패했습니다. 다시 시도해주세요.");
+                        console.error('삭제 실패:', data.message);
+                    }
+                })
+                .catch(error => {
+                    alert("오류가 발생했습니다. 다시 시도해주세요.");
+                    console.error('오류 발생:', error);
+                });
+        }
+    }
+
+    // 레스토랑 신고 모달 닫기 함수
+    function closeRestaurantReportModal() {
+        const restaurantReportModal = document.getElementById("restaurantReportModal");
+        restaurantReportModal.style.display = "none";
     }
 
     // 페이지 로드 시 기본 콘텐츠 로드

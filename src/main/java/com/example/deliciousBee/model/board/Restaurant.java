@@ -8,6 +8,8 @@ import com.example.deliciousBee.model.file.RestaurantAttachedFile;
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.menu.Menu;
 
+import com.example.deliciousBee.model.report.RestaurantReport;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -82,9 +84,12 @@ public class Restaurant {
 	// 메뉴리스트 추가
 	@OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Menu> menuList;
-	
-	
-	
+
+
+	// 레스토랑과 관련된 신고
+	@OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference // 순환 참조 방지
+	private List<RestaurantReport> reports;
 
 	@PrePersist
 	protected void onCreate() {

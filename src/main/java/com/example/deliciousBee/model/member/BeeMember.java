@@ -121,4 +121,6 @@ public class BeeMember implements UserDetails, OAuth2User {
 				+ national + ", nickname='" + nickname + '\'' + ", gender=" + gender + ", birth=" + birth + ", email='"
 				+ email + '\'' + ", isSocialUser=" + isSocialUser + ", role=" + role + '}';
 	}
+
+
 }

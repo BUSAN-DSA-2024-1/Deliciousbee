@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>검색 결과</title>
     <link rel="stylesheet"><style>
+
     body {
         margin: 0;
         padding: 0;
@@ -262,6 +263,39 @@
         transition: background-color 0.3s, color 0.3s;
         margin-top: 10px;
         width: 100%; /* 버튼 너비를 100%로 설정하여 부모 요소에 맞게 조정 */
+    }
+    /* 레스토랑 신고 모달 스타일 */
+    .restaurant-modal-container {
+        width: 350px;
+        background-color: #fff;
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+        border-radius: 10px;
+        box-sizing: border-box;
+        padding: 20px 30px;
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000;
+    }
+
+    .restaurant-report-title {
+        text-align: center;
+        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+        "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+        margin: 10px 0 30px 0;
+        font-size: 28px;
+        font-weight: 800;
+    }
+
+    .restaurant-report-button-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        margin-top: 20px;
+        gap: 15px;
     }
 
     .btn-toggle:hover {
@@ -608,6 +642,21 @@
         </div>
     </div>
 </div>
+<!-- 레스토랑 신고 모달 -->
+<div id="restaurantReportModal" class="restaurant-modal-container" style="display: none;">
+    <p class="restaurant-report-title">레스토랑 신고</p>
+    <form class="restaurant-report-form">
+        <p class="modal-title">레스토랑명</p>
+        <input type="text" class="modal-input" id="restaurantName" readonly>
+        <p class="modal-title">신고 내용</p>
+        <textarea class="inputbox" id="reportContent" placeholder="신고 내용을 입력하세요" required></textarea>
+        <div class="restaurant-report-button-container">
+            <button type="button" class="form-btn submit-btn">신고 제출</button>
+            <button type="button" class="form-btn" onclick="closeRestaurantReportModal()">닫기</button>
+        </div>
+    </form>
+</div>
+
 <div id="navigator" class="center"></div>
 
 <!-- Load jQuery first -->
@@ -632,7 +681,64 @@
     let markers = [];
     let infoWindows = [];
     let restaurantCount = 0; // 정렬 순서 번호
+    let currentRestaurantId = null;
 
+    // 레스토랑 신고 모달 열기
+    function openRestaurantReportModal(button) {
+        const restaurantId = button.getAttribute('data-restaurant-id');
+        const restaurantName = button.getAttribute('data-restaurant-name');
+
+        // 모달 필드 채우기
+        document.getElementById('restaurantName').value = restaurantName;
+        document.getElementById('reportContent').value = ''; // 이전 내용 초기화
+
+        // 현재 레스토랑 ID 설정
+        currentRestaurantId = restaurantId;
+
+        // 모달 표시
+        const restaurantReportModal = document.getElementById("restaurantReportModal");
+        restaurantReportModal.style.display = "block";
+    }
+
+    // 레스토랑 신고 모달 닫기
+    function closeRestaurantReportModal() {
+        const restaurantReportModal = document.getElementById("restaurantReportModal");
+        restaurantReportModal.style.display = "none";
+    }
+
+    // 신고 제출 버튼 클릭 이벤트
+    document.querySelector('.restaurant-report-form .submit-btn').addEventListener('click', function() {
+        const reportContent = document.getElementById('reportContent').value.trim();
+        if (!reportContent) {
+            alert("신고 내용을 입력해주세요.");
+            return;
+        }
+
+        // 신고 제출
+        fetch(`/restaurants/${currentRestaurantId}/reports`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include', // 인증 정보 포함
+            body: JSON.stringify({ reportContent: reportContent })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("레스토랑 신고가 성공적으로 제출되었습니다.");
+                    closeRestaurantReportModal();
+                    // 필요 시, 콘텐츠 새로고침 또는 UI 업데이트
+                } else {
+                    alert("신고 제출에 실패하였습니다.");
+                    console.error('Report submission failed:', data.message);
+                }
+            })
+            .catch(error => {
+                alert("오류가 발생했습니다. 다시 시도해주세요.");
+                console.error('오류 발생:', error);
+            });
+    });
     // 로딩 화면을 숨기는 함수 (두 플래그가 모두 true일 때)
     function hideLoaderIfReady() {
         if (windowLoaded && ajaxLoaded) {
@@ -756,26 +862,31 @@
                     : 'default_image_url.jpg';
 
                 html += `
-                            <div class="col-12 mb-4">
-                                <div class="card" data-latitude="${restaurant.latitude}" data-longitude="${restaurant.longitude}" data-maincategory="${restaurant.mainCategory}">
-                                    <a href="/restaurant/rtread/${restaurant.id}">
-                                        <img src="${imageUrl}" alt="Restaurant Image" class="card-img-left">
-                                    </a>
-                                    <div class="card-body">
-                                    	<a href="/restaurant/rtread?id=${restaurant.id}">
-                                        	<h2 class="card-title">${restaurant.name}</h2>
-                                    	</a>
-                                        <h5 class="badge bg-primary"> # ${restaurant.categories} </h5>
-                                        <h4 class="text">${restaurant.address}</h4>
-                                        <small class="text-muted">${restaurant.description}</small>
-                                        <div class="card-footer">
-                                            <h3 class="card-text">★${restaurant.average_rating}</h3>
-                                    	<button class="update-btn" title="가게정보가 잘못됐어요">신고</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
+        <div class="col-12 mb-4">
+            <div class="card" data-latitude="${restaurant.latitude}" data-longitude="${restaurant.longitude}" data-maincategory="${restaurant.mainCategory}">
+                <a href="/restaurant/rtread/${restaurant.id}">
+                    <img src="${imageUrl}" alt="Restaurant Image" class="card-img-left">
+                </a>
+                <div class="card-body">
+                    <a href="/restaurant/rtread?id=${restaurant.id}">
+                        <h2 class="card-title">${restaurant.name}</h2>
+                    </a>
+                    <h5 class="badge bg-primary"> # ${restaurant.categories} </h5>
+                    <h4 class="text">${restaurant.address}</h4>
+                    <small class="text-muted">${restaurant.description}</small>
+                    <div class="card-footer">
+                        <h3 class="card-text">★${restaurant.average_rating}</h3>
+                        <button class="update-btn" title="가게정보가 잘못됐어요"
+                            data-restaurant-id="${restaurant.id}"
+                            data-restaurant-name="${restaurant.name}"
+                            onclick="openRestaurantReportModal(this)">
+                            신고
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
 
                 // 지도에 마커 추가
                 addMarker(restaurant, restaurantCount);

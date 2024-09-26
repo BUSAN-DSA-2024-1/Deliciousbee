@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 import com.example.deliciousBee.dto.report.ReportDto;
@@ -13,11 +14,16 @@ import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.board.VerificationStatus;
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.report.Report;
+import com.example.deliciousBee.model.report.RestaurantReport;
+import com.example.deliciousBee.model.report.RestaurantReportDTO;
+import com.example.deliciousBee.model.report.RestaurantReportRequest;
 import com.example.deliciousBee.model.review.Review;
 import com.example.deliciousBee.repository.ReportRepository;
 import com.example.deliciousBee.service.report.ReportService;
+import com.example.deliciousBee.service.report.RestaurantReportService;
 import com.example.deliciousBee.service.restaurant.RestaurantService;
 import com.example.deliciousBee.service.review.ReviewService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -36,11 +42,8 @@ public class ReportController {
 	private final RestaurantService restaurantService;
 	private final ReportService reportService;
 	private final ReviewService reviewService;
+	private final RestaurantReportService restaurantReportService;
 
-	@GetMapping("/admin")
-	public String adminPage() {
-		return "admin/adminpage"; //
-	}
 
 
 	// 리뷰 신고
@@ -193,5 +196,96 @@ public class ReportController {
 
 
 
+	@PostMapping("/restaurants/{restaurantId}/reports")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> createRestaurantReport(
+			@PathVariable Long restaurantId,
+			@Valid @RequestBody RestaurantReportRequest request,
+			@AuthenticationPrincipal BeeMember loginMember) {
 
+		String reporterId = loginMember != null ? loginMember.getMember_id() : null;
+		RestaurantReport report = restaurantReportService.createReport(
+				restaurantId,
+                Long.valueOf(reporterId),
+				request.getReportContent()
+		);
+
+		RestaurantReportDTO reportDTO = new RestaurantReportDTO(report);
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("success", true);
+		response.put("report", reportDTO);
+		response.put("message", "레스토랑 신고가 성공적으로 제출되었습니다.");
+		return ResponseEntity.ok(response);
+	}
+
+	/**
+	 * 모든 레스토랑 신고 조회 (관리자용)
+	 */
+	@GetMapping("/admin/restaurant-reports")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> getAllRestaurantReports() {
+		List<RestaurantReport> reports = restaurantReportService.getAllReports();
+		List<RestaurantReportDTO> reportDTOs = reports.stream()
+				.map(RestaurantReportDTO::new)
+				.collect(Collectors.toList());
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("reports", reportDTOs);
+		response.put("success", true);
+		return ResponseEntity.ok(response);
+	}
+
+	/**
+	 * 특정 레스토랑에 대한 신고 조회 (관리자용)
+	 */
+	@GetMapping("/admin/restaurants/{restaurantId}/reports")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> getReportsByRestaurant(
+			@PathVariable Long restaurantId) {
+		List<RestaurantReport> reports = restaurantReportService.getReportsByRestaurant(restaurantId);
+		List<RestaurantReportDTO> reportDTOs = reports.stream()
+				.map(RestaurantReportDTO::new)
+				.collect(Collectors.toList());
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("reports", reportDTOs);
+		response.put("success", true);
+		return ResponseEntity.ok(response);
+	}
+
+	/**
+	 * 레스토랑 신고 상태 업데이트 (관리자용)
+	 */
+	@PatchMapping("/admin/restaurant-reports/{reportId}/status")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> updateRestaurantReportStatus(
+			@PathVariable Long reportId,
+			@RequestParam RestaurantReport.ReportStatus status) {
+		RestaurantReport updatedReport = restaurantReportService.updateReportStatus(reportId, status);
+		RestaurantReportDTO reportDTO = new RestaurantReportDTO(updatedReport);
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("report", reportDTO);
+		response.put("success", true);
+		response.put("message", "신고 상태가 성공적으로 업데이트되었습니다.");
+		return ResponseEntity.ok(response);
+	}
+
+	/**
+	 * 레스토랑 신고 삭제 (관리자용)
+	 */
+	@DeleteMapping("/admin/restaurant-reports/{reportId}")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> deleteRestaurantReport(@PathVariable Long reportId) {
+		restaurantReportService.deleteReport(reportId);
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("success", true);
+		response.put("message", "레스토랑 신고가 성공적으로 삭제되었습니다.");
+		return ResponseEntity.ok(response);
+	}
 }
+
+
+
