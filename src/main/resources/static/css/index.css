@@ -235,6 +235,7 @@ input:hover {
     padding: 0;
     height: 30px;
     text-align: center;
+    margin-top: 8px;
 }
 
 .img-content .intro-content {
@@ -251,7 +252,8 @@ input:hover {
 
 .rest-title {
     font-size: 1rem;
-    background-color: #cccccc;
+    background-color: #343A40;
+    color: white;
     height: 2%;
     width: 100%;
     top: 0;
@@ -269,44 +271,45 @@ input:hover {
 .slider-buttons {
     display: flex;
     justify-content: space-between;
-    width: 60px; /* 버튼 간의 간격 조정 */
+    width: 60px; /* 버튼 간격 조정 */
     position: absolute;
     right: 10px;
-    top: 7%;
+    top: 7.5%; /* 위치 조정 */
     transform: translateY(-50%);
 }
 
 .slider-buttons button {
-    background-color: #cccccc;
-    border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
+    background-color: transparent; /* 배경을 투명하게 */
+    border: none; /* 테두리 제거 */
     cursor: pointer;
-    font-size: 1.2rem;
+    font-size: 2rem; /* 화살표 크기 증가 */
+    font-weight: bold; /* 화살표를 굵게 */
+    color: white;
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: color 0.3s ease, transform 0.3s ease; /* 색상 및 크기 변화 애니메이션 */
 }
 
 .slider-buttons button:hover {
-    background-color: #aaaaaa;
+    color: orange; /* hover 시 화살표 색상 변경 */
+    transform: scale(1.2); /* hover 시 화살표 확대 */
 }
+
+.slider-buttons button:active {
+    color: #777; /* 클릭 시 더 진한 색상 */
+    transform: scale(1.1); /* 클릭 시 살짝 축소 */
+}
+
 
 
 .content-wrapper:hover .image-wrapper {
     filter: blur(7px);
 }
 
-.content-wrapper:hover .image-wrapper img {
-    transform: scale(1.2);
-}
-
 .content-wrapper:hover .intro-content {
     opacity: 1;
 }
-
-
 
 .google-text{
     color: black;
@@ -314,7 +317,7 @@ input:hover {
 }
 
 .navbar {
-    background-color: #61686c;
+    background-color: #343A40;
     color: white;
     padding: 15px;
     display: flex;
@@ -390,7 +393,6 @@ input:hover {
     overflow: visible;
 
     /* 네비게이션 바 스타일 적용 */
-    background-color: #61686c; /* 네비게이션 바 배경색 */
     color: white; /* 네비게이션 바 텍스트 색상 */
     margin-left: 20px; /* .nav-item과 동일한 왼쪽 마진 */
 
@@ -419,6 +421,7 @@ input:hover {
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: #343A40;
     padding: 14px 28px;
     border-radius: 50px;
     cursor: pointer;
@@ -787,7 +790,7 @@ input:hover {
 
 .form-container {
     width: 350px;
-    height: 450px;
+    height: 435px;
     background-color: #fff;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     border-radius: 10px;
@@ -858,6 +861,116 @@ input:hover {
     box-shadow: none;
 }
 
+.buttons-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin-top: 15px;
+    gap: 15px;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.flex-row > div > label {
+  font-size: 14px;
+  color: black;
+  font-weight: 400;
+}
+
+.span {
+  font-size: 14px;
+  margin-left: 5px;
+  color: #2d79f3;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.button-submit {
+  margin: 20px 0 10px 0;
+  background-color: #151717;
+  border: none;
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 10px;
+  height: 50px;
+  width: 100%;
+  cursor: pointer;
+}
+
+.p {
+  text-align: center;
+  color: black;
+  font-size: 14px;
+  margin: 5px 0;
+}
+
+.btn {
+  margin-top: 10px;
+  width: 42.5%;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 500;
+  gap: 10px;
+  border: 1px solid #ededef;
+  background-color: white;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+.btn:hover {
+  border: 1px solid #2d79f3;
+  ;
+}
+
+.google-login-button {
+    border-radius: 20px;
+    box-sizing: border-box;
+    padding: 10px 15px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
+    rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+    font-size: 11px;
+    gap: 5px;
+    border: 2px solid #747474;
+    height: 40px;
+}
+
+.google-icon {
+    font-size: 18px;
+    margin-bottom: 1px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
 .sign-up-label {
     margin: 0;
     font-size: 10px;
@@ -865,7 +978,7 @@ input:hover {
     font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
     "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
     text-align: center;
-    margin-top: 5%;
+    margin-top: 7.5%;
 }
 
 .sign-up-link {
@@ -878,6 +991,25 @@ input:hover {
     font-weight: 800;
     font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
     "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}
+
+.divider {
+  display: flex;
+  align-items: center; /* 세로 가운데 정렬 */
+  text-align: center; 
+  margin: 0px; /* 위아래 여백 */
+}
+
+.divider span {
+  padding: 0 15px; /* or 좌우 여백 */
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex-grow: 1; /* 양쪽 선이 균등하게 늘어나도록 */
+  height: 1px;
+  background-color: black;
 }
 
 .buttons-container {
