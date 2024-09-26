@@ -197,18 +197,17 @@
                         <option th:each="keyword : ${keywordsByCategory.get(category)}" th:value="${keyword.id}"
                           th:text="${keyword.keywordName}">[[${keyword.keywordName}]]</option>
                       </select>
-
-                      <!-- custom KeyWord Form -->
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" th:id="${category.name() + 'Checkbox'}"
-                          th:name="${category.name() + 'Checkbox'}">
-                        <label class="form-check-label-review-keyword" th:for="${category.name() + 'Checkbox'}"
-                          th:text="'존재하지 않은 ' + ${category} + ' 키워드를 작성해주세요'"></label>
-                      </div>
-                      <input type="text" class="form-control" id="customMenuInput" name="customMenuInput" disabled>
-                      <input type="hidden" id="customMenuName" name="customMenuName">
                     </div>
 
+                    <!-- custom KeyWord Form -->
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="customKeywordCheckbox"
+                        name="customKeywordCheckbox">
+                      <label class="form-check-label-review-keyword" for="customKeywordCheckbox">존재하지 않은 키워드를
+                        작성해주세요</label>
+                    </div>
+                    <input type="text" class="form-control" id="customKeywordInput" name="customKeywordInput" disabled>
+                    <input type="hidden" id="customKeywordName" name="customKeywordName">
                   </div>
 
 
@@ -473,6 +472,24 @@
       $('#customMenuInput').on('input', function () {
         $('#customMenuName').val($(this).val());
       });
+
+      // 커스텀 키워드 처리
+      $('#customKeywordCheckbox').change(function () {
+        console.log('hello world');
+        const customInput = $('#customKeywordInput');
+        if ($(this).is(':checked')) {
+          customInput.prop('disabled', false);
+        } else {
+          customInput.prop('disabled', true);
+          customInput.val('');
+          $('#customKeywordName').val('');
+        }
+      });
+
+      $('#customKeywordInput').on('input', function () {
+        $('#customKeywordName').val($(this).val());
+      });
+
     });
 
 
@@ -572,7 +589,7 @@
         }
       });
     }
-    // ----------------------------------------------------------------------------------------------------
+
     function latestList(sortBy, page) {
       const restaurantId = /*[[${restaurant.id}]]*/ ''; // 레스토랑 ID
       const pageUrl = `/review/allreview/${restaurantId}/sort`; // 서버 API URL
@@ -588,7 +605,6 @@
           withCredentials: true
         },
         success: function (response) {
-          console.log(response);
           const reviewsContainer = $('.restaurantCard');
           reviewsContainer.empty();
           window.totalPages = response.totalPages;
@@ -608,16 +624,30 @@
               `;
                 });
               }
-              // 키워드 처리
+              // 키워드 작업
               let reviewKeywordHTML = '';
-              review.keywords.forEach(function (keyword) {
-                reviewKeywordHTML += `
-                  <div class="review-keyword">
-                      <i class="review-keyword-icon"></i>
-                      <span>${keyword.keyWord.keywordName}</span>
-                  </div>
-              `;
-              });
+              if (review.keywords && review.keywords.length > 0) {
+                review.keywords.forEach(function (keyword) {
+                  reviewKeywordHTML += `
+                <div class="review-keyword customKeyWord-style">`;
+                  if (keyword.customKeyWordName != null) {
+                    reviewKeywordHTML += `
+                    <span class="review-keyword-icon customKeyWord-icon"></span>
+                    <span>${keyword.customKeyWordName}</span>
+                  `;
+                  }
+                  else {
+                    reviewKeywordHTML += `
+                    <span class="review-keyword-icon"></span>
+                    <span>${keyword.keyWord.keywordName}</span>
+                  `
+                  }
+
+                  reviewKeywordHTML += '</div>';
+                });
+              }
+
+
               // 메뉴 처리
               let reviewMenuHTML = '';
               if (review.reviewMenuList && review.reviewMenuList.length > 0) {
@@ -748,8 +778,6 @@
     })
 
     function updatePagination(sortBy) {
-      console.log("Updating pagination. Total pages:", window.totalPages, "Current page:", window.currentPage);
-
       if (!window.totalPages || window.totalPages <= 1) {
         $('#review-pagination').empty();
         return;
@@ -779,7 +807,6 @@
           </ul>
         </nav>
       `;
-      console.log(paginationHTML);
       $('#review-pagination').html(paginationHTML);
     }
 
