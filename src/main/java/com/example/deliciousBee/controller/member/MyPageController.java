@@ -1,5 +1,6 @@
 package com.example.deliciousBee.controller.member;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,12 +28,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.deliciousBee.model.file.MyPageAttachedFile;
 import com.example.deliciousBee.model.member.BeeMember;
+import com.example.deliciousBee.model.member.BeeUpdateForm;
 import com.example.deliciousBee.model.mypage.MyPage;
 import com.example.deliciousBee.model.mypage.MyPageUpdateForm;
 import com.example.deliciousBee.model.mypage.MyPageVisit;
 import com.example.deliciousBee.model.review.Review;
+import com.example.deliciousBee.repository.MyPageFileRepository;
 import com.example.deliciousBee.repository.MyPageRepository;
 import com.example.deliciousBee.repository.ReviewRepository;
 import com.example.deliciousBee.service.member.BeeMemberService;
@@ -40,6 +45,7 @@ import com.example.deliciousBee.service.member.FollowService;
 import com.example.deliciousBee.service.member.MyPageService;
 import com.example.deliciousBee.service.review.ReviewService;
 import com.example.deliciousBee.util.MemberFileService;
+import com.example.deliciousBee.util.MyPageFileService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -64,7 +70,8 @@ public class MyPageController {
 	private final FollowService followService;
 	private final ReviewRepository reviewRepository;
 	private final JwtTokenProvider jwtTokenProvider;
-
+	private final MyPageFileRepository myPageFileRepository;
+	private final MyPageFileService myPageFileService;
 
 	@Autowired
 	private MemberFileService memberFileService; // fileStore 주입 받음.
@@ -185,11 +192,16 @@ public class MyPageController {
 	// **********************마이페이지에서 수정하기*********************
 	@PostMapping("updateMyPage")
 	public String updateMyPage(@AuthenticationPrincipal BeeMember loginMember,
-			@Validated @ModelAttribute("myPageUpdateForm") MyPageUpdateForm myPageUpdateForm,
-		    BindingResult result,
-		    @RequestParam(name = "file", required = false) MultipartFile file,
-			HttpServletRequest request, Model model) {
+	                           @Validated BindingResult result,
+	                           RedirectAttributes redirectAttributes,
+	                           HttpServletRequest request,
+	                           @RequestParam(name = "introduce") String introduce,
+	                           @RequestParam(name = "isFileRemoved", required = false, defaultValue = "false") boolean isFileRemoved,
+	                           @RequestParam(name = "file", required = false) MultipartFile file,
+	                           Model model) {
 
+		  log.info("확인용 저장전 {}", file);
+		  log.info("확인용 저장전 {}", loginMember.getMyPage());
 		if (result.hasErrors()) {
 			return "member/myPage";
 		}
@@ -197,14 +209,14 @@ public class MyPageController {
 			return "redirect:/member/login";
 		}
 
-		MyPage myPage = loginMember.getMyPage(); 
-	    myPage.setIntroduce(myPageUpdateForm.getIntroduce()); // MyPageUpdateForm에서 introduce 값 사용
-		    
-		myPageRepository.save(myPage); // MyPage 객체 저장
-		return "redirect:/member/myPage";
+		try {
+	        myPageService.updateMyPage(introduce, isFileRemoved, file, loginMember);
+	        redirectAttributes.addFlashAttribute("message", "마이페이지가 성공적으로 수정되었습니다.");
+	    } catch (IOException e) {
+	        redirectAttributes.addFlashAttribute("error", "파일 업로드 중 오류가 발생했습니다.");
+	    }
+	    return "redirect:/member/myPage"; // 업데이트 후 리디렉션
 	}
-
-
 	// *******************사람들 마이페이지 리스트 **********************
 	@GetMapping("myPageList")
 	public String myPageList(@RequestParam(name = "searchText", defaultValue = "") String searchText,

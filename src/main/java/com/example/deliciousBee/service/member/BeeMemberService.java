@@ -12,6 +12,8 @@ import com.example.deliciousBee.util.MemberFileService;
 import com.google.api.client.util.Value;
 import com.example.deliciousBee.dto.member.OAuthAttributes;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.deliciousBee.repository.BeeMemberRepository;
+import com.example.deliciousBee.model.file.AttachedFile;
 import com.example.deliciousBee.model.file.MemberAttachedFile;
 import com.example.deliciousBee.model.member.BeeMember;
 
@@ -27,6 +30,7 @@ import jakarta.transaction.Transactional;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class BeeMemberService implements UserDetailsService {
 
 
@@ -39,10 +43,20 @@ public class BeeMemberService implements UserDetailsService {
 	private final MemberFileService memberFileService;
 	
 	@Transactional // 에러가 터지면 커밋안해준다 롤백해줌, 해당쿼리를 롤백해줌
-	public void saveMember(BeeMember beeMember, MemberAttachedFile attachedFile) {
-//		beeMember.setPassword(passwordEncoder.encode(beeMember.getPassword()));
-		beeMemberRepository.save(beeMember); // 저장
-
+	public void saveMember(BeeMember beeMember, MultipartFile file) {
+	    if (file != null && file.getSize() > 0) {
+	        try {
+	            // 새 MemberAttachedFile 객체를 생성합니다.
+	            MemberAttachedFile newSaveFile = memberFileService.saveFile(file);
+	            newSaveFile.setBeeMember(beeMember); // MemberAttachedFile 에 BeeMember 연결
+	            beeMember.setProfileImage(newSaveFile); // BeeMember 에 MemberAttachedFile 연결
+	            beeMemberRepository.save(beeMember); // BeeMember 저장
+	        } catch (IOException e) {
+	            // 예외 처리
+	        }
+	    } else {
+	        beeMemberRepository.save(beeMember);
+	    }
 	}
 
 
@@ -69,7 +83,7 @@ public class BeeMemberService implements UserDetailsService {
 	// **********************멤버 수정***************
 		@Transactional
 		public void updateMember(BeeMember updateMember, boolean isFileRemoved, MultipartFile file) {
-
+			
 			BeeMember findMember = findMemberById(updateMember.getMember_id());
 
 			findMember.setProfileImage(updateMember.getProfileImage());
@@ -78,26 +92,33 @@ public class BeeMemberService implements UserDetailsService {
 			findMember.setEmail(updateMember.getEmail());
 
 			
-			// 첨부파일 삭제전 체크
-			MemberAttachedFile attachedFile = findFileByMemberId(findMember);
-			if (attachedFile != null && (isFileRemoved || (file != null && file.getSize() > 0))) { // 없는경우에도 수정하기때문에 확인작업
-				// isFileRemoved:파일삭제요청
-				removeFile(attachedFile);
-
-			}
-
-			// 새로운 파일 저장
-			 if (file != null && file.getSize() > 0) {
-			        try {
-			            MemberAttachedFile newSaveFile = memberFileService.saveFile(file);
-			            newSaveFile.setBeeMember(findMember);
-			            findMember.setProfileImage(newSaveFile);
-			            saveMember(findMember, newSaveFile); 
-			        } catch (IOException e) {
-			            // 예외 처리
-			            // 추가적인 오류 처리 로직 (예: 사용자에게 오류 메시지 표시)
+			 MemberAttachedFile attachedFile = findFileByMemberId(findMember);
+			    if (attachedFile != null) {
+			        if (file != null && file.getSize() > 0) {
+			            try {
+			                MemberAttachedFile newSaveFile = memberFileService.saveFile(file);
+			                newSaveFile.setBeeMember(findMember); // MemberAttachedFile 에 BeeMember 연결
+			                findMember.setProfileImage(newSaveFile); // BeeMember 에 MemberAttachedFile 연결
+			                beeMemberRepository.save(findMember); 
+			            } catch (IOException e) {
+			                // 예외 처리
+			            }
+			        } else {
+			            findMember.setProfileImage(attachedFile);
+			        }
+			    } else {
+			        if (file != null && file.getSize() > 0) {
+			            try {
+			                MemberAttachedFile newSaveFile = memberFileService.saveFile(file);
+			                newSaveFile.setBeeMember(findMember); // MemberAttachedFile 에 BeeMember 연결
+			                findMember.setProfileImage(newSaveFile); // BeeMember 에 MemberAttachedFile 연결
+			                beeMemberRepository.save(findMember); 
+			            } catch (IOException e) {
+			                // 예외 처리
+			            }
 			        }
 			    }
+			 
 
 			beeMemberRepository.save(findMember);
 
@@ -107,8 +128,8 @@ public class BeeMemberService implements UserDetailsService {
 		private MemberAttachedFile findFileByMemberId(BeeMember beeMember) {
 			// 쿼리 메서드
  			MemberAttachedFile attachedFile = memberFileRepository.findByBeeMember(beeMember); // findBy로 시작해야 쿼리만들어줌
-			
-			System.out.println("확인용");
+ 			log.info("확인용 {}", beeMember);
+			log.info("확인용 {}", attachedFile);
 			return attachedFile;
 		}
 		

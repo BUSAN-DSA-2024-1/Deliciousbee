@@ -4,31 +4,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="/css/index.css">
-	<link rel="stylesheet" href="/css/myPage.css">
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="/css/myPage.css">
 <title>마이페이지</title>
 </head>
 <body>
-<!-- 네비게이션 바 삽입 -->
-<th:block th:replace="~{fragments/navbar-login :: navbar}"></th:block>
-<!-- 로그인 모달 삽입 -->
-<th:block th:replace="~{fragments/navbar-login :: loginModal}"></th:block>
+	<!-- 네비게이션 바 삽입 -->
+	<th:block th:replace="~{fragments/navbar-login :: navbar}"></th:block>
+	<!-- 로그인 모달 삽입 -->
+	<th:block th:replace="~{fragments/navbar-login :: loginModal}"></th:block>
 
-	<div class="main-info">
+	<div class="main-image">
 		<!-- 메인 이미지 -->
-		<img th:if="${myPage.mainImage == null}" src="/image/back.jpg"
-			alt="기본 이미지" class="default-main-image"> <img
+		<img th:if="${myPage.mainImage == null}"
+			src="/myPageImage/no-main-image.png" alt="기본 이미지"
+			class="default-main-image"> <img
 			th:unless="${myPage.mainImage == null}"
 			th:src="@{'/loginMember/display?filename=' + ${loginMember.profileImage.saved_filename}}"
-			alt="메인 이미지" class="main-image">
+			alt="메인 이미지">
 		<!-- 프로필 이미지 -->
 		<div class="profile-image">
 			<img th:if="${myPage.beeMember.profileImage == null}"
 				src="/myPageImage/no-profil.png" alt="기본 이미지"
-				class="default-profile-image"> <img
+				class="my-profile-image"> <img
 				th:unless="${myPage.beeMember.profileImage == null}"
 				th:src="@{'/member/display?filename=' + ${loginMember.profileImage.saved_filename}}"
-				alt="메인 이미지" class="profile-image">
+				alt="메인 이미지" class="my-profile-image">
 		</div>
 	</div>
 
@@ -43,21 +44,33 @@
 					<div th:if="${!isOwner}">
 						<button th:if="${loginMember != null}"
 							th:id="'followButton' + ${myPage.beeMember.member_id}"
-							th:text="${followService.isFollowing(loginMember.member_id, myPage.beeMember.member_id)} ? '언팔로우' : '팔로우'"
 							th:data-following-id="${myPage.beeMember.member_id}"
 							th:class="${followService.isFollowing(loginMember.member_id, myPage.beeMember.member_id)} ? 'follow-button' : 'nofollow'"
-							onclick="toggleFollow(this)"></button>
+							onclick="toggleFollow(this)">
+							<img
+								th:src="${followService.isFollowing(loginMember.member_id, myPage.beeMember.member_id)} ? @{/myPageImage/unfollow.png} : @{/myPageImage/follow.png}"
+								alt="팔로우/언팔로우">
+						</button>
 						<div class="no-login-follow">
 							<a th:if="${loginMember == null}" th:href="@{login}"
 								onclick="return showLoginAlert()" class="nofollow">팔로우</a>
 						</div>
 						<!-- 팔로워/팔로잉 목록 버튼 -->
 					</div>
-					<button class="follow-list" onclick="showFollowersModal()">팔로워
-						목록</button>
-					<button class="follow-list" onclick="showFollowingModal()">팔로잉
-						목록</button>
+					<button class="follow-list" onclick="showFollowersModal()">
+						<img src="/myPageImage/follower-list.png" alt="팔로워 목록">
+					</button>
+					<button class="follow-list" onclick="showFollowingModal()">
+						<img src="/myPageImage/follwing-list.png" alt="팔로워 목록">
+					</button>
 				</span>
+				<div class="goUpdate-button"
+					th:if="${loginMember != null and loginMember.member_id == myPage.beeMember.member_id}">
+					<button class="update-btn"
+						onclick="location.href='/member/updateMyPage'">
+						<img src="/myPageImage/update-myPage.png" alt="수정하기 아이콘">
+					</button>
+				</div>
 			</div>
 			<h4 class="intro-title">소개글</h4>
 			<div class="introduce"
@@ -306,10 +319,7 @@
 		</div>
 	</div>
 
-	<div class="goUpdate-button"
-		th:if="${loginMember != null and loginMember.member_id == myPage.beeMember.member_id}">
-		<button onclick="location.href='/member/updateMyPage'">수정하기</button>
-	</div>
+
 	<!-- 위로가는 화살표 버튼 -->
 	<a onclick="scrollToTop()" id="scrollToTopButton"> <svg
 			xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -357,26 +367,35 @@
 		//팔로워**************
 		async function toggleFollow(button) {
     const followingId = button.dataset.followingId;
-    const isFollowing = button.textContent === '언팔로우';
+    const img = button.querySelector('img'); // 이미지 요소 가져오기
+    const isFollowing = img.src.endsWith('/myPageImage/unfollow.png'); // 이미지 src로 판별
     const url = isFollowing ? `/unfollow/${followingId}` : `/follow/${followingId}`;
 
     try {
         const response = await fetch(url, { method: 'POST' });
-        const success = await response.json(); 
+        const success = await response.json();
 
         if (success) {
-            // 버튼 텍스트 및 클래스 변경
-            button.textContent = isFollowing ? '팔로우' : '언팔로우';
-            button.classList.toggle('follow-button', !isFollowing); // 언팔로우 시 btn-secondary 추가
-            button.classList.toggle('nofollow', isFollowing); // 팔로우 시 btn-primary 추가
+            // 이미지 src 및 클래스 변경
+            img.src = isFollowing ? '/myPageImage/follow.png' : '/myPageImage/unfollow.png';
+            button.classList.toggle('follow-button', !isFollowing);
+            button.classList.toggle('nofollow', isFollowing);
+            
+            // 툴팁 내용 변경
+            const tooltip = button.querySelector('.tooltiptext'); 
+            if (tooltip) { 
+                tooltip.textContent = isFollowing ? '팔로우' : '언팔로우';
+            }
+
+
         } else {
             alert('팔로우/언팔로우 요청에 실패했습니다.');
         }
-   			 } catch (error) {
-        	console.error('팔로우/언팔로우 요청 중 오류 발생:', error);
-        	alert('팔로우/언팔로우 요청 중 오류가 발생했습니다.');
-   		  }
-		}		
+    } catch (error) {
+        console.error('팔로우/언팔로우 요청 중 오류 발생:', error);
+        alert('팔로우/언팔로우 요청 중 오류가 발생했습니다.');
+    }
+}
 		//로그인안한사람 팔로워하려할때**************
 		function showLoginAlert() {
 	        alert("로그인이 필요한 서비스입니다.");
@@ -580,6 +599,7 @@ $(document).ready(function() {
    window.addEventListener('click', handleLargeImageModalOutsideClick);
  }
 	</script>
+	<script th:src="@{/js/layout.js}"></script>
 
 </body>
 

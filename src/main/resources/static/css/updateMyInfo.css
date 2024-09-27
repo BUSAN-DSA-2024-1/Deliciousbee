@@ -92,7 +92,7 @@ body {
   width: 100px;
   height: 100px;
   object-fit: cover;
-  border: 2px solid #ddd;
+  border: 5px solid #ddd;
   margin-bottom: 10px; /* 닉네임 입력 필드와의 간격 조정 */
 }
 .info {
@@ -140,17 +140,4 @@ button:hover {
     background-color: #0056b3;
 }
 
-/* 프로필 사진 스타일 */
-.profile-photo {
-	width:150px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
 
-.profile-photo img {
-    width: 100px; /* 원하는 크기로 조정 */
-    height: 100px;
-    object-fit: cover; /* 이미지가 영역을 넘어가지 않도록 */
-    border: 2px solid #ddd; /* 경계선 추가 */
-}

@@ -20,7 +20,7 @@ public class MyPageAttachedFile {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long MyPageMainImage_id;   //첨부파일 아이디
+	private Long mainImage_id;   //첨부파일 아이디
 
 	
 	@OneToOne

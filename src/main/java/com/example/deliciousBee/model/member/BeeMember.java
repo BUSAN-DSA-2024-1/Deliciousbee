@@ -119,7 +119,9 @@ public class BeeMember implements UserDetails, OAuth2User {
 	public String toString() {
 		return "BeeMember{" + "member_id='" + member_id + '\'' + ", password='" + password + '\'' + ", national="
 				+ national + ", nickname='" + nickname + '\'' + ", gender=" + gender + ", birth=" + birth + ", email='"
-				+ email + '\'' + ", isSocialUser=" + isSocialUser + ", role=" + role + '}';
+				+ email + '\'' + ", isSocialUser=" + isSocialUser +", role=" + role + 
+		           ", profileImage =" + profileImage + 
+		           '}';
 	}
 
 

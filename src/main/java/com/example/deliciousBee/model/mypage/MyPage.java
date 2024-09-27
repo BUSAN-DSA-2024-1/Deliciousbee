@@ -7,6 +7,7 @@ import com.example.deliciousBee.model.file.MyPageAttachedFile;
 import com.example.deliciousBee.model.member.BeeMember;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -54,15 +55,14 @@ public class MyPage {
 	
 	 
 
-	public static MyPageUpdateForm toUpdateForm(MyPage myPage, BeeMember beeMember) {
-		MyPageUpdateForm myPageUpdateForm = new MyPageUpdateForm();
-
-		myPageUpdateForm.setMyPage_id(myPage.getId());
-		myPageUpdateForm.setIntroduce(myPage.getIntroduce());
-		myPageUpdateForm.setBeeMember(myPage.getBeeMember());
-
-		return myPageUpdateForm;
-
-	}
+//	public static MyPageUpdateForm toUpdateForm(MyPage myPage) {
+//		MyPageUpdateForm myPageUpdateForm = new MyPageUpdateForm();
+//
+//		myPageUpdateForm.setMyPage_id(myPage.getId());
+//		myPageUpdateForm.setIntroduce(myPage.getIntroduce());
+//
+//		return myPageUpdateForm;
+//
+//	}
 
 }

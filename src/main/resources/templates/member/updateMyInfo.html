@@ -27,7 +27,7 @@
 				enctype="multipart/form-data" onsubmit="return formCheck()">
 				<div class="info">
 					<label for="profileImageInput" class="profile-image-label"
-						data-hover-text="프로필 이미지 변경"> <img
+						style="display: inline-block;"> <img
 						id="profileImagePreview"
 						th:if="${loginMember.profileImage != null}"
 						th:src="@{'/member/display?filename=' + ${loginMember.profileImage.saved_filename}}"
@@ -38,7 +38,7 @@
 						class="profile-photo">
 					</label> <input type="file" name="file" id="profileImageInput"
 						accept="image/*" style="display: none;">
-					
+
 				</div>
 				<div class="info">
 					<h4>닉네임(2~8자)</h4>

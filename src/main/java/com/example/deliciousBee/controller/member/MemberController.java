@@ -292,7 +292,6 @@ public class MemberController {
 	}
 
 	// *************************회원탈퇴하기*****************************
-// *************************회원탈퇴하기*****************************
 	@PostMapping("deleteMember")
 	public String deleteMember(@AuthenticationPrincipal BeeMember loginMember,
 							   @RequestParam("password") String password, RedirectAttributes redirectAttributes) {

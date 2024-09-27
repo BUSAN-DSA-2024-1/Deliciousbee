@@ -25,9 +25,9 @@
 
 			<h1>내 정보</h1>
 			<div class="profile-image-label">
-				 <img th:if="${loginMember.profileImage != null}"
-         th:src="@{'/member/display?filename=' + ${loginMember.profileImage.saved_filename}}"
-         alt="프로필 이미지" class="profile-photo"> <img
+				<img th:if="${loginMember.profileImage != null}"
+					th:src="@{'/member/display?filename=' + ${loginMember.profileImage.saved_filename}}"
+					alt="프로필 이미지" class="profile-photo"> <img
 					th:unless="${loginMember.profileImage != null}"
 					src="/myPageImage/no-profil.png" alt="기본 프로필 이미지"
 					class="profile-photo">
