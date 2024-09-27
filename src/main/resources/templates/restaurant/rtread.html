@@ -265,6 +265,142 @@
           </div>
         </div>
 
+
+
+
+
+
+
+
+
+
+        <!-- UpdateReview Modal -->
+        <div class="modal fade" id="updateReviewModal" tabindex="-1" role="dialog" aria-labelledby="updateReviewModal"
+          aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="reportModalLabel">수정하기</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="form-group">
+                  <label for="updateReviewContents">리뷰 내용</label>
+                  <textarea class="form-control" id="updateReviewContents" name="updateReviewContents" rows="4"
+                    required></textarea>
+                </div>
+
+                <!-- Rating Form -->
+                <hr class="Review-Write-hr">
+                <div class="form-group">
+                  <label for="rating">전체 평점</label>
+                  <input type="number" class="form-control" id="updateReviewRating" name="updateReviewRating" min="1"
+                    max="5" step="1" required>
+                </div>
+                <div class="form-group">
+                  <label for="updateReviewTasteRating">음식 평점</label>
+                  <input type="range" class="form-control-range" id="updateReviewTasteRating"
+                    name="updateReviewTasteRating" min="1" max="3" step="1" onclick="detailRating(this)">
+                  <div class="detail-Rating-labels">
+                    <span>나쁨</span>
+                    <span>보퉁</span>
+                    <span>좋음</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="updateReviewPriceRating">가격 평점</label>
+                  <input type="range" class="form-control-range" id="updateReviewPriceRating"
+                    name="updateReviewPriceRating" min="1" max="3" step="1" onclick="detailRating(this)">
+                  <div class="detail-Rating-labels">
+                    <span>나쁨</span>
+                    <span>보퉁</span>
+                    <span>좋음</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="updateReviewkKindRating">친절 평점</label>
+                  <input type="range" class="form-control-range" id="updateReviewkKindRating"
+                    name="updateReviewkKindRating" min="1" max="3" step="1" onclick="detailRating(this)">
+                  <div class="detail-Rating-labels">
+                    <span>나쁨</span>
+                    <span>보퉁</span>
+                    <span>좋음</span>
+                  </div>
+                </div>
+                <!-- Menu Form -->
+                <hr class="Review-Write-hr">
+                <div class="form-group">
+                  <label for="recommendItems">추천 메뉴</label>
+                  <div th:each="menu : ${restaurant.menuList}">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" th:value="${menu.id}" name="updateReviewMenuList" id="updateReviewMenuList">
+                      <label class="form-check-label" th:text="${menu.name}">Menu Name</label>
+                      <span th:text="'    ' +${menu.price} + '원'"></span>
+                    </div>
+                  </div>
+
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="customMenuCheckbox" name="customMenuCheckbox">
+                    <label class="form-check-label" for="customMenuCheckbox">기타</label>
+                  </div>
+                  <input type="text" class="form-control" id="customMenuInput" name="customMenuInput" disabled>
+                  <input type="hidden" id="customMenuName" name="customMenuName">
+                </div>
+
+                <hr class="Review-Write-hr">
+                <div class="form-group">
+                  <label for="keywords">키워드 등록</label>
+                  <div th:each="category : ${T(com.example.deliciousBee.model.keyWord.KeywordCategory).values()}">
+                    <label for="keywords" th:text="${category.name().replace('_', ' ')}"></label>
+                    <select class="form-control" multiple name="keywords">
+                      <option th:each="keyword : ${keywordsByCategory.get(category)}" th:value="${keyword.id}"
+                        th:text="${keyword.keywordName}">[[${keyword.keywordName}]]</option>
+                    </select>
+                  </div>
+
+                  <!-- custom KeyWord Form -->
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="customKeywordCheckbox"
+                      name="customKeywordCheckbox">
+                    <label class="form-check-label-review-keyword" for="customKeywordCheckbox">존재하지 않은 키워드를
+                      작성해주세요</label>
+                  </div>
+                  <input type="text" class="form-control" id="customKeywordInput" name="customKeywordInput" disabled>
+                  <input type="hidden" id="customKeywordName" name="customKeywordName">
+                </div>
+
+
+                <hr class="Review-Write-hr">
+                <div class="form-group">
+                  <label for="updateReviewVistDate">방문 시기</label>
+                  <input type="date" class="form-control" id="updateReviewVistDate" name="updateReviewVistDate" required>
+                </div>
+                <div class="form-group">
+                  <label for="updateReviewAttachedFile">리뷰 사진 업로드</label>
+                  <input type="file" class="form-control-file" id="updateReviewAttachedFile" name="updateReviewAttachedFile" multiple>
+                  <span id="updateReviewAttachedFileName"></span>
+                </div>
+                <input type="hidden" name="restaurant_id" th:value="${restaurant_id}">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="submitUpdate()">수정 하기</button>
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">취소</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
         <!-- Review List -->
         <div class="row restaurantCard">
           <div class="col-lg-12">
@@ -475,7 +611,6 @@
 
       // 커스텀 키워드 처리
       $('#customKeywordCheckbox').change(function () {
-        console.log('hello world');
         const customInput = $('#customKeywordInput');
         if ($(this).is(':checked')) {
           customInput.prop('disabled', false);
@@ -557,6 +692,7 @@
       });
     }
 
+    // 신고 기능
     function showReportReasons(button) {
       const reviewId = button.dataset.reviewId; // data-review-id 값 가져오기
       $('#reportModal').data('review-id', reviewId); // 모달에 data-review-id 설정
@@ -590,6 +726,115 @@
       });
     }
 
+
+
+
+
+
+
+
+
+    // 수정 기능
+    function showUpdateReview(button) {
+      const reviewId = button.dataset.reviewId;
+      $('#updateReviewModal').data('review-id', reviewId);
+      $.ajax({
+        url: '/review/get/' + reviewId,
+        type: 'GET',
+        success: function (data) {
+          const reviewContents = data.reviewContents || data.review_contents;
+          const rating = data.rating || data.review_rating;
+          const tasteRating = data.tasteRating || data.taste_rating;
+          const priceRating = data.priceRating || data.price_rating;
+          const kindRating = data.kindRating || data.kind_rating;
+          const reviewMenuList = data.reviewMenuList || data.review_menuList
+          const visitDate = data.visitDate || data.visit_date;
+          const attachedFile = data.attachedFile || data.attached_file;
+          if(attachedFile) {
+            $('updateReviewAttachedFileName').text(attachedFile);
+          } 
+          else {
+            $('updateReviewAttachedFileName').text('');
+          }
+
+          $('#updateReviewContents').val(reviewContents);
+          $('#updateReviewRating').val(rating);
+          $('#updateReviewTasteRating').val(priceRating);
+          $('#updateReviewPriceRating').val(priceRating);
+          $('#updateReviewkKindRating').val(priceRating);
+          $('#updateReviewMenuList').val(reviewMenuList);
+          $('#updateReviewVistDate').val(visitDate);
+          $('#updateReviewAttachedFile').val(attachedFile);
+
+          $('#updateReviewModal').on('shown.bs.modal', function () {
+            // 선택된 메뉴 ID 배열 초기화
+            selectedMenuIds = [];
+
+            // 기존에 선택된 메뉴 체크박스 체크
+            $.each($('#updateReviewModal').data('review-id').reviewMenuList, function (index, menu) {
+              if (menu.menu) {
+                selectedMenuIds.push(menu.menu.id);
+                $('input[name="reviewMenuList"][value="' + menu.menu.id + '"]').prop('checked', true);
+              } else {
+                selectedMenuIds.push(-1); // customMenuName의 경우 임시로 -1 할당
+                $('#customMenuCheckbox').prop('checked', true);
+                $('#customMenuName').val(menu.customMenuName);
+                $('#customMenuInput').val(menu.customMenuName);
+                $('#customMenuInput').prop('disabled', false);
+              }
+            });
+          });
+
+          // 체크박스 변경 시 선택된 메뉴 ID 배열 업데이트
+          $('input[name="reviewMenuList"]').on('change', function () {
+            if ($(this).is(':checked')) {
+              selectedMenuIds.push(parseInt($(this).val()));
+            } else {
+              selectedMenuIds = selectedMenuIds.filter(function (id) {
+                return id !== parseInt($(this).val());
+              }, this);
+            }
+          });
+
+          // 기타 메뉴 체크박스 변경 시 customMenuInput 활성화/비활성화
+          $('#customMenuCheckbox').on('change', function () {
+            $('#customMenuInput').prop('disabled', !$(this).is(':checked'));
+            if (!$(this).is(':checked')) {
+              $('#customMenuInput').val('');
+              $('#customMenuName').val('');
+            }
+          });
+
+
+
+
+
+
+
+
+          $('#updateReviewModal').modal('show');
+        },
+        error: function (xhr) {
+          console.error('AJAX 통신 실패', xhr);
+          alert('리뷰 정보를 불러오는데 실패했습니다.');
+        }
+      })
+    }
+
+    function submitUpdate() {
+      const reviewId = $('#updateReviewModal').data('review-id');
+      console.log(reviewId);
+    }
+
+
+
+
+
+
+
+
+
+    // 정렬 및 페이징 기능
     function latestList(sortBy, page) {
       const restaurantId = /*[[${restaurant.id}]]*/ ''; // 레스토랑 ID
       const pageUrl = `/review/allreview/${restaurantId}/sort`; // 서버 API URL
@@ -701,7 +946,7 @@
                         </button>
                         <button type="button" class="btn btn-outline-danger mr-2" data-toggle="modal" data-target="#reportModal" data-review-id="${review.id}" onclick="showReportReasons(this)">신고</button> 
                         ${review.canEdit ? `
-                          <a class="btn btn-outline-secondary mr-2" href="/review/update/${review.id}">수정</a>
+                          <button type="button" class="btn btn-outline-secondary mr-2" data-toggle="modal" data-target="#updateReviewModal" data-review-id="${review.id}" onclick="showUpdateReview(this)">수정</button>
                           <button type="button" class="btn btn-outline-secondary mr-2" data-bs-toggle="button" onclick="deleteReview(this)">삭제</button>
                         ` : ''}
                       </div>

@@ -156,7 +156,6 @@ public class RestaurantController {
 		String memberId = loginMember.getMember_id();
 		Sort sort = Sort.by(Sort.Direction.DESC, sortBy); 
 		Pageable pageable = PageRequest.of(page, 5, sort);
-		log.info("********************************pageable:{}", pageable);
 		Page<Review> reviewsByRestaurant = reviewService.sortReview(restaurant_id, memberId, pageable, sortBy);
 		model.addAttribute("reviewsByRestaurant", reviewsByRestaurant.getContent()); 
 		model.addAttribute("currentPage", page); 

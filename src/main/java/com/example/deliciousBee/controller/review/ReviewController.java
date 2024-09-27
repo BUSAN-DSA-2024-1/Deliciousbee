@@ -260,6 +260,16 @@ public class ReviewController {
 		return "/review/update";
 	}
 
+	@GetMapping("/get/{reviewId}")
+	@ResponseBody
+	public ResponseEntity<Review> getReview(@PathVariable("reviewId") Long reviewId) {
+		Review review = reviewService.findReview(reviewId);
+		if (review == null) {
+			return ResponseEntity.notFound().build();
+		}
+		return ResponseEntity.ok(review); 
+	}
+
 	// 리뷰 수정
 	@PostMapping("/update")
 	public String postUpdateReview(@Validated @ModelAttribute ReviewUpdateForm reviewUpdateForm, BindingResult result,
@@ -282,19 +292,19 @@ public class ReviewController {
 
 	@GetMapping("/allreview/{restaurant_id}/sort")
 	@ResponseBody
-	public ResponseEntity<Map<String, Object>> getSortAllReview(@PathVariable("restaurant_id") Long restaurant_id
-			,@RequestParam(required = false, defaultValue = "modifiedAt", value = "sortBy") String sortBy
-			,@AuthenticationPrincipal BeeMember loginMember
-			,@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
+	public ResponseEntity<Map<String, Object>> getSortAllReview(@PathVariable("restaurant_id") Long restaurant_id,
+			@RequestParam(required = false, defaultValue = "modifiedAt", value = "sortBy") String sortBy,
+			@AuthenticationPrincipal BeeMember loginMember,
+			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
 		try {
 			String memberId = loginMember.getMember_id();
 			PageRequest pageble = PageRequest.of(page - 1, 5);
 			Page<Review> reviews = reviewService.sortReview(restaurant_id, memberId, pageble, sortBy);
 			Map<String, Object> response = new HashMap<>();
-	        response.put("reviews", reviews.getContent());
-	        response.put("currentPage", reviews.getNumber() + 1); 
-	        response.put("totalPages", reviews.getTotalPages());
-	        return ResponseEntity.ok(response);
+			response.put("reviews", reviews.getContent());
+			response.put("currentPage", reviews.getNumber() + 1);
+			response.put("totalPages", reviews.getTotalPages());
+			return ResponseEntity.ok(response);
 
 		} catch (Exception e) {
 			log.error("서버 처리 중 오류 발생", e);
