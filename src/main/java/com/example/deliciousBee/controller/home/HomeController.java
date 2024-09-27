@@ -32,5 +32,9 @@ public class HomeController {
 		return "shop/index";
 	}
 
-	
+	@GetMapping("/admin")
+	public String adminPage() {
+		return "admin/adminpage"; //
+	}
+
 }
