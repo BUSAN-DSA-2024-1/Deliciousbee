@@ -702,13 +702,17 @@
     function submitReport() {
       const reviewId = $('#reportModal').data('review-id');
       const reason = $('#reportReason').val();
-      console.log(reviewId);
+      const contents = $('#reportContents').val(); // 예: 추가된 내용
 
       $.ajax({
         url: 'report/submit/' + reviewId,
         type: 'POST',
         contentType: "application/json",
-        data: JSON.stringify({ "reason": reason }),
+        data: JSON.stringify({
+          "reason": reason,
+          "contents": contents
+          // 필요한 경우 추가 필드
+        }),
         success: function (data) {
           if (data.success) {
             alert('신고가 제출되었습니다');
@@ -725,6 +729,7 @@
         }
       });
     }
+
 
 
 
@@ -752,7 +757,7 @@
           const attachedFile = data.attachedFile || data.attached_file;
           if(attachedFile) {
             $('updateReviewAttachedFileName').text(attachedFile);
-          } 
+          }
           else {
             $('updateReviewAttachedFileName').text('');
           }
@@ -858,7 +863,7 @@
           // 서버에서 받은 리뷰 목록을 렌더링
           if (Array.isArray(response.reviews)) {
             response.reviews.forEach(function (review) {
-              // 첨부파일 처리 
+              // 첨부파일 처리
               let attachedFileHTML = '';
               if (review.attachedFile && review.attachedFile.length > 0) {
                 review.attachedFile.forEach(function (file) {
@@ -944,7 +949,7 @@
                         <button type="button" class="btn btn-success mr-2 like-button" onclick="likeReview(this)" data-review-id="${review.id}">
                           좋아요 <span class="like-count">${review.likeCount}</span>
                         </button>
-                        <button type="button" class="btn btn-outline-danger mr-2" data-toggle="modal" data-target="#reportModal" data-review-id="${review.id}" onclick="showReportReasons(this)">신고</button> 
+                        <button type="button" class="btn btn-outline-danger mr-2" data-toggle="modal" data-target="#reportModal" data-review-id="${review.id}" onclick="showReportReasons(this)">신고</button>
                         ${review.canEdit ? `
                           <button type="button" class="btn btn-outline-secondary mr-2" data-toggle="modal" data-target="#updateReviewModal" data-review-id="${review.id}" onclick="showUpdateReview(this)">수정</button>
                           <button type="button" class="btn btn-outline-secondary mr-2" data-bs-toggle="button" onclick="deleteReview(this)">삭제</button>
