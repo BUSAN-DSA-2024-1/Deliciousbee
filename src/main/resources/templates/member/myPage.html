@@ -20,7 +20,7 @@
 			src="/myPageImage/no-main-image.png" alt="기본 이미지"
 			class="default-main-image"> <img
 			th:unless="${myPage.mainImage == null}"
-			th:src="@{'/loginMember/display?filename=' + ${loginMember.profileImage.saved_filename}}"
+			th:src="@{'/loginMember/display?filename=' + ${loginMember.Image.saved_filename}}"
 			alt="메인 이미지">
 		<!-- 프로필 이미지 -->
 		<div class="profile-image">
@@ -28,7 +28,7 @@
 				src="/myPageImage/no-profil.png" alt="기본 이미지"
 				class="my-profile-image"> <img
 				th:unless="${myPage.beeMember.profileImage == null}"
-				th:src="@{'/member/display?filename=' + ${loginMember.profileImage.saved_filename}}"
+				th:src="@{'/member/display?filename=' + ${myPage.beeMember.profileImage.saved_filename}}"
 				alt="메인 이미지" class="my-profile-image">
 		</div>
 	</div>
