@@ -191,32 +191,24 @@ public class MyPageController {
 
 	// **********************마이페이지에서 수정하기*********************
 	@PostMapping("updateMyPage")
-	public String updateMyPage(@AuthenticationPrincipal BeeMember loginMember,
-	                           @Validated BindingResult result,
-	                           RedirectAttributes redirectAttributes,
-	                           HttpServletRequest request,
-	                           @RequestParam(name = "introduce") String introduce,
-	                           @RequestParam(name = "isFileRemoved", required = false, defaultValue = "false") boolean isFileRemoved,
-	                           @RequestParam(name = "file", required = false) MultipartFile file,
-	                           Model model) {
+    public String updateMyPage(@AuthenticationPrincipal BeeMember loginMember,
+                               @RequestParam(name = "introduce") String introduce,
+                               @RequestParam(name = "isFileRemoved", required = false, defaultValue = "false") boolean isFileRemoved,
+                               @RequestParam(name = "file", required = false) MultipartFile file,
+                               RedirectAttributes redirectAttributes) {
 
-		  log.info("확인용 저장전 {}", file);
-		  log.info("확인용 저장전 {}", loginMember.getMyPage());
-		if (result.hasErrors()) {
-			return "member/myPage";
-		}
-		if (loginMember == null) {
-			return "redirect:/member/login";
-		}
+        if (loginMember == null) {
+            return "redirect:/member/login";
+        }
 
-		try {
-	        myPageService.updateMyPage(introduce, isFileRemoved, file, loginMember);
-	        redirectAttributes.addFlashAttribute("message", "마이페이지가 성공적으로 수정되었습니다.");
-	    } catch (IOException e) {
-	        redirectAttributes.addFlashAttribute("error", "파일 업로드 중 오류가 발생했습니다.");
-	    }
-	    return "redirect:/member/myPage"; // 업데이트 후 리디렉션
-	}
+        try {
+            myPageService.updateMyPage(introduce, isFileRemoved, file, loginMember);
+            redirectAttributes.addFlashAttribute("message", "마이페이지가 성공적으로 수정되었습니다.");
+        } catch (IOException e) {
+            redirectAttributes.addFlashAttribute("error", "파일 업로드 중 오류가 발생했습니다.");
+        }
+        return "redirect:/member/myPage";
+    }
 	// *******************사람들 마이페이지 리스트 **********************
 	@GetMapping("myPageList")
 	public String myPageList(@RequestParam(name = "searchText", defaultValue = "") String searchText,

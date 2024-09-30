@@ -93,6 +93,8 @@ public class BeeMemberService implements UserDetailsService {
 
 			
 			 MemberAttachedFile attachedFile = findFileByMemberId(findMember);
+			 log.info("확인용: {}", attachedFile);
+			 log.info("확인용: {}", findMember);
 			    if (attachedFile != null) {
 			        if (file != null && file.getSize() > 0) {
 			            try {

@@ -64,35 +64,31 @@ public class MyPageService implements UserDetailsService {
 	}
 	//마이페이지 수정
 	@Transactional
-	public void updateMyPage(String introduce, boolean isFileRemoved, MultipartFile file, BeeMember loginMember) throws IOException {
-		 log.info("확인용 {}", introduce, file);
-		 MyPage myPage = loginMember.getMyPage();
-		 log.info("확인용 {}", myPage);
-		    myPage.setIntroduce(introduce);
+    public void updateMyPage(String introduce, boolean isFileRemoved, MultipartFile file, BeeMember loginMember) throws IOException {
+        MyPage myPage = loginMember.getMyPage();
+        myPage.setIntroduce(introduce);
 
-		    if (isFileRemoved) {
-	            if (myPage.getMainImage() != null) { // Check if a file exists before removing
-	                myPageFileService.deleteFile(myPage.getMainImage().getSaved_filename());
-	                myPageFileRepository.delete(myPage.getMainImage()); // DB에서도 삭제
-	                myPage.setMainImage(null);
-	            }
-	        }
+        if (isFileRemoved) {
+            if (myPage.getMainImage() != null) {
+                myPageFileService.deleteFile(myPage.getMainImage().getSaved_filename());
+                myPageFileRepository.delete(myPage.getMainImage());
+                myPage.setMainImage(null);
+            }
+        }
 
-	        if (file != null && !file.isEmpty()) {
-	            // 기존 파일 삭제
-	            if (myPage.getMainImage() != null) {
-	                myPageFileService.deleteFile(myPage.getMainImage().getSaved_filename());
-	                myPageFileRepository.delete(myPage.getMainImage()); // DB에서도 삭제
-	            }
-	            log.info("확인용 저장전 {}", file);
-	            MyPageAttachedFile newFile = myPageFileService.saveFile(file);
-	            myPage.setMainImage(newFile);
-	            log.info("확인용 {}", newFile);
-	            newFile.setMyPage(myPage); // myPage와 AttachedFile 연결
-	        }
+        if (file != null && !file.isEmpty()) {
+            // 기존 파일 삭제
+            if (myPage.getMainImage() != null) {
+                myPageFileService.deleteFile(myPage.getMainImage().getSaved_filename());
+                myPageFileRepository.delete(myPage.getMainImage());
+            }
+            MyPageAttachedFile newFile = myPageFileService.saveFile(file);
+            myPage.setMainImage(newFile);
+            newFile.setMyPage(myPage);
+        }
 
-		    myPageRepository.save(myPage);
-		}
+        myPageRepository.save(myPage);
+    }
 
 		private void removeExistingFile(MyPage myPage) {
 		    if (myPage.getMainImage() != null) {
