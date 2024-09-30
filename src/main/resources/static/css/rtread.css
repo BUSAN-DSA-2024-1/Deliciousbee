@@ -3,10 +3,43 @@ body {
 	font-family: 'Noto Sans KR', sans-serif;
 }
 
+a {
+	padding: 0;
+}
+
+.card-body {
+    border-top: 1px solid rgba(0,0,0,.1);
+}
+
+.image-gallery {
+      justify-content: center; /* cardking 내부 요소 가로 중앙 정렬 */
+       align-items: center; /* 이미지를 수직으로도 중앙 정렬 */
+}
+
 .card-img-top {
-	height: 300px;
-	object-fit: cover;
-	border-radius: 0;
+	width:300px;
+    overflow:hidden;
+    margin:0 auto;	 
+}
+
+.imagination {
+	width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.cardking {
+  height: 150px;
+  display: flex; /* cardking 자체를 flex container로 유지 */
+  border-radius: 0;
+  justify-content: center; /* cardking 내부 요소 가로 중앙 정렬 */
+}
+
+.image-container { 
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* 이미지를 수직으로도 중앙 정렬 */
 }
 
 .sidebar-card {
@@ -29,7 +62,7 @@ body {
 }
 
 .card-header {
-	background-color: #61686c !important;
+	background-color: #343A40 !important;
 	color: white;
 }
 
@@ -85,10 +118,11 @@ body {
 	text-align: left;
 }
 
-.button-container {
-	display: flex;
-	align-items: center;
-	margin-top: 10px;
+.I-am-ironMan .button-container {
+	justify-content: space-between;
+	    font-size: .875em;
+     font-weight: 400; 
+    color: #6c757d !important;
 }
 
 .d-flex {
@@ -183,8 +217,9 @@ body {
 	line-height: 30px;
 	padding: 0px 12px;
 	font-size: 14px;
-	background: #efefef;
-	border-radius: 15px;
+	border: 1px solid #343A40;
+	box-shadow: 0.2px 0.2px 2px #343A40;
+	border-radius: 10px;
 	display: inline-block;
 	margin-right: 6px;
 	margin-bottom: 10px;
@@ -217,139 +252,149 @@ body {
 	font-size: 14px;
 }
 
+.star-menu {
+  display: flex; /* star-menu를 flexbox 컨테이너로 설정 */
+  justify-content: space-between; /* 요소들을 좌우로 최대한 넓게 배치 */
+  align-items: center; /* 요소들을 세로 중앙 정렬 (선택 사항) */
+}
+
+.kind-heart {
+  display: flex; /* star-menu를 flexbox 컨테이너로 설정 */
+  justify-content: space-between; /* 요소들을 좌우로 최대한 넓게 배치 */
+  align-items: center; /* 요소들을 세로 중앙 정렬 (선택 사항) */
+}
 
 /* 메뉴 컨테이너 스타일 */
-.menu-date  {
-    display: flex;
-    justify-content: space-between; /* 양쪽 끝으로 정렬 */
-    align-items: center; /* 세로 중앙 정렬 */
+.menu-date {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .menu-container {
-    position: relative;
-    display: inline-block;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .menu-button1 {
-    background-color: transparent; 
-    border: transparent;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.dropmenu-mother {
-	width: 80px;
-	cursor: pointer;
+  background-color: transparent;
+  border: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  padding: 0;
 }
 
 .dropdown-menu {
-    display: none;
-    position: absolute;
-    width: 30px !important; 
-    left: 30%; 
-    top: 100%;
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 5px; /* 패딩을 없애서 크기를 줄임 */
-    list-style: none;
-    margin: 0;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    text-align: center; /* 글씨를 가운데 정렬 */
+  display: none;
+  position: absolute;
+  min-width: 3rem;
+  right: 0;
+  top: 100%;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 0;
+  list-style: none;
+  margin: 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  overflow: hidden;
 }
 
-/* 드롭다운 메뉴 항목 스타일 */
 .dropdown-menu li {
-    padding: 8px 0; /* 패딩을 수직으로만 설정하여 크기를 줄임 */
+  width: 100%;
 }
 
-/* 드롭다운 메뉴 링크 스타일 */
-.dropdown-menu li a {
-    text-decoration: none;
-    color: #333;
-    display: block;
-    width: 100%; /* 전체 너비를 사용하여 클릭 가능 영역을 넓힘 */
-    text-align: center; /* 링크의 글씨를 가운데 정렬 */
+.dropdown-menu li a,
+.dropdown-menu li button {
+  display: block;
+  width: 100%;
+  padding: 8px 0; /* 패딩을 줄여 더 컴팩트하게 */
+  text-align: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
+  text-decoration: none;
+  font-size: 12px; /* 글꼴 크기를 줄임 */
+  transition: background-color 0.2s;
+  white-space: nowrap; /* 텍스트가 줄바꿈되지 않도록 */
+  overflow: hidden;
+  text-overflow: ellipsis; /* 텍스트가 너무 길면 ...으로 표시 */
 }
 
-/* 드롭다운 항목 hover 스타일 */
-.dropdown-menu li:hover {
-    background-color: #f0f0f0;
+.dropdown-menu li a:hover,
+.dropdown-menu li button:hover {
+  background-color: #f0f0f0;
+}
+
+/* 구분선 스타일 */
+.dropdown-menu li:not(:last-child) {
+  border-bottom: 1px solid #e0e0e0;
 }
 
 /* 메뉴 버튼 클릭 시 드롭다운 메뉴 표시 */
 .menu-container.open .dropdown-menu {
-    display: flex;
-    
-}
-
-.heart input {
-  position: absolute;
-  opacity: 0;
-  cursor: pointer;
-  height: 0;
-  width: 0;
-}
-
-.heart {
   display: block;
-  position: relative;
-  cursor: pointer;
-  font-size: 20px;
-  user-select: none;
-  transition: 100ms;
 }
 
-.checkmark {
+.con-like {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.like-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.like-button .checkmark {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
+.like-button .checkmark svg {
+  position: absolute;
   top: 0;
   left: 0;
-  height: 2em;
-  width: 2em;
-  transition: 100ms;
-  animation: dislike_effect 400ms ease;
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.3s;
 }
 
-.heart input:checked ~ .checkmark path {
-  fill: #FF5353;
-  stroke-width: 0;
+.like-button .checkmark .outline {
+  opacity: 1;
 }
 
-.heart input:checked ~ .checkmark {
-  animation: like_effect 400ms ease;
+.like-button .checkmark .filled {
+  opacity: 0;
+  fill: #ff4136;
 }
 
-.heart:hover {
-  transform: scale(1.1);
+.like-button.liked .checkmark .outline {
+  opacity: 0;
 }
 
-@keyframes like_effect {
-  0% {
-    transform: scale(0);
-  }
-
-  50% {
-    transform: scale(1.2);
-  }
-
-  100% {
-    transform: scale(1);
-  }
+.like-button.liked .checkmark .filled {
+  opacity: 1;
 }
 
-@keyframes dislike_effect {
-  0% {
-    transform: scale(0);
-  }
-
-  50% {
-    transform: scale(1.2);
-  }
-
-  100% {
-    transform: scale(1);
-  }
+.like-count {
+  font-size: 14px;
 }
 .nav-review-paging ul {
 	display: flex;
