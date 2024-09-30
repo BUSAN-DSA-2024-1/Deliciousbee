@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,15 +9,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/index.css">
     <style>
-
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* 배경 어둡게 */
-            display: none; /* 초기에는 숨김 */
+            background-color: rgba(0, 0, 0, 0.5);
+            /* 배경 어둡게 */
+            display: none;
+            /* 초기에는 숨김 */
         }
 
         .review-modal-container {
@@ -31,14 +33,16 @@
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%); /* 화면 중앙에 위치 */
-            z-index: 1000; /* 다른 요소보다 위에 표시 */
+            transform: translate(-50%, -50%);
+            /* 화면 중앙에 위치 */
+            z-index: 1000;
+            /* 다른 요소보다 위에 표시 */
         }
 
         .reviewUp-title {
             text-align: center;
             font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-            "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+                "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
             margin: 10px 0 30px 0;
             font-size: 28px;
             font-weight: 800;
@@ -49,7 +53,7 @@
             margin-bottom: 5px;
             font-size: 9px;
             font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-            "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+                "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
         }
 
         .review-modal-inner-form {
@@ -72,7 +76,7 @@
         .form-btn {
             padding: 10px 15px;
             font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-            "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+                "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
             border-radius: 20px;
             border: 0 !important;
             outline: 0 !important;
@@ -101,13 +105,13 @@
             box-sizing: border-box;
             padding: 10px 15px;
             box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
-            rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+                rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
             font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-            "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+                "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
             font-size: 11px;
             gap: 5px;
         }
@@ -119,8 +123,10 @@
             box-sizing: border-box;
             padding: 12px 15px;
             height: 120px;
-            white-space: pre-wrap; /* 텍스트 줄 바꿈 및 공백 유지 */
-            resize: none; /* 크기 조절 방지 */
+            white-space: pre-wrap;
+            /* 텍스트 줄 바꿈 및 공백 유지 */
+            resize: none;
+            /* 크기 조절 방지 */
         }
 
 
@@ -128,19 +134,20 @@
             border: 2px solid #747474;
         }
 
-        .modal-title{
+        .modal-title {
             margin: 0;
             margin-left: 4px;
         }
 
-        .modal-image-container{
+        .modal-image-container {
             width: 290px;
         }
 
-        .modal-image{
+        .modal-image {
             width: 140px;
             height: 100px;
         }
+
         body {
             font-family: 'Noto Sans KR', sans-serif;
             margin: 0;
@@ -196,7 +203,8 @@
             margin-bottom: 2rem;
         }
 
-        th, td {
+        th,
+        td {
             border: 1px solid #ddd;
             padding: 1rem;
             text-align: left;
@@ -222,105 +230,106 @@
         }
     </style>
 </head>
+
 <body>
 
 
-<div class="container">
-    <h1>관리자 페이지</h1>
+    <div class="container">
+        <h1>관리자 페이지</h1>
 
-    <div class="tab-buttons">
-        <button onclick="loadContent('pendingRestaurants')">등록된 점포</button>
-        <button onclick="loadContent('reportedReviews')">신고된 리뷰</button>
-        <button onclick="loadContent('reportedRestaurants')">신고된 레스토랑</button>
+        <div class="tab-buttons">
+            <button onclick="loadContent('pendingRestaurants')">등록된 점포</button>
+            <button onclick="loadContent('reportedReviews')">신고된 리뷰</button>
+            <button onclick="loadContent('reportedRestaurants')">신고된 레스토랑</button>
+        </div>
+
+        <div class="content-section" id="content">
+            <!-- 콘텐츠가 여기에 로드됩니다. -->
+        </div>
+
+
     </div>
 
-    <div class="content-section" id="content">
-        <!-- 콘텐츠가 여기에 로드됩니다. -->
+    <!-- 레스토랑 신고 관리 모달 -->
+    <div id="restaurantReportModal" class="restaurant-report-modal-container" style="display: none;">
+        <p class="modal-title">레스토랑 신고 관리</p>
+        <div class="modal-content">
+            <p><strong>신고 내용:</strong> <span id="reportContent"></span></p>
+            <p><strong>레스토랑명:</strong> <span id="restaurantName"></span></p>
+            <p><strong>신고자:</strong> <span id="reporterName"></span></p>
+            <p><strong>신고 날짜:</strong> <span id="reportDate"></span></p>
+            <p><strong>신고 상태:</strong> <span id="reportStatus"></span></p>
+        </div>
+        <div class="modal-actions">
+            <button class="approve-btn" onclick="updateReportStatus(currentRestaurantReportId, 'RESOLVED')">승인</button>
+            <button class="reject-btn" onclick="updateReportStatus(currentRestaurantReportId, 'REJECTED')">거부</button>
+            <button class="close-btn" onclick="closeRestaurantReportModal()">닫기</button>
+        </div>
     </div>
 
+    <script>
+        let currentRestaurantReportId = null; // 현재 관리 중인 레스토랑 신고 ID
 
-</div>
+        // 로그인 모달 제어 (기존 코드 유지)
+        document.addEventListener('DOMContentLoaded', function () {
+            var loginButton = document.getElementById('loginButton');
+            if (loginButton) {
+                loginButton.addEventListener('click', function (event) {
+                    event.preventDefault(); // 링크 기본 동작 방지
+                    var loginModal = document.getElementById('loginModal');
+                    if (loginModal) {
+                        loginModal.style.display = 'block';
+                    } else {
+                        console.error('loginModal 요소를 찾을 수 없습니다.');
+                    }
+                });
+            } else {
+                console.error('loginButton 요소를 찾을 수 없습니다.');
+            }
+        });
 
-<!-- 레스토랑 신고 관리 모달 -->
-<div id="restaurantReportModal" class="restaurant-report-modal-container" style="display: none;">
-    <p class="modal-title">레스토랑 신고 관리</p>
-    <div class="modal-content">
-        <p><strong>신고 내용:</strong> <span id="reportContent"></span></p>
-        <p><strong>레스토랑명:</strong> <span id="restaurantName"></span></p>
-        <p><strong>신고자:</strong> <span id="reporterName"></span></p>
-        <p><strong>신고 날짜:</strong> <span id="reportDate"></span></p>
-        <p><strong>신고 상태:</strong> <span id="reportStatus"></span></p>
-    </div>
-    <div class="modal-actions">
-        <button class="approve-btn" onclick="updateReportStatus(currentRestaurantReportId, 'RESOLVED')">승인</button>
-        <button class="reject-btn" onclick="updateReportStatus(currentRestaurantReportId, 'REJECTED')">거부</button>
-        <button class="close-btn" onclick="closeRestaurantReportModal()">닫기</button>
-    </div>
-</div>
-
-<script>
-    let currentRestaurantReportId = null; // 현재 관리 중인 레스토랑 신고 ID
-
-    // 로그인 모달 제어 (기존 코드 유지)
-    document.addEventListener('DOMContentLoaded', function() {
-        var loginButton = document.getElementById('loginButton');
-        if (loginButton) {
-            loginButton.addEventListener('click', function(event) {
-                event.preventDefault(); // 링크 기본 동작 방지
-                var loginModal = document.getElementById('loginModal');
-                if (loginModal) {
-                    loginModal.style.display = 'block';
-                } else {
-                    console.error('loginModal 요소를 찾을 수 없습니다.');
-                }
-            });
-        } else {
-            console.error('loginButton 요소를 찾을 수 없습니다.');
+        // 닫기 버튼 클릭 시 모달 닫기 (기존 코드 수정)
+        function closeModal() {
+            document.getElementById('loginModal').style.display = 'none';
         }
-    });
 
-    // 닫기 버튼 클릭 시 모달 닫기 (기존 코드 수정)
-    function closeModal() {
-        document.getElementById('loginModal').style.display = 'none';
-    }
-
-    // 모달 외부 영역 클릭 시 모달 닫기 (기존 코드 유지)
-    window.onclick = function(event) {
-        let modal = document.getElementById('loginModal');
-        if (event.target == modal) {
-            modal.style.display = 'none';
+        // 모달 외부 영역 클릭 시 모달 닫기 (기존 코드 유지)
+        window.onclick = function (event) {
+            let modal = document.getElementById('loginModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
         }
-    }
 
-    function loadContent(contentType) {
+        function loadContent(contentType) {
 
-        // 활성화된 탭 버튼 스타일 변경
-        document.querySelectorAll('.tab-buttons button').forEach(button => button.classList.remove('active'));
-        document.querySelector(`.tab-buttons button[onclick="loadContent('${contentType}')"]`).classList.add('active');
+            // 활성화된 탭 버튼 스타일 변경
+            document.querySelectorAll('.tab-buttons button').forEach(button => button.classList.remove('active'));
+            document.querySelector(`.tab-buttons button[onclick="loadContent('${contentType}')"]`).classList.add('active');
 
-        // AJAX 요청을 사용하여 콘텐츠 로드
-        switch (contentType) {
-            case 'pendingRestaurants':
-                // AJAX 요청
-                fetch('/admin/restaurants/pending', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    credentials: 'include' // 쿠키 포함
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
-                        }
-                        return response.json();
+            // AJAX 요청을 사용하여 콘텐츠 로드
+            switch (contentType) {
+                case 'pendingRestaurants':
+                    // AJAX 요청
+                    fetch('/admin/restaurants/pending', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        credentials: 'include' // 쿠키 포함
                     })
-                    .then(data => {
-                        console.log('미승인 레스토랑 목록:', data);
-                        if (data.success) {
-                            let rows = '';
-                            data.pending.forEach(restaurant => {
-                                rows += `
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('미승인 레스토랑 목록:', data);
+                            if (data.success) {
+                                let rows = '';
+                                data.pending.forEach(restaurant => {
+                                    rows += `
                                 <tr>
                                     <td>${restaurant.id}</td>
                                     <td>${restaurant.name}</td>
@@ -329,8 +338,8 @@
                                     <td><button onclick="approveRestaurant(${restaurant.id})" class="btn btn-success">승인</button></td>
                                 </tr>
                             `;
-                            });
-                            const content = `
+                                });
+                                const content = `
                             <table>
                                 <thead>
                                     <tr>
@@ -346,39 +355,39 @@
                                 </tbody>
                             </table>
                         `;
-                            document.getElementById('content').innerHTML = content;
-                        } else {
-                            // 오류 처리
-                            alert("미승인 레스토랑 목록을 가져오는데 실패했습니다.");
-                            console.error('Error fetching pending restaurants:', data.message);
-                        }
+                                document.getElementById('content').innerHTML = content;
+                            } else {
+                                // 오류 처리
+                                alert("미승인 레스토랑 목록을 가져오는데 실패했습니다.");
+                                console.error('Error fetching pending restaurants:', data.message);
+                            }
+                        })
+                        .catch(error => {
+                            alert("오류가 발생했습니다. 다시 시도해주세요.");
+                            console.error('오류 발생:', error);
+                        });
+                    break;
+                case 'reportedReviews':
+                    // AJAX 요청
+                    fetch('/admin/reports/all', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        credentials: 'include' // 쿠키 포함
                     })
-                    .catch(error => {
-                        alert("오류가 발생했습니다. 다시 시도해주세요.");
-                        console.error('오류 발생:', error);
-                    });
-                break;
-            case 'reportedReviews':
-                // AJAX 요청
-                fetch('/admin/reports/all', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    credentials: 'include' // 쿠키 포함
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('신고된 리뷰 목록:', data);
-                        if (data.success) {
-                            let rows = '';
-                            data.reports.forEach(report => {
-                                rows += `
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('신고된 리뷰 목록:', data);
+                            if (data.success) {
+                                let rows = '';
+                                data.reports.forEach(report => {
+                                    rows += `
                                 <tr>
                                     <td>${report.reviewId}</td>
                                     <td>${report.reason}</td>
@@ -386,8 +395,8 @@
                                    <td><button onclick="openReviewModal(${report.id}, ${report.reviewId})" data-report-id="${report.id}">관리</button></td>
                                 </tr>
                             `;
-                            });
-                            const content = `
+                                });
+                                const content = `
                             <table>
                                 <thead>
                                     <tr>
@@ -402,41 +411,41 @@
                                 </tbody>
                             </table>
                         `;
-                            document.getElementById('content').innerHTML = content;
-                        } else {
-                            // 오류 처리
-                            alert("신고된 리뷰 목록을 가져오는데 실패했습니다.");
-                            console.error('Error fetching reported reviews:', data.message);
-                        }
+                                document.getElementById('content').innerHTML = content;
+                            } else {
+                                // 오류 처리
+                                alert("신고된 리뷰 목록을 가져오는데 실패했습니다.");
+                                console.error('Error fetching reported reviews:', data.message);
+                            }
+                        })
+                        .catch(error => {
+                            alert("오류가 발생했습니다. 다시 시도해주세요.");
+                            console.error('오류 발생:', error);
+                        });
+                    break;
+                case 'reportedRestaurants':
+                    // AJAX 요청
+                    fetch('/admin/restaurant-reports', { // 올바른 엔드포인트로 수정
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        credentials: 'include' // 쿠키 포함
                     })
-                    .catch(error => {
-                        alert("오류가 발생했습니다. 다시 시도해주세요.");
-                        console.error('오류 발생:', error);
-                    });
-                break;
-            case 'reportedRestaurants':
-                // AJAX 요청
-                fetch('/admin/restaurant-reports', { // 올바른 엔드포인트로 수정
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    credentials: 'include' // 쿠키 포함
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('신고된 레스토랑 목록:', data);
-                        if (data.success) {
-                            let rows = '';
-                            data.reports.forEach(report => {
-                                console.log('Processing report:', report); // 디버깅용 로그
-                                if (report && report.id) {
-                                    rows += `
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('신고된 레스토랑 목록:', data);
+                            if (data.success) {
+                                let rows = '';
+                                data.reports.forEach(report => {
+                                    console.log('Processing report:', report); // 디버깅용 로그
+                                    if (report && report.id) {
+                                        rows += `
                                 <tr>
                                     <td>${report.restaurantId}</td>
                                     <td>${report.restaurantName}</td>
@@ -444,11 +453,11 @@
                                     <td><button onclick="handleReport(${report.id}, ${report.restaurantId})">관리</button></td>
                                 </tr>
                             `;
-                                } else {
-                                    console.error('Invalid report data:', report);
-                                }
-                            });
-                            const content = `
+                                    } else {
+                                        console.error('Invalid report data:', report);
+                                    }
+                                });
+                                const content = `
                         <table>
                             <thead>
                                 <tr>
@@ -463,297 +472,236 @@
                             </tbody>
                         </table>
                     `;
-                            document.getElementById('content').innerHTML = content;
+                                document.getElementById('content').innerHTML = content;
+                            } else {
+                                // 오류 처리
+                                alert("신고된 레스토랑 목록을 가져오는데 실패했습니다.");
+                                console.error('Error fetching reported restaurants:', data.message);
+                            }
+                        })
+                        .catch(error => {
+                            alert("오류가 발생했습니다. 다시 시도해주세요.");
+                            console.error('오류 발생:', error);
+                        });
+                    break;
+                default:
+                    document.getElementById('content').innerHTML = '<p>Invalid content type.</p>';
+            }
+        }
+
+        function approveRestaurant(restaurantId) {
+            if (confirm("승인하시겠습니까?")) {
+                fetch(`/admin/restaurant/approve/${restaurantId}`, { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("레스토랑이 성공적으로 승인되었습니다.");
+                            loadContent('pendingRestaurants');
+                            console.log("성공");
                         } else {
-                            // 오류 처리
-                            alert("신고된 레스토랑 목록을 가져오는데 실패했습니다.");
-                            console.error('Error fetching reported restaurants:', data.message);
+                            alert("레스토랑 승인에 실패했습니다. 다시 시도해주세요.");
+                            console.log("왜");
+                            console.error('승인 실패:', data.message);
                         }
                     })
                     .catch(error => {
                         alert("오류가 발생했습니다. 다시 시도해주세요.");
                         console.error('오류 발생:', error);
                     });
-                break;
-            default:
-                document.getElementById('content').innerHTML = '<p>Invalid content type.</p>';
+            }
         }
-    }
 
-    function approveRestaurant(restaurantId){
-        // 사용자에게 승인 확인
-        if (confirm("승인하시겠습니까?")) {
-            fetch(`/admin/restaurants/${restaurantId}/approve`, { method: 'POST' })
+        // ===================== 리뷰 관리 모달 관련 함수 ===================== //
+
+        function openReviewModal(reportId, reviewId) { // reviewId 인자 추가
+            currentReportId = reportId;
+            currentReviewId = reviewId;
+            console.log(reviewId); // 이 값을 확인해보세요
+
+            // 모달 표시
+            const reviewModal = document.getElementById("reviewModal");
+            reviewModal.style.display = "block";
+
+            // 전달받은 reviewId 사용
+            fetch(`/admin/reviews/${reviewId}`, { method: 'GET' })
                 .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // 승인 성공 시 콘텐츠 새로고침
-                        alert("레스토랑이 성공적으로 승인되었습니다.");
-                        loadContent('pendingRestaurants');
-                        console.log("성공")
-                    } else {
-                        // 승인 실패 시 에러 메시지 표시
-                        alert("레스토랑 승인에 실패했습니다. 다시 시도해주세요.");
-                        console.log("왜")
-                        console.error('승인 실패:', data.message);
-                    }
-                })
-                .catch(error => {
-                    // 네트워크 또는 서버 오류 처리
-                    alert("오류가 발생했습니다. 다시 시도해주세요.");
-                    console.error('오류 발생:', error);
-                });
-        }
-    }
+                .then(review => {
+                    // 모달에 리뷰 정보 표시
+                    const modalInput = document.querySelector(".modal-input");
+                    const inputbox = document.querySelector(".inputbox");
+                    modalInput.value = review.userName; // 작성자 표시
+                    inputbox.value = review.reviewContents; // 리뷰 내용 표시
 
-    // ===================== 리뷰 관리 모달 관련 함수 ===================== //
+                    // 사진 데이터 설정 (review.attachedFile 에서 가져오기)
+                    const photos = review.attachedFile.map(file => file.saved_filename); // Review 엔티티의 attachedFile 필드 사용
 
-    function openReviewModal(reportId, reviewId) { // reviewId 인자 추가
-        currentReportId = reportId;
-        currentReviewId = reviewId;
-        console.log(reviewId); // 이 값을 확인해보세요
+                    // 사진을 표시할 컨테이너 요소
+                    const photoContainer = document.querySelector(".modal-image-container"); // 이미 존재하는 컨테이너 사용
+                    photoContainer.innerHTML = ""; // 기존 사진 삭제
 
-        // 모달 표시
-        const reviewModal = document.getElementById("reviewModal");
-        reviewModal.style.display = "block";
+                    // 초기 표시할 사진 개수 (필요에 따라 수정)
+                    const initialDisplayCount = Math.min(photos.length, 4);
 
-        // 전달받은 reviewId 사용
-        fetch(`/admin/reviews/${reviewId}`, { method: 'GET' })
-            .then(response => response.json())
-            .then(review => {
-                // 모달에 리뷰 정보 표시
-                const modalInput = document.querySelector(".modal-input");
-                const inputbox = document.querySelector(".inputbox");
-                modalInput.value = review.userName; // 작성자 표시
-                inputbox.value = review.reviewContents; // 리뷰 내용 표시
-
-                // 사진 데이터 설정 (review.attachedFile 에서 가져오기)
-                const photos = review.attachedFile.map(file => file.saved_filename); // Review 엔티티의 attachedFile 필드 사용
-
-                // 사진을 표시할 컨테이너 요소
-                const photoContainer = document.querySelector(".modal-image-container"); // 이미 존재하는 컨테이너 사용
-                photoContainer.innerHTML = ""; // 기존 사진 삭제
-
-                // 초기 표시할 사진 개수 (필요에 따라 수정)
-                const initialDisplayCount = Math.min(photos.length, 4);
-
-                // 사진 출력 함수
-                function displayPhotos(startIndex, endIndex) {
-                    for (let i = startIndex; i < endIndex; i++) {
-                        const photoUrl = photos[i];
-                        if (photoUrl) { // 이미지 URL이 있는 경우에만 처리
-                            const img = document.createElement("img");
-                            img.src = `/review/display?filename=${photoUrl}`; // 이미지 URL 설정
-                            img.alt = "리뷰 사진";
-                            img.classList.add("modal-image"); // 이미지에 클래스 추가
-                            photoContainer.appendChild(img);
+                    // 사진 출력 함수
+                    function displayPhotos(startIndex, endIndex) {
+                        for (let i = startIndex; i < endIndex; i++) {
+                            const photoUrl = photos[i];
+                            if (photoUrl) { // 이미지 URL이 있는 경우에만 처리
+                                const img = document.createElement("img");
+                                img.src = `/review/display?filename=${photoUrl}`; // 이미지 URL 설정
+                                img.alt = "리뷰 사진";
+                                img.classList.add("modal-image"); // 이미지에 클래스 추가
+                                photoContainer.appendChild(img);
+                            }
                         }
                     }
-                }
 
-                // 더보기 버튼 생성
-                const moreButton = document.createElement("button");
-                moreButton.textContent = "더보기";
-                moreButton.classList.add("more-button");
-                moreButton.style.marginTop = "10px"; // 간격 조절
+                    // 더보기 버튼 생성
+                    const moreButton = document.createElement("button");
+                    moreButton.textContent = "더보기";
+                    moreButton.classList.add("more-button");
+                    moreButton.style.marginTop = "10px"; // 간격 조절
 
-                // 더보기 버튼 클릭 이벤트 처리
-                let currentStartIndex = initialDisplayCount;
+                    // 더보기 버튼 클릭 이벤트 처리
+                    let currentStartIndex = initialDisplayCount;
 
-                moreButton.addEventListener("click", () => {
-                    const nextEndIndex = Math.min(currentStartIndex + initialDisplayCount, photos.length);
+                    moreButton.addEventListener("click", () => {
+                        const nextEndIndex = Math.min(currentStartIndex + initialDisplayCount, photos.length);
 
-                    if (currentStartIndex < photos.length) {
-                        displayPhotos(currentStartIndex, nextEndIndex);
-                        currentStartIndex += initialDisplayCount;
+                        if (currentStartIndex < photos.length) {
+                            displayPhotos(currentStartIndex, nextEndIndex);
+                            currentStartIndex += initialDisplayCount;
+                        }
+
+                        if (currentStartIndex >= photos.length) {
+                            moreButton.disabled = true; // 더 이상 표시할 사진이 없으면 버튼 비활성화
+                            moreButton.textContent = "더 이상 사진이 없습니다.";
+                        }
+                    });
+
+                    // 초기 사진 출력
+                    displayPhotos(0, initialDisplayCount);
+
+                    // 더보기 버튼을 DOM에 추가 (필요한 경우)
+                    if (photos.length > initialDisplayCount) {
+                        photoContainer.appendChild(moreButton);
                     }
 
-                    if (currentStartIndex >= photos.length) {
-                        moreButton.disabled = true; // 더 이상 표시할 사진이 없으면 버튼 비활성화
-                        moreButton.textContent = "더 이상 사진이 없습니다.";
+                    // 승인 및 삭제 버튼에 이벤트 리스너 추가
+                    const approveBtn = document.querySelector(".approve-btn");
+                    const deleteBtn = document.querySelector(".delete-btn");
+
+                    approveBtn.onclick = function () {
+                        approveReport(currentReportId);
+                    };
+
+                    deleteBtn.onclick = function () {
+                        deleteReview(currentReviewId);
                     }
-                });
 
-                // 초기 사진 출력
-                displayPhotos(0, initialDisplayCount);
-
-                // 더보기 버튼을 DOM에 추가 (필요한 경우)
-                if (photos.length > initialDisplayCount) {
-                    photoContainer.appendChild(moreButton);
-                }
-
-                // 승인 및 삭제 버튼에 이벤트 리스너 추가
-                const approveBtn = document.querySelector(".approve-btn");
-                const deleteBtn = document.querySelector(".delete-btn");
-
-                approveBtn.onclick = function() {
-                    approveReport(currentReportId);
-                };
-
-                deleteBtn.onclick = function() {
-                    deleteReview(currentReviewId);
-                }
-
-            })
-            .catch(error => {
-                console.error("리뷰 정보를 가져오는 중 오류 발생:", error);
-                // 오류 처리 (예: 사용자에게 오류 메시지 표시)
-            });
-    }
-
-    function approveReport(currentReportId) {
-        if (confirm("리포트를 승인(삭제)하시겠습니까?")) {
-            fetch(`/admin/reports/${currentReportId}/approve`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include' // 쿠키 포함
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => { throw err; });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        alert("리포트가 성공적으로 승인(삭제)되었습니다.");
-                        closeModal();
-                        loadContent('reportedReviews');
-                    } else {
-                        alert("리포트 승인에 실패했습니다. 다시 시도해주세요.");
-                        console.error('승인 실패:', data.message);
-                    }
                 })
                 .catch(error => {
-                    alert("오류가 발생했습니다. 다시 시도해주세요.");
-                    console.error('오류 발생:', error);
+                    console.error("리뷰 정보를 가져오는 중 오류 발생:", error);
+                    // 오류 처리 (예: 사용자에게 오류 메시지 표시)
                 });
         }
-    }
 
-
-    function deleteReview(currentReviewId) {
-        if (confirm("리뷰를 삭제하시겠습니까?")) {
-            fetch(`/admin/reviews/${currentReviewId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => { throw err; });
-                    }
-                    return response.json();
+        function approveReport(currentReportId) {
+            if (confirm("리포트를 승인(삭제)하시겠습니까?")) {
+                fetch(`/admin/reports/${currentReportId}/approve`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include' // 쿠키 포함
                 })
-                .then(data => {
-                    if (data.success) {
-                        alert("리뷰가 성공적으로 삭제되었습니다.");
-                        closeModal();
-                        loadContent('reportedReviews');
-                    } else {
-                        alert("리뷰 삭제에 실패했습니다. 다시 시도해주세요.");
-                        console.error('삭제 실패:', data.message);
-                    }
-                })
-                .catch(error => {
-                    alert("오류가 발생했습니다. 다시 시도해주세요.");
-                    console.error('오류 발생:', error);
-                });
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => { throw err; });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            alert("리포트가 성공적으로 승인(삭제)되었습니다.");
+                            closeModal();
+                            loadContent('reportedReviews');
+                        } else {
+                            alert("리포트 승인에 실패했습니다. 다시 시도해주세요.");
+                            console.error('승인 실패:', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        alert("오류가 발생했습니다. 다시 시도해주세요.");
+                        console.error('오류 발생:', error);
+                    });
+            }
         }
-    }
 
-    // ===================== 레스토랑 신고 관리 모달 관련 함수 ===================== //
-    function handleReport(reportId, restaurantId) {
-        openRestaurantReportModal(reportId);
-    }
-    function openRestaurantReportModal(reportId) {
-        currentRestaurantReportId = reportId;
-        console.log("Selected Report ID:", reportId); // 디버깅용 로그
 
-        // 모달 표시
-        const restaurantReportModal = document.getElementById("restaurantReportModal");
-        restaurantReportModal.style.display = "block";
-
-        // 전달받은 reportId 사용하여 상세 정보 가져오기
-        fetch(`/admin/restaurant-reports`, { method: 'GET' }) // 모든 레스토랑 신고 중 하나를 선택
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const report = data.reports.find(r => r.id === reportId);
-                    if (report) {
-                        document.getElementById("reportContent").innerText = report.reportContent;
-                        document.getElementById("restaurantName").innerText = report.restaurantName;
-                        document.getElementById("reporterName").innerText = report.reporterId ? report.reporterId : "익명";
-                        document.getElementById("reportDate").innerText = new Date(report.reportDate).toLocaleString();
-                        document.getElementById("reportStatus").innerText = report.status;
-                    } else {
-                        alert("해당 레스토랑 신고를 찾을 수 없습니다.");
-                        closeRestaurantReportModal();
-                    }
-                } else {
-                    alert("레스토랑 신고 상세 정보를 가져오는데 실패했습니다.");
-                    console.error('Error fetching restaurant report details:', data.message);
-                }
-            })
-            .catch(error => {
-                alert("오류가 발생했습니다. 다시 시도해주세요.");
-                console.error('오류 발생:', error);
-            });
-    }
-
-    function updateReportStatus(reportId, newStatus) {
-        if (confirm(`신고 상태를 ${newStatus}으로 변경하시겠습니까?`)) {
-            fetch(`/admin/restaurant-reports/${reportId}/status?status=${newStatus}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include'
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => { throw err; });
-                    }
-                    return response.json();
+        function deleteReview(currentReviewId) {
+            if (confirm("리뷰를 삭제하시겠습니까?")) {
+                fetch(`/admin/reviews/${currentReviewId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
                 })
-                .then(data => {
-                    if (data.success) {
-                        alert("신고 상태가 성공적으로 업데이트되었습니다.");
-                        closeRestaurantReportModal();
-                        loadContent('reportedRestaurants');
-                    } else {
-                        alert("신고 상태 업데이트에 실패했습니다. 다시 시도해주세요.");
-                        console.error('업데이트 실패:', data.message);
-                    }
-                })
-                .catch(error => {
-                    alert("오류가 발생했습니다. 다시 시도해주세요.");
-                    console.error('오류 발생:', error);
-                });
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => { throw err; });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            alert("리뷰가 성공적으로 삭제되었습니다.");
+                            closeModal();
+                            loadContent('reportedReviews');
+                        } else {
+                            alert("리뷰 삭제에 실패했습니다. 다시 시도해주세요.");
+                            console.error('삭제 실패:', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        alert("오류가 발생했습니다. 다시 시도해주세요.");
+                        console.error('오류 발생:', error);
+                    });
+            }
         }
-    }
 
-    function deleteRestaurantReport(reportId) {
-        if (confirm("레스토랑 신고를 삭제하시겠습니까?")) {
-            fetch(`/admin/restaurant-reports/${reportId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-            })
+        // ===================== 레스토랑 신고 관리 모달 관련 함수 ===================== //
+        function handleReport(reportId, restaurantId) {
+            openRestaurantReportModal(reportId);
+        }
+        function openRestaurantReportModal(reportId) {
+            currentRestaurantReportId = reportId;
+            console.log("Selected Report ID:", reportId); // 디버깅용 로그
+
+            // 모달 표시
+            const restaurantReportModal = document.getElementById("restaurantReportModal");
+            restaurantReportModal.style.display = "block";
+
+            // 전달받은 reportId 사용하여 상세 정보 가져오기
+            fetch(`/admin/restaurant-reports`, { method: 'GET' }) // 모든 레스토랑 신고 중 하나를 선택
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert("레스토랑 신고가 성공적으로 삭제되었습니다.");
-                        loadContent('reportedRestaurants');
+                        const report = data.reports.find(r => r.id === reportId);
+                        if (report) {
+                            document.getElementById("reportContent").innerText = report.reportContent;
+                            document.getElementById("restaurantName").innerText = report.restaurantName;
+                            document.getElementById("reporterName").innerText = report.reporterId ? report.reporterId : "익명";
+                            document.getElementById("reportDate").innerText = new Date(report.reportDate).toLocaleString();
+                            document.getElementById("reportStatus").innerText = report.status;
+                        } else {
+                            alert("해당 레스토랑 신고를 찾을 수 없습니다.");
+                            closeRestaurantReportModal();
+                        }
                     } else {
-                        alert("레스토랑 신고 삭제에 실패했습니다. 다시 시도해주세요.");
-                        console.error('삭제 실패:', data.message);
+                        alert("레스토랑 신고 상세 정보를 가져오는데 실패했습니다.");
+                        console.error('Error fetching restaurant report details:', data.message);
                     }
                 })
                 .catch(error => {
@@ -761,16 +709,74 @@
                     console.error('오류 발생:', error);
                 });
         }
-    }
 
-    // 레스토랑 신고 모달 닫기 함수
-    function closeRestaurantReportModal() {
-        const restaurantReportModal = document.getElementById("restaurantReportModal");
-        restaurantReportModal.style.display = "none";
-    }
+        function updateReportStatus(reportId, newStatus) {
+            if (confirm(`신고 상태를 ${newStatus}으로 변경하시겠습니까?`)) {
+                fetch(`/admin/restaurant-reports/${reportId}/status?status=${newStatus}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include'
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => { throw err; });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            alert("신고 상태가 성공적으로 업데이트되었습니다.");
+                            closeRestaurantReportModal();
+                            loadContent('reportedRestaurants');
+                        } else {
+                            alert("신고 상태 업데이트에 실패했습니다. 다시 시도해주세요.");
+                            console.error('업데이트 실패:', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        alert("오류가 발생했습니다. 다시 시도해주세요.");
+                        console.error('오류 발생:', error);
+                    });
+            }
+        }
 
-    // 페이지 로드 시 기본 콘텐츠 로드
-    loadContent('pendingRestaurants');
-</script>
+        function deleteRestaurantReport(reportId) {
+            if (confirm("레스토랑 신고를 삭제하시겠습니까?")) {
+                fetch(`/admin/restaurant-reports/${reportId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("레스토랑 신고가 성공적으로 삭제되었습니다.");
+                            loadContent('reportedRestaurants');
+                        } else {
+                            alert("레스토랑 신고 삭제에 실패했습니다. 다시 시도해주세요.");
+                            console.error('삭제 실패:', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        alert("오류가 발생했습니다. 다시 시도해주세요.");
+                        console.error('오류 발생:', error);
+                    });
+            }
+        }
+
+        // 레스토랑 신고 모달 닫기 함수
+        function closeRestaurantReportModal() {
+            const restaurantReportModal = document.getElementById("restaurantReportModal");
+            restaurantReportModal.style.display = "none";
+        }
+
+        // 페이지 로드 시 기본 콘텐츠 로드
+        loadContent('pendingRestaurants');
+    </script>
 </body>
+
 </html>

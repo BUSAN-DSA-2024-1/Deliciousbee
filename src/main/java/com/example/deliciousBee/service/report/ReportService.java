@@ -21,11 +21,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class ReportService {
-	
+
 	private final ReportRepository reportRepository;
 	private final ReviewRepository reviewRepository;
 	private final FileRepository fileRepository;
-
 
 	public Optional<Report> getReportById(Long reportId) {
 		return reportRepository.findById(reportId);
@@ -35,9 +34,7 @@ public class ReportService {
 	public boolean sendReport(Long reviewId, Report report) {
 		try {
 			Review findReview = reviewRepository.findById(reviewId).get();
-			
-			// 리뷰 유무 체크
-			if(findReview == null) {
+			if (findReview == null) {
 				return false;
 			}
 
@@ -53,9 +50,7 @@ public class ReportService {
 
 	public List<ReportDto> getAllReportDtos() {
 		List<Report> reports = reportRepository.findAll();
-		return reports.stream()
-				.map(this::convertToDto)
-				.collect(Collectors.toList());
+		return reports.stream().map(this::convertToDto).collect(Collectors.toList());
 	}
 
 	private ReportDto convertToDto(Report report) {
@@ -63,7 +58,6 @@ public class ReportService {
 		dto.setId(report.getId());
 		dto.setReason(report.getReason());
 		dto.setReportDate(report.getReportDate());
-
 
 		if (report.getReview() != null) {
 			dto.setReviewId(report.getReview().getId());
@@ -76,25 +70,23 @@ public class ReportService {
 
 		return dto;
 	}
+
 	@Transactional
 	public void deleteReport(Long reportId) {
 		reportRepository.deleteById(reportId);
 	}
 
-
 	// 리포트 승인 (삭제) 메서드로 변경
 	@Transactional
 	public void approveReport(Long reportId) throws Exception {
-		Report report = reportRepository.findById(reportId)
-				.orElseThrow(() -> new Exception("리포트를 찾을 수 없습니다."));
+		Report report = reportRepository.findById(reportId).orElseThrow(() -> new Exception("리포트를 찾을 수 없습니다."));
 		reportRepository.delete(report);
 	}
 
 	// 리뷰 삭제 시 연관된 모든 리포트도 함께 삭제
 	@Transactional
 	public void deleteReview(Long reviewId) throws Exception {
-		Review review = reviewRepository.findById(reviewId)
-				.orElseThrow(() -> new Exception("리뷰를 찾을 수 없습니다."));
+		Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new Exception("리뷰를 찾을 수 없습니다."));
 
 		// 해당 리뷰와 연관된 모든 리포트 조회
 		List<Report> reports = reportRepository.findByReviewId(reviewId);
