@@ -706,38 +706,31 @@
     function submitReport() {
       const reviewId = $('#reportModal').data('review-id');
       const reason = $('#reportReason').val();
-      const token = localStorage.getItem('token');
-      if (!token) {
-        alert('로그인이 필요합니다');
-        return;
-      }
 
       $.ajax({
         url: '/restaurant/rtread/report/submit/' + reviewId,
         type: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + token,
-          'Content-Type': 'application/json'
-        },
-        data: JSON.stringify({ "reason": reason }),
+        contentType: "application/json",
+        data: JSON.stringify({
+          "reason": reason,
+          // 필요한 경우 추가 필드
+        }),
         success: function (data) {
           if (data.success) {
             alert('신고가 제출되었습니다');
             location.reload();
           } else {
-            alert(data.message || '신고 제출에 실패했습니다.');
+            alert('신고 제출에 실패했습니다.');
           }
           $('#reportModal').modal('hide');
         },
         error: function (xhr) {
           console.error('AJAX 통신 실패', xhr);
-          alert('AJAX 신고 제출에 실패했습니다.');
+          alert('신고 제출에 실패했습니다.');
           $('#reportModal').modal('hide');
         }
       });
     }
-
-
 
 
 

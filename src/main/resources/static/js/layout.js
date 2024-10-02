@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log("페이지 로드 완료");
 
     // 페이지 로드 시 인증 상태 확인
-    checkAuth();
+    // checkAuth();
 
     // OAuth2 콜백 URL 처리
     if (window.location.pathname.includes('/login/oauth2/code/google')) {
@@ -75,6 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // 일반 로그인 처리
+    // 일반 로그인 처리
     var loginForm = document.querySelector('#loginModal form');
     if (loginForm) {
         loginForm.addEventListener('submit', function (event) {
@@ -91,14 +92,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 credentials: 'include'  // 쿠키 포함
             })
                 .then(response => {
-                    if (response.ok) return response.text();
+                    if (response.ok) return response.json(); // 서버에서 JSON 응답
                     throw new Error('로그인 실패');
                 })
-                .then(message => {
-                    alert(message);
+                .then(data => {
+                    alert(data.message); // 성공 메시지
                     closeModal();
-                    // 로그인 성공 시 인증 상태 확인
-                    checkAuth();
+                    // 로그인 성공 후, 관리자 권한 여부에 따라 페이지 리다이렉트
+                    if (data.isAdmin) {
+                        window.location.href = '/admin'; // 관리자 페이지로 리디렉트
+                    } else {
+                        window.location.href = '/'; // 일반 사용자는 홈으로 리디렉트
+                    }
                 })
                 .catch(error => {
                     console.error('로그인 오류 발생:', error);
@@ -106,6 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
         });
     }
+
 
     // 닫기 버튼 이벤트 리스너 추가
     var closeModalButton = document.getElementById('closeModalButton');
@@ -127,36 +133,36 @@ document.addEventListener('DOMContentLoaded', function () {
         if (loginModal) loginModal.style.display = 'none';
     }
 
-    // 인증 상태 확인 함수
-    function checkAuth() {
-        fetch('member/api/check-auth', {
-            method: 'GET',
-            credentials: 'include'  // 쿠키 포함
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.isAuthenticated) {
-                    document.querySelector('.logged-in-menu').style.display = 'block';
-                    document.querySelector('.logged-out-menu').style.display = 'none';
-                    document.querySelector('.restaurant-write').style.display = 'block';
-                    // 관리자 권한 확인
-                    if (data.isAdmin) {
-                        document.querySelector('.admin-page').style.display = 'block';
-                    }
-                } else {
-                    document.querySelector('.logged-in-menu').style.display = 'none';
-                    document.querySelector('.logged-out-menu').style.display = 'block';
-                    document.querySelector('.restaurant-write').style.display = 'none';
-                    document.querySelector('.admin-page').style.display = 'none';
-                }
-            })
-            .catch(error => {
-                console.error('인증 상태 확인 오류:', error);
-                // 인증 상태를 알 수 없으므로 기본적으로 로그아웃 상태로 설정
-                document.querySelector('.logged-in-menu').style.display = 'none';
-                document.querySelector('.logged-out-menu').style.display = 'block';
-                document.querySelector('.restaurant-write').style.display = 'none';
-                document.querySelector('.admin-page').style.display = 'none';
-            });
-    }
+    // // 인증 상태 확인 함수
+    // function checkAuth() {
+    //     fetch('member/api/check-auth', {
+    //         method: 'GET',
+    //         credentials: 'include'  // 쿠키 포함
+    //     })
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             if (data.isAuthenticated) {
+    //                 document.querySelector('.logged-in-menu').style.display = 'block';
+    //                 document.querySelector('.logged-out-menu').style.display = 'none';
+    //                 document.querySelector('.restaurant-write').style.display = 'block';
+    //                 // 관리자 권한 확인
+    //                 if (data.isAdmin) {
+    //                     document.querySelector('.admin-page').style.display = 'block';
+    //                 }
+    //             } else {
+    //                 document.querySelector('.logged-in-menu').style.display = 'none';
+    //                 document.querySelector('.logged-out-menu').style.display = 'block';
+    //                 document.querySelector('.restaurant-write').style.display = 'none';
+    //                 document.querySelector('.admin-page').style.display = 'none';
+    //             }
+    //         })
+    //         .catch(error => {
+    //             console.error('인증 상태 확인 오류:', error);
+    //             // 인증 상태를 알 수 없으므로 기본적으로 로그아웃 상태로 설정
+    //             document.querySelector('.logged-in-menu').style.display = 'none';
+    //             document.querySelector('.logged-out-menu').style.display = 'block';
+    //             document.querySelector('.restaurant-write').style.display = 'none';
+    //             document.querySelector('.admin-page').style.display = 'none';
+    //         });
+    // }
 });

@@ -48,7 +48,6 @@ public class MemberRestController {
 //        return ResponseEntity.ok(new JwtResponse(token));
 //    }
 
-
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody BeeLoginForm loginRequest, HttpServletResponse response) {
         // 사용자가 입력한 ID로 회원 찾기
@@ -70,9 +69,17 @@ public class MemberRestController {
         jwtCookie.setMaxAge(86400);   // 1일 동안 유효
         response.addCookie(jwtCookie);
 
-        // 성공 응답
-        return ResponseEntity.ok("로그인 성공");
+        // 관리자 여부 확인
+        boolean isAdmin = beeMember.getRole() == Role.ADMIN;
+
+        // 성공 응답에 관리자 여부 포함하여 JSON 반환
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("message", "로그인 성공");
+        responseBody.put("isAdmin", isAdmin);
+
+        return ResponseEntity.ok(responseBody);
     }
+
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response) {
         Cookie jwtCookie = new Cookie("Authorization", null);

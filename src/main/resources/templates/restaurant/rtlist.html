@@ -635,7 +635,14 @@
                         <button class="btn btn-custom btn-sort" id="sort-rating">평점순</button>
                     </div>
                 </div>
-                <div id="map"></div>
+                <div>
+                    <button class="btn btn-custom btn-sort" id="distance500">500m</button>
+                    <button class="btn btn-custom btn-sort" id="distance1500">1.5km</button>
+                    <button class="btn btn-custom btn-sort" id="distance3000">3km</button>
+                    <button class="btn btn-custom btn-sort" id="distance5000">5km</button>
+                    <button class="btn btn-custom btn-sort" id="distance10000">10km</button>
+                    <div id="map"></div>
+                </div>
                 <div id="restaurantList"></div>
                 <div id="pagination"></div>
             </div>
@@ -682,6 +689,11 @@
     let infoWindows = [];
     let restaurantCount = 0; // 정렬 순서 번호
     let currentRestaurantId = null;
+    let radius = 0.5;
+
+
+
+
 
     // 레스토랑 신고 모달 열기
     function openRestaurantReportModal(button) {
@@ -815,7 +827,8 @@
                 size: 10,
                 sortBy: currentSortBy,
                 latitude: userLatitude,
-                longitude: userLongitude
+                longitude: userLongitude,
+                radius: radius
             },
             success: function(data) {
                 if (data && data._embedded && Array.isArray(data._embedded.restaurantDtoList)) {
@@ -823,7 +836,7 @@
                     if (append) {
                         currentPage++;  // 추가 모드일 때만 페이지 번호 증가
                     } else {
-                        currentPage = 1;
+                        currentPage = 0; // 0으로 초기화
                     }
                     if (data.page && data.page.totalPages) {
                         totalPages = data.page.totalPages;
@@ -839,6 +852,8 @@
                     // 사용자에게 결과가 없음을 알리는 UI 업데이트
                     if (!append) {
                         $('#restaurantList').html('<p>검색 결과가 없습니다.</p>');
+                        ajaxLoaded = true;
+                        hideLoaderIfReady();
                     }
                 }
                 isLoading = false;
@@ -941,7 +956,31 @@
         infoWindows = [];
     }
 
+    // 버튼 클릭 이벤트 핸들러 추가
+    $('#distance500').click(function() {
+        radius = 500;
+        loadRestaurants(); // radius 값을 0.5로 설정하고 loadRestaurants 함수 호출
+    });
 
+    $('#distance1500').click(function() {
+        radius = 1500;
+        loadRestaurants();
+    });
+
+    $('#distance3000').click(function() {
+        radius = 3000;
+        loadRestaurants();
+    });
+
+    $('#distance5000').click(function() {
+        radius = 5000;
+        loadRestaurants();
+    });
+
+    $('#distance10000').click(function() {
+        radius = 10000;
+        loadRestaurants();
+    });
 
 
     $(document).ready(function() {

@@ -36,20 +36,20 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 
 
     @Query("SELECT r FROM Restaurant r WHERE r.verificationStatus = 'APPROVED' ORDER BY " +
-            "6371 * acos(cos(radians(:userLatitude)) * cos(radians(r.latitude)) * cos(radians(r.longitude) - radians(:userLongitude)) + sin(radians(:userLatitude)) * sin(radians(r.latitude))) ASC")
+            "6371000 * acos(cos(radians(:userLatitude)) * cos(radians(r.latitude)) * cos(radians(r.longitude) - radians(:userLongitude)) + sin(radians(:userLatitude)) * sin(radians(r.latitude))) ASC")
     Page<Restaurant> findAllSortedByDistance(@Param("userLatitude") Double userLatitude, @Param("userLongitude") Double userLongitude, Pageable pageable);
 
 
     @Query("SELECT r FROM Restaurant r WHERE (r.name LIKE %:keyword% OR r.menu_name LIKE %:keyword%) AND r.verificationStatus = 'APPROVED' ORDER BY " +
-            "6371 * acos(cos(radians(:userLatitude)) * cos(radians(r.latitude)) * cos(radians(r.longitude) - radians(:userLongitude)) + sin(radians(:userLatitude)) * sin(radians(r.latitude))) ASC")
+            "6371000 * acos(cos(radians(:userLatitude)) * cos(radians(r.latitude)) * cos(radians(r.longitude) - radians(:userLongitude)) + sin(radians(:userLatitude)) * sin(radians(r.latitude))) ASC")
     Page<Restaurant> searchByNameOrMenuNameSortedByDistance(@Param("keyword") String keyword, @Param("userLatitude") Double userLatitude, @Param("userLongitude") Double userLongitude, Pageable pageable);
 
     @Query("SELECT r FROM Restaurant r WHERE (r.name LIKE %:keyword% OR r.menu_name LIKE %:keyword%) " +
             "AND r.verificationStatus = 'APPROVED' " +
-            "AND 6371 * acos(cos(radians(:userLatitude)) * cos(radians(r.latitude)) * " +
+            "AND 6371000 * acos(cos(radians(:userLatitude)) * cos(radians(r.latitude)) * " +
             "cos(radians(r.longitude) - radians(:userLongitude)) + sin(radians(:userLatitude)) * " +
             "sin(radians(r.latitude))) < :radius " +
-            "ORDER BY 6371 * acos(cos(radians(:userLatitude)) * cos(radians(r.latitude)) * " +
+            "ORDER BY 6371000 * acos(cos(radians(:userLatitude)) * cos(radians(r.latitude)) * " +
             "cos(radians(r.longitude) - radians(:userLongitude)) + sin(radians(:userLatitude)) * " +
             "sin(radians(r.latitude))) ASC")
     Page<Restaurant> searchByNameOrMenuNameWithinRadius(@Param("keyword") String keyword,
@@ -61,10 +61,10 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 
 
     @Query("SELECT r FROM Restaurant r WHERE r.verificationStatus = 'APPROVED' " +
-            "AND 6371 * acos(cos(radians(:userLatitude)) * cos(radians(r.latitude)) * " +
+            "AND 6371000 * acos(cos(radians(:userLatitude)) * cos(radians(r.latitude)) * " +
             "cos(radians(r.longitude) - radians(:userLongitude)) + sin(radians(:userLatitude)) * " +
             "sin(radians(r.latitude))) < :radius " +  // 반경 필터
-            "ORDER BY 6371 * acos(cos(radians(:userLatitude)) * cos(radians(r.latitude)) * " +
+            "ORDER BY 6371000 * acos(cos(radians(:userLatitude)) * cos(radians(r.latitude)) * " +
             "cos(radians(r.longitude) - radians(:userLongitude)) + sin(radians(:userLatitude)) * " +
             "sin(radians(r.latitude))) ASC")
     Page<Restaurant> findAllWithinRadius(@Param("userLatitude") Double userLatitude,

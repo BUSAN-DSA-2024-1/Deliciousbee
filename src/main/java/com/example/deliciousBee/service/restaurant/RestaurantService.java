@@ -189,11 +189,6 @@ public class RestaurantService {
                                                  Double radius) {
         Page<Restaurant> restaurants;
 
-        // 기본 반경 값 설정 (500m)
-        if (radius == null) {
-            radius = 6.0; // 반경을 km 단위로 설정 (0.5km = 500m)
-        }
-
         if (keyword == null || keyword.isEmpty()) {
             // 검색어가 없는 경우 전체 레스토랑 목록 조회
             if ("distance".equals(sortBy) && userLatitude != null && userLongitude != null && radius > 0) {
@@ -209,12 +204,19 @@ public class RestaurantService {
             // 키워드가 있는 경우: 검색된 레스토랑 조회
             if ("distance".equals(sortBy) && userLatitude != null && userLongitude != null && radius > 0) {
                 restaurants = restaurantRepository.searchByNameOrMenuNameWithinRadius(keyword, userLatitude, userLongitude, radius, pageable);
+                System.out.println("확인용1");
             } else if ("distance".equals(sortBy) && userLatitude != null && userLongitude != null && radius <= 0) {
                 restaurants = restaurantRepository.searchByNameOrMenuNameSortedByDistance(keyword, userLatitude, userLongitude, pageable);
+                System.out.println("확인용2");
             } else if ("rating".equals(sortBy)) { // 평점순 정렬 추가
                 restaurants = restaurantRepository.searchByNameOrMenuNameSortedByRating(keyword, pageable);
+                System.out.println("확인용3");
             } else {
-                restaurants = restaurantRepository.searchByNameOrMenuName(keyword, pageable);
+                restaurants = restaurantRepository.searchByNameOrMenuNameWithinRadius(keyword, userLatitude, userLongitude, radius, pageable);
+                System.out.println(restaurants);
+                //
+//                restaurants = restaurantRepository.searchByNameOrMenuName(keyword, pageable);
+                System.out.println("확인용4");
             }
         }
 

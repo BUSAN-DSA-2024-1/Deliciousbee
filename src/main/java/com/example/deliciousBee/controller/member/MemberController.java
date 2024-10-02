@@ -2,6 +2,8 @@ package com.example.deliciousBee.controller.member;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.member.*;
@@ -17,6 +19,7 @@ import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +33,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -65,12 +69,69 @@ public class MemberController {
 	@Autowired
 	private FileService fileService; // fileStore 주입 받음.
 
+
+
+	@ModelAttribute("auth") // "auth"라는 이름으로 모델에 추가
+	public Map<String, Object> authenticationDetails(HttpServletRequest request) {
+		String token = extractJwtFromRequest(request); // 요청에서 JWT 추출 (아래 설명 참조)
+
+		Map<String, Object> auth = new HashMap<>();
+		auth.put("isAuthenticated", false); // 기본값 false
+		auth.put("isAdmin", false); // 기본값 false
+		auth.put("username", ""); // 빈 문자열로 초기화
+
+
+		if (token != null && jwtTokenProvider.validateToken(token)) {
+			String memberId = jwtTokenProvider.getMemberIdFromJWT(token);
+			BeeMember beeMember = beeMemberService.findMemberById(memberId);
+
+			if (beeMember != null) {
+				auth.put("isAuthenticated", true);
+				auth.put("isAdmin", beeMember.getRole() == Role.ADMIN); // Enum 직접 비교
+				auth.put("username", beeMember.getUsername());
+			}
+		}
+		return auth;
+	}
+
+	// 요청에서 JWT 추출 (Authorization 헤더 또는 쿠키)
+	private String extractJwtFromRequest(HttpServletRequest request) {
+		String bearerToken = request.getHeader("Authorization");
+		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+			return bearerToken.substring(7);
+		}
+
+		// Authorization 헤더에 없으면 쿠키에서 확인
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if ("Authorization".equals(cookie.getName())) {
+					return cookie.getValue();
+				}
+			}
+		}
+
+		return null; // 토큰 없음
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	// **************회원가입 페이지 이동*************
 	@GetMapping("join")
 	public String joinForm(Model model) {
 		model.addAttribute("member", new BeeJoinForm()); // new Member(): 빈객체를 담아서 보낸다-> member가가지고있는 필드이름으 활용할수있다
 		return "member/joinForm"; // member 밑에 joinForm을 열어달라
-
 	}
 	//************회원가입 진행*******
 	@PostMapping("join")

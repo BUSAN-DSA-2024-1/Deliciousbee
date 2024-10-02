@@ -45,8 +45,6 @@ public class ReportController {
 	private final RestaurantReportService restaurantReportService;
 
 
-
-
 	@PostMapping("/restaurant/rtread/report/submit/{reviewId}")
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> submitReport(
