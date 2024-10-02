@@ -2,6 +2,7 @@ package com.example.deliciousBee.controller.member;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.member.*;
@@ -9,6 +10,7 @@ import com.example.deliciousBee.model.mypage.MyPage;
 import com.example.deliciousBee.repository.MyPageVisitRepository;
 import com.example.deliciousBee.security.jwt.JwtTokenProvider;
 import com.example.deliciousBee.service.member.BeeMemberService;
+import com.example.deliciousBee.service.member.FollowService;
 import com.example.deliciousBee.service.member.MyPageService;
 
 import com.example.deliciousBee.util.FileService;
@@ -64,6 +66,8 @@ public class MemberController {
 
 	@Autowired
 	private FileService fileService; // fileStore 주입 받음.
+	@Autowired  // FollowService 주입
+	private FollowService followService;
 
 	// **************회원가입 페이지 이동*************
 	@GetMapping("join")
@@ -193,7 +197,10 @@ public class MemberController {
 			RedirectAttributes redirectAttributes, HttpServletRequest request,
 			@RequestParam(name = "file", required = false) MultipartFile file,
 			Model model) {
-
+		
+		BeeMember existingMember = beeMemberService.findMemberById(loginMember.getMember_id()); // 서비스에서 DB 조회
+	    log.info("확인용 컨트롤 기존 회원 정보: {}", existingMember);
+				
 		// 회원 정보 업데이트
 		BeeMember updatedMember = BeeUpdateForm.toBeeMember(beeUpdateForm);
 		updatedMember.setMember_id(loginMember.getMember_id()); // 회원 ID 유지
@@ -201,6 +208,10 @@ public class MemberController {
 		updatedMember.setGender(loginMember.getGender());
 		beeMemberService.updateMember(updatedMember, beeUpdateForm.isFileRemoved(), file); // 서비스 호출하여 업데이트 수행
 
+		
+		 // hidden input의 값을 사용하여 파일 삭제 여부 판단
+	    boolean isFileRemoved = beeUpdateForm.isFileRemoved(); // 폼에서 hidden input 값을 가져옴
+	    beeMemberService.updateMember(updatedMember, isFileRemoved, file);
 		// 세션 업데이트
 		BeeMember updatedLoginMember = beeMemberService.findMemberById(loginMember.getMember_id()); // 업데이트된 회원 정보 가져오기
 	    request.getSession().setAttribute("loginMember", updatedLoginMember);
@@ -256,6 +267,22 @@ public class MemberController {
 
 		return "redirect:/member/myInfo";
 	}
+	
+	// **********************팔로워 관리 이동**********************
+		@GetMapping("myFollow")
+		public String myFollow(@AuthenticationPrincipal BeeMember loginMember,
+				
+				Model model) {
+			if (loginMember == null) {
+				return "redirect:/member/login";
+			}
+			List<BeeMember> followingList = followService.getFollowingList(loginMember.getMember_id());
+		    model.addAttribute("followingList", followingList);
+		    
+		    List<BeeMember> followerList = followService.getFollowerList(loginMember.getMember_id());
+		    model.addAttribute("followerList", followerList);
+		    return "member/myFollow"; 
+		}
 
 	// **********************내가 쓴글 이동**********************
 	@GetMapping("myList")

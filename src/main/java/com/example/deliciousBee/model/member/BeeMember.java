@@ -48,7 +48,8 @@ public class BeeMember implements UserDetails, OAuth2User {
 	@Column(length = 100)
 	private String email;
 	private boolean isSocialUser; // 소셜 로그인 플래그
-	@OneToOne(mappedBy = "beeMember", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER )
+	@JoinColumn(name = "profile_image_id")
     private MemberAttachedFile profileImage;
 	 @OneToOne(mappedBy = "beeMember", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	    private MyPage myPage;
@@ -113,12 +114,14 @@ public class BeeMember implements UserDetails, OAuth2User {
 	public void setAttributes(Map<String, Object> attributes) {
 		this.attributes = attributes;
 	}
+	
+	
 	@Override
 	public String toString() {
 		return "BeeMember{" + "member_id='" + member_id + '\'' + ", password='" + password + '\'' + ", national="
 				+ national + ", nickname='" + nickname + '\'' + ", gender=" + gender + ", birth=" + birth + ", email='"
 				+ email + '\'' + ", isSocialUser=" + isSocialUser +", role=" + role + 
-		           ", profileImage =" + profileImage + 
+		           ", profileImage_id =" + profileImage.getProfileImage_id() + 
 		           '}';
 	}
 

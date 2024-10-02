@@ -67,7 +67,7 @@ public class MyPageService implements UserDetailsService {
     public void updateMyPage(String introduce, boolean isFileRemoved, MultipartFile file, BeeMember loginMember) throws IOException {
         MyPage myPage = loginMember.getMyPage();
         myPage.setIntroduce(introduce);
-
+        log.info("확인용: {}", myPage);
         if (isFileRemoved) {
             if (myPage.getMainImage() != null) {
                 myPageFileService.deleteFile(myPage.getMainImage().getSaved_filename());
@@ -85,6 +85,8 @@ public class MyPageService implements UserDetailsService {
             MyPageAttachedFile newFile = myPageFileService.saveFile(file);
             myPage.setMainImage(newFile);
             newFile.setMyPage(myPage);
+            log.info("확인용: {}", myPage);
+            log.info("확인용: {}", newFile);
         }
 
         myPageRepository.save(myPage);
@@ -107,7 +109,7 @@ public class MyPageService implements UserDetailsService {
 				// 쿼리 메서드
 				MyPageAttachedFile attachedFile = myPageFileRepository.findByMyPage(myPage); // findBy로 시작해야 쿼리만들어줌
 				
-				System.out.println("확인용");
+				log.info("확인용: {}", attachedFile);
 				return attachedFile;
 			}
 			

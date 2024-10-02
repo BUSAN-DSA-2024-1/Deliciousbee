@@ -82,7 +82,7 @@
 		</div>
 
 		<!-- 팔로워 목록 모달 -->
-		<div id="followersModal" class="modal">
+		<div id="followersModal" class="list-modal">
 			<div class="follow-modal-content">
 				<span class="close-modal" onclick="closeFollowersModal()">×</span>
 				<h3>팔로워 목록</h3>
@@ -98,7 +98,7 @@
 		</div>
 
 		<!-- 팔로잉 목록 모달 -->
-		<div id="followingModal" class="modal">
+		<div id="followingModal" class="list-modal">
 			<div class="follow-modal-content">
 				<span class="close-modal" onclick="closeFollowingModal()">×</span>
 				<h3>팔로잉 목록</h3>
@@ -123,7 +123,7 @@
 		</div>
 
 		<!-- 오늘의 방문자 목록 모달 -->
-		<div id="visitorsModal" class="modal">
+		<div id="visitorsModal" class="list-modal">
 			<div class="visit-modal-content">
 				<span class="close-modal" onclick="closeVisitorsModal()">×</span>
 				<h3>오늘의 방문자</h3>
@@ -150,7 +150,7 @@
 				<div class="restaurant_name_head">
 					<span><img src="/image/bee.jpg" alt="벌 이미지"
 						style="width: 35px; height: 35px; object-fit: cover;"></span> <a
-						th:href="@{/restaurant/rtread(id=${review.restaurant.id})}"
+						th:href="@{/restaurant/rtread/{id}(id=${review.restaurant.id}, reviewId=${review.id})}"
 						title="식당 정보로 이동"> <span th:text="${review.restaurant.name}"
 						class="restaurant_name" style="text-decoration: none;"></span>
 					</a>
@@ -219,13 +219,13 @@
 							<p>
 								친절 포인트: <span class="gauge-container"> <span
 									class="gauge"
-									th:style="'width:' + ${review.kindRating * 33.33} + '%'"></span>
+									th:style="'width:' + ${review.kindRating * 33.33} + '%; background-color:' + (${review.kindRating == 1 ? '#ff4c4c' : (review.kindRating == 2 ? '#ffc107' : '#4caf50')})"></span>
 								</span> 맛 포인트: <span class="gauge-container"> <span
 									class="gauge"
-									th:style="'width:' + ${review.tasteRating * 33.33} + '%'"></span>
+									th:style="'width:' + ${review.tasteRating * 33.33} + '%; background-color:' + (${review.tasteRating == 1 ? '#ff4c4c' : (review.tasteRating == 2 ? '#ffc107' : '#4caf50')})"></span>
 								</span> 가격 포인트: <span class="gauge-container"> <span
 									class="gauge"
-									th:style="'width:' + ${review.priceRating * 33.33} + '%'"></span>
+									th:style="'width:' + ${review.priceRating * 33.33} + '%; background-color:' + (${review.priceRating == 1 ? '#ff4c4c' : (review.priceRating == 2 ? '#ffc107' : '#4caf50')})"></span>
 								</span>
 							</p>
 						</div>
@@ -234,8 +234,8 @@
 								<span>추천 메뉴: </span> <span
 									th:each="reviewMenu, iterStat : ${review.reviewMenuList}"
 									th:text="${reviewMenu?.menu?.name 
-                  					 ?: reviewMenu?.customMenuName 
-                   					?: ''} + ${!iterStat.last ? ', ' : ''}"></span>
+                ?: reviewMenu?.customMenuName 
+                ?: ''} + ${!iterStat.last ? ', ' : ''}"></span>
 							</div>
 							<div class="review_content"
 								th:id="'reviewContent' + ${review.id}"
@@ -263,7 +263,7 @@
 			<div class="no-review-info">
 				작성된 리뷰가 없습니다ㅠ
 				<p th:if="${#authentication.isAuthenticated() and isOwner}">
-					<a href="rtlist.html">리뷰 작성하러 가기</a> 👉
+					<a href="/">리뷰 작성하러 가기</a> 👉
 				</p>
 			</div>
 		</div>
@@ -295,26 +295,15 @@
 					</tr>
 				</tbody>
 			</table>
+
 			<div class="random-review" id="randomReviewSlider">
 				<h3>오늘의 리뷰</h3>
-				<div th:if="${randomReview != null}" class="random-review-item">
-					<a
-						th:href="@{/restaurant/rtread(id=${randomReview.restaurant.id})}"
-						title="식당 정보로 이동"> <span class="restaurant-name"
-						th:text="${randomReview.restaurant.name}"></span>
-					</a> <img
-						th:if="${randomReview.attachedFile != null and !randomReview.attachedFile.isEmpty()}"
-						th:each="file : ${randomReview.attachedFile}"
-						th:src="@{'/review/display?filename='+${file.saved_filename}}"
-						alt="Review Image"
-						style="width: 200px; height: 200px; object-fit: cover;"> <img
-						th:unless="${randomReview.attachedFile != null and !randomReview.attachedFile.isEmpty()}"
-						src="/myPageImage/no-review-img.jpg" alt="No Review Image"
-						style="width: 200px; height: 200px; object-fit: cover;">
+				<div id="randomReviewContainer">
+					<div class="random-review-item" id="currentRandomReview">
+						<!-- 초기에는 비어 있음. JavaScript에서 내용을 채웁니다. -->
+					</div>
 				</div>
-				<div th:unless="${randomReview != null}">
-					<p>리뷰가 없습니다.</p>
-				</div>
+				<button id="nextReviewsButton">다음</button>
 			</div>
 		</div>
 	</div>
@@ -483,47 +472,7 @@ function scrollToTop() {
     });
 }
 
-function updateRandomReview() {
-    $.ajax({
-        url: '/random-review', // 컨트롤러의 API URL
-        type: 'GET',
-        dataType: 'json',
-        success: function(data) {
-            if (data) { // 데이터가 존재하는 경우에만 업데이트
-                $('#randomReviewSlider .restaurant-name').text(data.restaurantName);
 
-                // 이미지 업데이트 로직 개선
-                const imageBox = $('#randomReviewSlider .random-review-item');
-                imageBox.empty(); // 기존 이미지 삭제
-
-                if (data.imageUrl) {
-                    $('<img>').attr({
-                        src: data.imageUrl,
-                        alt: 'Review Image',
-                        style: 'width: 200px; height: 200px; object-fit: cover;'
-                    }).appendTo(imageBox);
-                } else {
-                    $('<img>').attr({
-                        src: '/myPageImage/no-review-img.jpg',
-                        alt: 'No Review Image',
-                        style: 'width: 200px; height: 200px; object-fit: cover;'
-                    }).appendTo(imageBox);
-                }
-            }
-        },
-        error: function(error) {
-            console.error('랜덤 리뷰 가져오기 실패:', error);
-        }
-    });
-}
-
-$(document).ready(function() {
-    // 초기 로딩 시 한 번 실행
-    updateRandomReview();
-
-    // 5초마다 반복 실행
-    setInterval(updateRandomReview, 5000); 
-});
 
 //리뷰로 이동
  function scrollToReview(reviewId) {
@@ -598,6 +547,49 @@ $(document).ready(function() {
    }
    window.addEventListener('click', handleLargeImageModalOutsideClick);
  }
+ 
+ 
+ //랜덤 리뷰
+ $(document).ready(function() {
+	    let currentReviewIndex = 0;
+	    let randomReviews = []; // 전역 변수로 선언
+
+	    // 초기 랜덤 리뷰 로드 (기존 AJAX 요청 유지)
+	    $.ajax({
+	        url: '/member/randomReviews',
+	        type: 'GET',
+	        success: function(data) {
+	            randomReviews = JSON.parse(data); // JSON으로 파싱
+	            showRandomReview(currentReviewIndex); // 첫 번째 리뷰 표시
+	        },
+	        error: function(error) {
+	            console.error('랜덤 리뷰 가져오기 실패:', error);
+	        }
+	    });
+
+
+	    $("#nextReviewsButton").click(function() {
+	        currentReviewIndex = (currentReviewIndex + 1) % randomReviews.length;
+	        showRandomReview(currentReviewIndex);
+	    });
+
+	    function showRandomReview(index) {
+	        const review = randomReviews[index];
+	        // HTML 생성 및 추가 (기존 로직 활용)
+	         console.log("Selected review:", review);
+	       let reviewHtml = `
+	    	   <a href="/restaurant/rtread/${review.restaurantId}?reviewId=${review.reviewId}" class="random-review-link">
+	            <div class="random-review-image">
+	                <img src="${review.imageUrl}" alt="Random Review Image">
+	            </div>
+	            <div class="random-review-content">
+	                <span>${review.restaurantName}</span>
+	            </div>
+	        </a>
+	       `;
+	        $('#currentRandomReview').html(reviewHtml);
+	    }
+	});
 	</script>
 	<script th:src="@{/js/layout.js}"></script>
 

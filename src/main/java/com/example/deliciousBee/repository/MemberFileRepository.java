@@ -9,4 +9,6 @@ public interface MemberFileRepository extends JpaRepository<MemberAttachedFile, 
 
 
 	MemberAttachedFile findByBeeMember(BeeMember beeMember);
+
+//	 MemberAttachedFile findByBeeMember_MemberId(String member_id);
 }

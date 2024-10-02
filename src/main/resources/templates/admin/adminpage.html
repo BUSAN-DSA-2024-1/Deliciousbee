@@ -481,25 +481,21 @@
     }
 
     function approveRestaurant(restaurantId){
-        // 사용자에게 승인 확인
         if (confirm("승인하시겠습니까?")) {
-            fetch(`/admin/restaurants/${restaurantId}/approve`, { method: 'POST' })
+            fetch(`/admin/restaurant/approve/${restaurantId}`, { method: 'POST' })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // 승인 성공 시 콘텐츠 새로고침
                         alert("레스토랑이 성공적으로 승인되었습니다.");
                         loadContent('pendingRestaurants');
-                        console.log("성공")
+                        console.log("성공");
                     } else {
-                        // 승인 실패 시 에러 메시지 표시
                         alert("레스토랑 승인에 실패했습니다. 다시 시도해주세요.");
-                        console.log("왜")
+                        console.log("왜");
                         console.error('승인 실패:', data.message);
                     }
                 })
                 .catch(error => {
-                    // 네트워크 또는 서버 오류 처리
                     alert("오류가 발생했습니다. 다시 시도해주세요.");
                     console.error('오류 발생:', error);
                 });

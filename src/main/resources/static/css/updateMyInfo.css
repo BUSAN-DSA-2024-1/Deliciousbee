@@ -93,8 +93,25 @@ body {
   height: 100px;
   object-fit: cover;
   border: 5px solid #ddd;
-  margin-bottom: 10px; /* 닉네임 입력 필드와의 간격 조정 */
 }
+
+
+#deleteProfileImageButton {
+    display: inline-block;
+    padding: 5px 10px;  /* 버튼 패딩 조정 */
+    border: none;        /* 기본 테두리 제거 */
+    border-radius: 4px; /* 둥근 모서리 */
+    background-color: #ff4757; /* 배경색 (빨간색) */
+    color: white;       /* 텍스트 색상 (흰색) */
+    cursor: pointer;    /* 커서 모양 변경 */
+    font-size: 13px;    /* 폰트 크기 조정 */
+    transition: background-color 0.3s ease; /* 호버 효과를 위한 transition 추가 */
+}
+
+#deleteProfileImageButton:hover {
+    background-color: #ff6b81; /* 호버시 배경색 변경 */
+}
+
 .info {
     margin-bottom: 20px;
 }
@@ -125,7 +142,7 @@ body {
 }
 
 /* 버튼 스타일 */
-button {
+.button {
     background-color: #007bff;
     color: #fff;
     border: none;
@@ -136,7 +153,7 @@ button {
     transition: background-color 0.3s;
 }
 
-button:hover {
+.button:hover {
     background-color: #0056b3;
 }
 

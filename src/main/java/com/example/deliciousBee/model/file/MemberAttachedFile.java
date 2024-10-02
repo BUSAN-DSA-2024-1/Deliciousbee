@@ -22,12 +22,12 @@ public class MemberAttachedFile {
 
 	  @Id
 	    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	    private Long profilImage_id;
+	    private Long profileImage_id;
 
 
 	
-	  @OneToOne(fetch = FetchType.EAGER)
-	    @JoinColumn(name = "member_id")
+	  @OneToOne(mappedBy = "profileImage", fetch = FetchType.EAGER)
+	  @JoinColumn(name = "member_id")
 	    private BeeMember beeMember;
 	
 	private String original_filename;  //원본 파일이름

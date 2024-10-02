@@ -16,6 +16,7 @@
 			<ul>
 				<li><a href="/member/myPage">마이 페이지</a></li>
 				<li><a href="/member/myInfo" class="active">내 정보</a></li>
+				<li><a href="/member/myFollow">팔로워 관리</a></li>
 				<li><a href="/member/myList">내가 쓴글</a></li>
 				<li><a href="/member/myReply">내가 쓴 댓글</a></li>
 				<li><a href="/member/deleteMember">회원탈퇴</a></li>
@@ -26,6 +27,7 @@
 			<form action="/member/updateMyInfo" method="POST"
 				enctype="multipart/form-data" onsubmit="return formCheck()">
 				<div class="info">
+					<h4>프로필 이미지</h4>
 					<label for="profileImageInput" class="profile-image-label"
 						style="display: inline-block;"> <img
 						id="profileImagePreview"
@@ -38,7 +40,11 @@
 						class="profile-photo">
 					</label> <input type="file" name="file" id="profileImageInput"
 						accept="image/*" style="display: none;">
-
+						
+					<p class="profile-delete">
+            			<button type="button" id="deleteProfileImageButton" onclick="confirmDeleteProfileImage()">프로필 이미지 제거</button>
+        			</p>
+					<input type="hidden" name="fileRemoved" id="fileRemoved" value="false">
 				</div>
 				
 				<div class="info">
@@ -72,7 +78,7 @@
 						<option value="FOREIGNER">FOREIGNER</option>
 					</select>
 				</div>
-				<button type="submit">저장하기</button>
+				<button type="submit" class="button">저장하기</button>
 			</form>
 		</div>
 	</div>
@@ -109,6 +115,15 @@
 				reader.readAsDataURL(e.target.files[0]);
 			}
 		});
+		
+		function confirmDeleteProfileImage() {
+	        if (confirm("프로필 이미지를 삭제하시겠습니까?")) {
+	            // 삭제 요청을 나타내기 위해 hidden input의 값을 true로 설정
+	            document.getElementById('fileRemoved').value = "true";
+
+	            profileImagePreview.src = "/myPageImage/no-profil.png"; // 기본 이미지로 설정
+	        }
+	    }
 	</script>
 </body>
 </html>
