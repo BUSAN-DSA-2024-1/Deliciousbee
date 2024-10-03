@@ -540,6 +540,10 @@
         animation: shadow 1.7s infinite;
         filter: blur(5px);
     }
+    .btn-selected {
+        background-color: #007bff; /* 원하는 배경색으로 변경 */
+        color: white; /* 원하는 글자색으로 변경 */
+    }
 
     @keyframes shadow {
         0% {
@@ -689,7 +693,8 @@
     let infoWindows = [];
     let restaurantCount = 0; // 정렬 순서 번호
     let currentRestaurantId = null;
-    let radius = 0.5;
+    let radius = 500; // 기본값 500m 설정
+    let selectedButton = $('#distance500'); // 기본 선택 버튼 설정
 
 
 
@@ -768,7 +773,7 @@
     function initMap() {
         const initialCenter = { lat: 37.5665, lng: 126.9780 }; // 서울 시청
         map = new google.maps.Map(document.getElementById("map"), {
-            zoom: 15,
+            zoom: 14,
             center: initialCenter,
         });
 
@@ -956,31 +961,51 @@
         infoWindows = [];
     }
 
-    // 버튼 클릭 이벤트 핸들러 추가
+
+    function updateButtonStyles() {
+        $('.btn-sort').removeClass('btn-selected'); // 모든 버튼에서 선택 효과 제거
+        selectedButton.addClass('btn-selected'); // 현재 선택된 버튼에 선택 효과 추가
+    }
+
+
     $('#distance500').click(function() {
         radius = 500;
-        loadRestaurants(); // radius 값을 0.5로 설정하고 loadRestaurants 함수 호출
+        selectedButton = $(this); // 현재 클릭된 버튼 저장
+        updateButtonStyles();
+        loadRestaurants();
     });
 
     $('#distance1500').click(function() {
         radius = 1500;
+        selectedButton = $(this);
+        updateButtonStyles();
         loadRestaurants();
     });
 
     $('#distance3000').click(function() {
         radius = 3000;
+        selectedButton = $(this);
+        updateButtonStyles();
         loadRestaurants();
     });
 
     $('#distance5000').click(function() {
         radius = 5000;
+        selectedButton = $(this);
+        updateButtonStyles();
         loadRestaurants();
     });
 
     $('#distance10000').click(function() {
         radius = 10000;
+        selectedButton = $(this);
+        updateButtonStyles();
         loadRestaurants();
     });
+
+
+    // 초기 로드 시 500m 버튼 선택 효과 적용
+    updateButtonStyles();
 
 
     $(document).ready(function() {
