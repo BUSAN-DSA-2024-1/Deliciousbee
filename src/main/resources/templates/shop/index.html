@@ -7,10 +7,11 @@
     <title>DeliciousBee - 맛집 찾기</title>
     
     <link rel="stylesheet" href="/css/index.css">
+    
 </head>
 <body>
 <!-- 네비게이션 바 삽입 -->
-<th:block th:replace="~{fragments/navbar-login :: navbar}"></th:block>
+<th:block th:replace="~{fragments/index-navbar-login :: index-navbar}"></th:block>
 <!-- 로그인 모달 삽입 -->
 <th:block th:replace="~{fragments/navbar-login :: loginModal}"></th:block>
 <main>
@@ -42,7 +43,7 @@
                 <li class="img-content" th:each="restaurant : ${restaurantlist}"
                     th:onclick="|window.location.href='@{/restaurant/rtread/{restaurantId}(restaurantId=${restaurant.id})}'|">
                     <div class="content-wrapper">
-                        <div class="image-wrapper" th:each="file : ${restaurant.attachedFile}">
+                        <div class="image-wrapper"  th:each="file : ${restaurant.attachedFile}">
                             <img th:if="${#lists.size(restaurant.attachedFile) > 0}" th:src="@{'/restaurant/display?filename='+${file.saved_filename}}" alt="레스토랑 이미지"/>
                             <p th:if="${#lists.size(restaurant.attachedFile) == 0}">이미지가 없습니다</p>
                         </div>
@@ -60,6 +61,25 @@
 
 </main>
 <script>
+
+document.querySelector('.slide-left').addEventListener('click', function() {
+	event.preventDefault();
+    document.querySelector('.card').scrollBy({
+        left: -472, // 왼쪽으로 300px 스크롤
+        behavior: 'smooth'
+    });
+    console.log('왼쪽으로 스크롤 중'); // 스크롤 로그 추가
+});
+
+document.querySelector('.slide-right').addEventListener('click', function() {
+	event.preventDefault();
+    document.querySelector('.card').scrollBy({
+        left: 472, // 오른쪽으로 300px 스크롤
+        behavior: 'smooth'
+    });
+    console.log('오른쪽으로 스크롤 중'); // 스크롤 로그 추가
+});
+
 </script>
 <script th:src="@{/js/layout.js}"></script>
 
