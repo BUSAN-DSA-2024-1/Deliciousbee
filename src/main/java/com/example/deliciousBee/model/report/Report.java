@@ -6,15 +6,8 @@ import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.review.Review;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
 import lombok.Data;
 import net.minidev.json.annotate.JsonIgnore;
 
@@ -30,12 +23,14 @@ public class Report {
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
-    @ManyToOne
-    @JoinColumn(name = "bee_member_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    @JsonBackReference // Report 엔티티가 "back" 참조
     private BeeMember beeMember;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "review_id")
+    @JsonBackReference
     private Review review;
 
     @Enumerated(EnumType.STRING)
@@ -43,5 +38,6 @@ public class Report {
     
     @Column(name = "report_date")
     private LocalDate reportDate;
+
 
 }
