@@ -11,22 +11,136 @@ a {
     border-top: 1px solid rgba(0,0,0,.1);
 }
 
+/* 신고 버튼 */
+.update-btn {
+	border: none;
+	background-color: white;
+}
+
+.report-position {
+	display: flex;
+	justify-content: space-between;
+	
+}
+
+/* 레스토랑 신고 모달 스타일 */
+    .restaurant-modal-container {
+        width: 350px;
+        background-color: #fff;
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+        border-radius: 10px;
+        box-sizing: border-box;
+        padding: 20px 30px;
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000;
+    }
+
+    .restaurant-report-title {
+        text-align: center;
+        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+        "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+        margin: 10px 0 30px 0;
+        font-size: 28px;
+        font-weight: 800;
+    }
+
+    .restaurant-report-button-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        margin-top: 20px;
+        gap: 15px;
+    }
+
+.image-wrapper {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap; /* 줄 바꿈 허용 */
+}
+
+.card-img-top2 {
+    height: 300px; /* 비율 유지 */
+    object-fit: cover; /* 이미지 비율 유지 */
+}
+
+
+/* 숨길 이미지 스타일 */
+.hidden {
+    display: none;
+}
+
+.show-more {
+  position: absolute;
+  top: 100px; /* 상단 여백 */
+  right: 10px; /* 오른쪽 여백 */
+  font-size: 16px;
+  color: white;
+  background-color: gray;
+  	width: 30px;
+	height: 30px;
+	z-index: 50;
+	border: none;
+	opacity: 0.4;
+	
+}
+
 .image-gallery {
-      justify-content: center; /* cardking 내부 요소 가로 중앙 정렬 */
-       align-items: center; /* 이미지를 수직으로도 중앙 정렬 */
+  height: 100%; /* 부모 컨테이너 높이 채우기 */
+  width: 100%; /* 부모 컨테이너 너비 채우기 */
+  display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
 }
 
-.card-img-top {
-	width:300px;
-    overflow:hidden;
-    margin:0 auto;	 
+.gallery-item {
+  /* width: 100px; (필요 없음) */
+  display: flex;
+  max-height: 300px; /* 최대 높이 설정 */
+    justify-content: center;
 }
 
-.imagination {
-	width:100%;
-    height:100%;
-    object-fit:cover;
+.gallery-item img {
+  max-width: 100%;
+  max-height: 100%; /* 부모의 최대 높이를 따르도록 설정 */
+  object-fit: contain; /* 이미지 비율 유지하며 컨테이너에 맞춤 */
+  display: block; /* 이미지 아래쪽의 여백 제거 */
+
 }
+
+.hidden-image {
+  display: none;
+}
+
+.modal-image {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%; /* 이미지 너비 조정 */
+}
+
+/* 모달 스타일 (필요에 따라 추가) */
+.modal-content {
+    max-width: 900px; /* 최대 너비 설정 */
+    margin: 0 auto; /* 가운데 정렬 */
+}
+
+.modal-body {
+    display: flex;
+    flex-wrap: wrap; /* 여러 줄로 배치 */
+    justify-content: center; /* 가운데 정렬 */
+    gap: 10px; /* 이미지 간 간격 */
+}
+
+.modal-image img{
+    width: 200px; /* 이미지 크기 조정 */
+    height: 200px; /* 이미지 크기 조정 */
+    object-fit: cover;
+
 
 .cardking {
   height: 150px;
@@ -330,6 +444,7 @@ a {
 .dropdown-menu li button:hover {
   background-color: #f0f0f0;
 }
+
 
 /* 구분선 스타일 */
 .dropdown-menu li:not(:last-child) {
