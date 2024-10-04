@@ -4,31 +4,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="/css/index.css">
-	<link rel="stylesheet" href="/css/myPage.css">
+<link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="/css/myPage.css">
 <title>마이페이지</title>
 </head>
 <body>
-<!-- 네비게이션 바 삽입 -->
-<th:block th:replace="~{fragments/navbar-login :: navbar}"></th:block>
-<!-- 로그인 모달 삽입 -->
-<th:block th:replace="~{fragments/navbar-login :: loginModal}"></th:block>
+	<!-- 네비게이션 바 삽입 -->
+	<th:block th:replace="~{fragments/navbar-login :: navbar}"></th:block>
+	<!-- 로그인 모달 삽입 -->
+	<th:block th:replace="~{fragments/navbar-login :: loginModal}"></th:block>
 
-	<div class="main-info">
+
+
+
+
+
+	<div class="main-image">
 		<!-- 메인 이미지 -->
-		<img th:if="${myPage.mainImage == null}" src="/image/back.jpg"
-			alt="기본 이미지" class="default-main-image"> <img
+		<img th:if="${myPage.mainImage == null}"
+			src="/myPageImage/no-main-image.png" alt="기본 이미지"
+			class="default-main-image"> <img
 			th:unless="${myPage.mainImage == null}"
-			th:src="@{'/loginMember/display?filename=' + ${loginMember.profileImage.saved_filename}}"
-			alt="메인 이미지" class="main-image">
+			th:src="@{'/loginMember/display?filename=' + ${loginMember.Image.saved_filename}}"
+			alt="메인 이미지">
 		<!-- 프로필 이미지 -->
 		<div class="profile-image">
 			<img th:if="${myPage.beeMember.profileImage == null}"
 				src="/myPageImage/no-profil.png" alt="기본 이미지"
-				class="default-profile-image"> <img
+				class="my-profile-image"> <img
 				th:unless="${myPage.beeMember.profileImage == null}"
-				th:src="@{'/member/display?filename=' + ${loginMember.profileImage.saved_filename}}"
-				alt="메인 이미지" class="profile-image">
+				th:src="@{'/member/display?filename=' + ${myPage.beeMember.profileImage.saved_filename}}"
+				alt="메인 이미지" class="my-profile-image">
 		</div>
 	</div>
 
@@ -43,21 +49,33 @@
 					<div th:if="${!isOwner}">
 						<button th:if="${loginMember != null}"
 							th:id="'followButton' + ${myPage.beeMember.member_id}"
-							th:text="${followService.isFollowing(loginMember.member_id, myPage.beeMember.member_id)} ? '언팔로우' : '팔로우'"
 							th:data-following-id="${myPage.beeMember.member_id}"
 							th:class="${followService.isFollowing(loginMember.member_id, myPage.beeMember.member_id)} ? 'follow-button' : 'nofollow'"
-							onclick="toggleFollow(this)"></button>
+							onclick="toggleFollow(this)">
+							<img
+								th:src="${followService.isFollowing(loginMember.member_id, myPage.beeMember.member_id)} ? @{/myPageImage/unfollow.png} : @{/myPageImage/follow.png}"
+								alt="팔로우/언팔로우">
+						</button>
 						<div class="no-login-follow">
 							<a th:if="${loginMember == null}" th:href="@{login}"
 								onclick="return showLoginAlert()" class="nofollow">팔로우</a>
 						</div>
 						<!-- 팔로워/팔로잉 목록 버튼 -->
 					</div>
-					<button class="follow-list" onclick="showFollowersModal()">팔로워
-						목록</button>
-					<button class="follow-list" onclick="showFollowingModal()">팔로잉
-						목록</button>
+					<button class="follow-list" onclick="showFollowersModal()">
+						<img src="/myPageImage/follower-list.png" alt="팔로워 목록">
+					</button>
+					<button class="follow-list" onclick="showFollowingModal()">
+						<img src="/myPageImage/follwing-list.png" alt="팔로워 목록">
+					</button>
 				</span>
+				<div class="goUpdate-button"
+					th:if="${loginMember != null and loginMember.member_id == myPage.beeMember.member_id}">
+					<button class="update-btn"
+						onclick="location.href='/member/updateMyPage'">
+						<img src="/myPageImage/update-myPage.png" alt="수정하기 아이콘">
+					</button>
+				</div>
 			</div>
 			<h4 class="intro-title">소개글</h4>
 			<div class="introduce"
@@ -69,7 +87,7 @@
 		</div>
 
 		<!-- 팔로워 목록 모달 -->
-		<div id="followersModal" class="modal">
+		<div id="followersModal" class="list-modal">
 			<div class="follow-modal-content">
 				<span class="close-modal" onclick="closeFollowersModal()">×</span>
 				<h3>팔로워 목록</h3>
@@ -85,7 +103,7 @@
 		</div>
 
 		<!-- 팔로잉 목록 모달 -->
-		<div id="followingModal" class="modal">
+		<div id="followingModal" class="list-modal">
 			<div class="follow-modal-content">
 				<span class="close-modal" onclick="closeFollowingModal()">×</span>
 				<h3>팔로잉 목록</h3>
@@ -110,7 +128,7 @@
 		</div>
 
 		<!-- 오늘의 방문자 목록 모달 -->
-		<div id="visitorsModal" class="modal">
+		<div id="visitorsModal" class="list-modal">
 			<div class="visit-modal-content">
 				<span class="close-modal" onclick="closeVisitorsModal()">×</span>
 				<h3>오늘의 방문자</h3>
@@ -137,7 +155,7 @@
 				<div class="restaurant_name_head">
 					<span><img src="/image/bee.jpg" alt="벌 이미지"
 						style="width: 35px; height: 35px; object-fit: cover;"></span> <a
-						th:href="@{/restaurant/rtread(id=${review.restaurant.id})}"
+						th:href="@{/restaurant/rtread/{id}(id=${review.restaurant.id}, reviewId=${review.id})}"
 						title="식당 정보로 이동"> <span th:text="${review.restaurant.name}"
 						class="restaurant_name" style="text-decoration: none;"></span>
 					</a>
@@ -206,13 +224,13 @@
 							<p>
 								친절 포인트: <span class="gauge-container"> <span
 									class="gauge"
-									th:style="'width:' + ${review.kindRating * 33.33} + '%'"></span>
+									th:style="'width:' + ${review.kindRating * 33.33} + '%; background-color:' + (${review.kindRating == 1 ? '#ff4c4c' : (review.kindRating == 2 ? '#ffc107' : '#4caf50')})"></span>
 								</span> 맛 포인트: <span class="gauge-container"> <span
 									class="gauge"
-									th:style="'width:' + ${review.tasteRating * 33.33} + '%'"></span>
+									th:style="'width:' + ${review.tasteRating * 33.33} + '%; background-color:' + (${review.tasteRating == 1 ? '#ff4c4c' : (review.tasteRating == 2 ? '#ffc107' : '#4caf50')})"></span>
 								</span> 가격 포인트: <span class="gauge-container"> <span
 									class="gauge"
-									th:style="'width:' + ${review.priceRating * 33.33} + '%'"></span>
+									th:style="'width:' + ${review.priceRating * 33.33} + '%; background-color:' + (${review.priceRating == 1 ? '#ff4c4c' : (review.priceRating == 2 ? '#ffc107' : '#4caf50')})"></span>
 								</span>
 							</p>
 						</div>
@@ -221,8 +239,8 @@
 								<span>추천 메뉴: </span> <span
 									th:each="reviewMenu, iterStat : ${review.reviewMenuList}"
 									th:text="${reviewMenu?.menu?.name 
-                  					 ?: reviewMenu?.customMenuName 
-                   					?: ''} + ${!iterStat.last ? ', ' : ''}"></span>
+                ?: reviewMenu?.customMenuName 
+                ?: ''} + ${!iterStat.last ? ', ' : ''}"></span>
 							</div>
 							<div class="review_content"
 								th:id="'reviewContent' + ${review.id}"
@@ -250,7 +268,7 @@
 			<div class="no-review-info">
 				작성된 리뷰가 없습니다ㅠ
 				<p th:if="${#authentication.isAuthenticated() and isOwner}">
-					<a href="rtlist.html">리뷰 작성하러 가기</a> 👉
+					<a href="/">리뷰 작성하러 가기</a> 👉
 				</p>
 			</div>
 		</div>
@@ -282,34 +300,20 @@
 					</tr>
 				</tbody>
 			</table>
+
 			<div class="random-review" id="randomReviewSlider">
 				<h3>오늘의 리뷰</h3>
-				<div th:if="${randomReview != null}" class="random-review-item">
-					<a
-						th:href="@{/restaurant/rtread(id=${randomReview.restaurant.id})}"
-						title="식당 정보로 이동"> <span class="restaurant-name"
-						th:text="${randomReview.restaurant.name}"></span>
-					</a> <img
-						th:if="${randomReview.attachedFile != null and !randomReview.attachedFile.isEmpty()}"
-						th:each="file : ${randomReview.attachedFile}"
-						th:src="@{'/review/display?filename='+${file.saved_filename}}"
-						alt="Review Image"
-						style="width: 200px; height: 200px; object-fit: cover;"> <img
-						th:unless="${randomReview.attachedFile != null and !randomReview.attachedFile.isEmpty()}"
-						src="/myPageImage/no-review-img.jpg" alt="No Review Image"
-						style="width: 200px; height: 200px; object-fit: cover;">
+				<div id="randomReviewContainer">
+					<div class="random-review-item" id="currentRandomReview">
+						<!-- 초기에는 비어 있음. JavaScript에서 내용을 채웁니다. -->
+					</div>
 				</div>
-				<div th:unless="${randomReview != null}">
-					<p>리뷰가 없습니다.</p>
-				</div>
+				<button id="nextReviewsButton">다음</button>
 			</div>
 		</div>
 	</div>
 
-	<div class="goUpdate-button"
-		th:if="${loginMember != null and loginMember.member_id == myPage.beeMember.member_id}">
-		<button onclick="location.href='/member/updateMyPage'">수정하기</button>
-	</div>
+
 	<!-- 위로가는 화살표 버튼 -->
 	<a onclick="scrollToTop()" id="scrollToTopButton"> <svg
 			xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -357,26 +361,35 @@
 		//팔로워**************
 		async function toggleFollow(button) {
     const followingId = button.dataset.followingId;
-    const isFollowing = button.textContent === '언팔로우';
+    const img = button.querySelector('img'); // 이미지 요소 가져오기
+    const isFollowing = img.src.endsWith('/myPageImage/unfollow.png'); // 이미지 src로 판별
     const url = isFollowing ? `/unfollow/${followingId}` : `/follow/${followingId}`;
 
     try {
         const response = await fetch(url, { method: 'POST' });
-        const success = await response.json(); 
+        const success = await response.json();
 
         if (success) {
-            // 버튼 텍스트 및 클래스 변경
-            button.textContent = isFollowing ? '팔로우' : '언팔로우';
-            button.classList.toggle('follow-button', !isFollowing); // 언팔로우 시 btn-secondary 추가
-            button.classList.toggle('nofollow', isFollowing); // 팔로우 시 btn-primary 추가
+            // 이미지 src 및 클래스 변경
+            img.src = isFollowing ? '/myPageImage/follow.png' : '/myPageImage/unfollow.png';
+            button.classList.toggle('follow-button', !isFollowing);
+            button.classList.toggle('nofollow', isFollowing);
+            
+            // 툴팁 내용 변경
+            const tooltip = button.querySelector('.tooltiptext'); 
+            if (tooltip) { 
+                tooltip.textContent = isFollowing ? '팔로우' : '언팔로우';
+            }
+
+
         } else {
             alert('팔로우/언팔로우 요청에 실패했습니다.');
         }
-   			 } catch (error) {
-        	console.error('팔로우/언팔로우 요청 중 오류 발생:', error);
-        	alert('팔로우/언팔로우 요청 중 오류가 발생했습니다.');
-   		  }
-		}		
+    } catch (error) {
+        console.error('팔로우/언팔로우 요청 중 오류 발생:', error);
+        alert('팔로우/언팔로우 요청 중 오류가 발생했습니다.');
+    }
+}
 		//로그인안한사람 팔로워하려할때**************
 		function showLoginAlert() {
 	        alert("로그인이 필요한 서비스입니다.");
@@ -464,47 +477,7 @@ function scrollToTop() {
     });
 }
 
-function updateRandomReview() {
-    $.ajax({
-        url: '/random-review', // 컨트롤러의 API URL
-        type: 'GET',
-        dataType: 'json',
-        success: function(data) {
-            if (data) { // 데이터가 존재하는 경우에만 업데이트
-                $('#randomReviewSlider .restaurant-name').text(data.restaurantName);
 
-                // 이미지 업데이트 로직 개선
-                const imageBox = $('#randomReviewSlider .random-review-item');
-                imageBox.empty(); // 기존 이미지 삭제
-
-                if (data.imageUrl) {
-                    $('<img>').attr({
-                        src: data.imageUrl,
-                        alt: 'Review Image',
-                        style: 'width: 200px; height: 200px; object-fit: cover;'
-                    }).appendTo(imageBox);
-                } else {
-                    $('<img>').attr({
-                        src: '/myPageImage/no-review-img.jpg',
-                        alt: 'No Review Image',
-                        style: 'width: 200px; height: 200px; object-fit: cover;'
-                    }).appendTo(imageBox);
-                }
-            }
-        },
-        error: function(error) {
-            console.error('랜덤 리뷰 가져오기 실패:', error);
-        }
-    });
-}
-
-$(document).ready(function() {
-    // 초기 로딩 시 한 번 실행
-    updateRandomReview();
-
-    // 5초마다 반복 실행
-    setInterval(updateRandomReview, 5000); 
-});
 
 //리뷰로 이동
  function scrollToReview(reviewId) {
@@ -579,7 +552,51 @@ $(document).ready(function() {
    }
    window.addEventListener('click', handleLargeImageModalOutsideClick);
  }
+ 
+ 
+ //랜덤 리뷰
+ $(document).ready(function() {
+	    let currentReviewIndex = 0;
+	    let randomReviews = []; // 전역 변수로 선언
+
+	    // 초기 랜덤 리뷰 로드 (기존 AJAX 요청 유지)
+	    $.ajax({
+	        url: '/member/randomReviews',
+	        type: 'GET',
+	        success: function(data) {
+	            randomReviews = JSON.parse(data); // JSON으로 파싱
+	            showRandomReview(currentReviewIndex); // 첫 번째 리뷰 표시
+	        },
+	        error: function(error) {
+	            console.error('랜덤 리뷰 가져오기 실패:', error);
+	        }
+	    });
+
+
+	    $("#nextReviewsButton").click(function() {
+	        currentReviewIndex = (currentReviewIndex + 1) % randomReviews.length;
+	        showRandomReview(currentReviewIndex);
+	    });
+
+	    function showRandomReview(index) {
+	        const review = randomReviews[index];
+	        // HTML 생성 및 추가 (기존 로직 활용)
+	         console.log("Selected review:", review);
+	       let reviewHtml = `
+	    	   <a href="/restaurant/rtread/${review.restaurantId}?reviewId=${review.reviewId}" class="random-review-link">
+	            <div class="random-review-image">
+	                <img src="${review.imageUrl}" alt="Random Review Image">
+	            </div>
+	            <div class="random-review-content">
+	                <span>${review.restaurantName}</span>
+	            </div>
+	        </a>
+	       `;
+	        $('#currentRandomReview').html(reviewHtml);
+	    }
+	});
 	</script>
+	<script th:src="@{/js/layout.js}"></script>
 
 </body>
 

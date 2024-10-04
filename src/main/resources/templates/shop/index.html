@@ -5,12 +5,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DeliciousBee - 맛집 찾기</title>
-    
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
     <link rel="stylesheet" href="/css/index.css">
+    <style>
+        /* 스타일 추가 (선택사항) */
+        .message-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 1px solid #ccc;
+            padding: 20px;
+            background-color: white;
+            z-index: 1000; /* 다른 요소 위에 표시 */
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+        .message-form label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .message-form input[type="text"],
+        .message-form textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        .message-form button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .message-form button.cancel {
+            background-color: #f44336; /* 빨간색 */
+        }
+    </style>
 </head>
 <body>
+
 <!-- 네비게이션 바 삽입 -->
-<th:block th:replace="~{fragments/navbar-login :: navbar}"></th:block>
+<th:block th:replace="~{fragments/index-navbar-login :: index-navbar}"></th:block>
 <!-- 로그인 모달 삽입 -->
 <th:block th:replace="~{fragments/navbar-login :: loginModal}"></th:block>
 <main>
@@ -42,7 +80,7 @@
                 <li class="img-content" th:each="restaurant : ${restaurantlist}"
                     th:onclick="|window.location.href='@{/restaurant/rtread/{restaurantId}(restaurantId=${restaurant.id})}'|">
                     <div class="content-wrapper">
-                        <div class="image-wrapper" th:each="file : ${restaurant.attachedFile}">
+                        <div class="image-wrapper"  th:each="file : ${restaurant.attachedFile}">
                             <img th:if="${#lists.size(restaurant.attachedFile) > 0}" th:src="@{'/restaurant/display?filename='+${file.saved_filename}}" alt="레스토랑 이미지"/>
                             <p th:if="${#lists.size(restaurant.attachedFile) == 0}">이미지가 없습니다</p>
                         </div>
@@ -58,8 +96,81 @@
         </section>
     </div>
 
+
 </main>
+<div class="message-popup" id="messagePopup">
+    <form class="message-form">
+        <label for="senderId">보내는 사람:</label>
+        <input type="text" id="senderId" name="senderId"><br><br>
+
+        <label for="receiverId">받는 사람:</label>
+        <input type="text" id="receiverId" name="receiverId"><br><br>
+
+        <label for="message">내용:</label>
+        <textarea id="message" name="message"></textarea><br><br>
+
+        <button type="button" onclick="sendMessage()">확인</button>
+        <button type="button" class="cancel" onclick="closeMessagePopup()">취소</button>
+    </form>
+</div>
 <script>
+
+document.querySelector('.slide-left').addEventListener('click', function() {
+	event.preventDefault();
+    document.querySelector('.card').scrollBy({
+        left: -472, // 왼쪽으로 300px 스크롤
+        behavior: 'smooth'
+    });
+    console.log('왼쪽으로 스크롤 중'); // 스크롤 로그 추가
+});
+
+document.querySelector('.slide-right').addEventListener('click', function() {
+	event.preventDefault();
+    document.querySelector('.card').scrollBy({
+        left: 472, // 오른쪽으로 300px 스크롤
+        behavior: 'smooth'
+    });
+    console.log('오른쪽으로 스크롤 중'); // 스크롤 로그 추가
+});
+function openMessagePopup() {
+    document.getElementById("messagePopup").style.display = "block";
+}
+
+function closeMessagePopup() {
+    document.getElementById("messagePopup").style.display = "none";
+}
+
+function sendMessage() {
+    const senderId = document.getElementById("senderId").value;  // 수정된 ID
+    const receiverId = document.getElementById("receiverId").value; // 수정된 ID
+    const content = document.getElementById("message").value;  // message 내용 가져오기
+
+    // 입력값 유효성 검사 (필수)
+    if (!senderId || !receiverId || !content) {
+        alert("모든 필드를 입력해야 합니다.");
+        return;
+    }
+
+    $.ajax({
+        type: "POST",
+        url: "/api/messages/send",
+        contentType: "application/json",
+        data: JSON.stringify({
+            senderId: senderId,
+            receiverId: receiverId,
+            content: content
+        }),
+        success: function (response) {
+            console.log("메시지 전송 성공:", response);
+            alert("메시지가 전송되었습니다.");
+            closeMessagePopup();
+        },
+        error: function (error) {
+            console.error("메시지 전송 실패:", error);
+            alert("메시지 전송에 실패했습니다.");
+        }
+    });
+}
 </script>
 <script th:src="@{/js/layout.js}"></script>
 

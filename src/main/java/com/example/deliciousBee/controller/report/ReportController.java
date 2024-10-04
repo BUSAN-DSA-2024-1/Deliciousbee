@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+
 import com.example.deliciousBee.dto.report.ReportDto;
 import com.example.deliciousBee.dto.report.RestaurantVerificationDto;
 import com.example.deliciousBee.model.board.Restaurant;
@@ -28,6 +29,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,17 +38,20 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ReportController {
 
+
 	private final RestaurantService restaurantService;
 	private final ReportService reportService;
 	private final ReviewService reviewService;
 	private final RestaurantReportService restaurantReportService;
 
-	// 리뷰 신고
+
 	@PostMapping("/restaurant/rtread/report/submit/{reviewId}")
 	@ResponseBody
-	public ResponseEntity<Map<String, Object>> submitReport(@RequestBody Report report,
-			@PathVariable("reviewId") Long reviewId, @AuthenticationPrincipal BeeMember loginMember) {
-				
+	public ResponseEntity<Map<String, Object>> submitReport(
+			@RequestBody ReportDto reportDto,
+			@PathVariable("reviewId") Long reviewId,
+			@AuthenticationPrincipal BeeMember loginMember) {
+
 		Map<String, Object> response = new HashMap<>();
 		
 		if (loginMember == null) {
@@ -55,8 +60,9 @@ public class ReportController {
 		try {
 			report.setBeeMember(loginMember);
 			report.setReportDate(LocalDate.now());
+			report.setReason(reportDto.getReason());
+			// 필요한 경우 추가 필드 설정
 
-			// 신고 제출 서비스 호출
 			boolean success = reportService.sendReport(reviewId, report);
 			response.put("success", success);
 			if (success) {
@@ -163,9 +169,7 @@ public class ReportController {
 	public ResponseEntity<Map<String, Object>> getPendingRestaurants() {
 		Map<String, Object> response = new HashMap<>();
 		try {
-			List<RestaurantVerificationDto> pendingRestaurantDtos = restaurantService.getPendingRestaurantDtos(); // RestaurantReportDto
-																													// 리스트
-																													// 가져오기
+			List<RestaurantVerificationDto> pendingRestaurantDtos = restaurantService.getPendingRestaurantDtos(); // RestaurantReportDto 리스트 가져오기
 			response.put("pending", pendingRestaurantDtos); // RestaurantReportDto 리스트를 "pending" 키에 담아 반환
 			response.put("success", true);
 		} catch (Exception e) {
@@ -193,14 +197,21 @@ public class ReportController {
 		return ResponseEntity.ok(response);
 	}
 
+
+
 	@PostMapping("/restaurants/{restaurantId}/reports")
 	@ResponseBody
-	public ResponseEntity<Map<String, Object>> createRestaurantReport(@PathVariable Long restaurantId,
-			@Valid @RequestBody RestaurantReportRequest request, @AuthenticationPrincipal BeeMember loginMember) {
+	public ResponseEntity<Map<String, Object>> createRestaurantReport(
+			@PathVariable Long restaurantId,
+			@Valid @RequestBody RestaurantReportRequest request,
+			@AuthenticationPrincipal BeeMember loginMember) {
 
 		String reporterId = loginMember != null ? loginMember.getMember_id() : null;
-		RestaurantReport report = restaurantReportService.createReport(restaurantId, Long.valueOf(reporterId),
-				request.getReportContent());
+		RestaurantReport report = restaurantReportService.createReport(
+				restaurantId,
+                Long.valueOf(reporterId),
+				request.getReportContent()
+		);
 
 		RestaurantReportDTO reportDTO = new RestaurantReportDTO(report);
 
@@ -218,7 +229,8 @@ public class ReportController {
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> getAllRestaurantReports() {
 		List<RestaurantReport> reports = restaurantReportService.getAllReports();
-		List<RestaurantReportDTO> reportDTOs = reports.stream().map(RestaurantReportDTO::new)
+		List<RestaurantReportDTO> reportDTOs = reports.stream()
+				.map(RestaurantReportDTO::new)
 				.collect(Collectors.toList());
 
 		Map<String, Object> response = new HashMap<>();
@@ -232,9 +244,11 @@ public class ReportController {
 	 */
 	@GetMapping("/admin/restaurants/{restaurantId}/reports")
 	@ResponseBody
-	public ResponseEntity<Map<String, Object>> getReportsByRestaurant(@PathVariable Long restaurantId) {
+	public ResponseEntity<Map<String, Object>> getReportsByRestaurant(
+			@PathVariable Long restaurantId) {
 		List<RestaurantReport> reports = restaurantReportService.getReportsByRestaurant(restaurantId);
-		List<RestaurantReportDTO> reportDTOs = reports.stream().map(RestaurantReportDTO::new)
+		List<RestaurantReportDTO> reportDTOs = reports.stream()
+				.map(RestaurantReportDTO::new)
 				.collect(Collectors.toList());
 
 		Map<String, Object> response = new HashMap<>();
@@ -248,7 +262,8 @@ public class ReportController {
 	 */
 	@PatchMapping("/admin/restaurant-reports/{reportId}/status")
 	@ResponseBody
-	public ResponseEntity<Map<String, Object>> updateRestaurantReportStatus(@PathVariable Long reportId,
+	public ResponseEntity<Map<String, Object>> updateRestaurantReportStatus(
+			@PathVariable Long reportId,
 			@RequestParam RestaurantReport.ReportStatus status) {
 		RestaurantReport updatedReport = restaurantReportService.updateReportStatus(reportId, status);
 		RestaurantReportDTO reportDTO = new RestaurantReportDTO(updatedReport);
@@ -274,3 +289,6 @@ public class ReportController {
 		return ResponseEntity.ok(response);
 	}
 }
+
+
+

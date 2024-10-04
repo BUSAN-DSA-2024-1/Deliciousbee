@@ -5,6 +5,7 @@ import com.example.deliciousBee.model.mypage.MyPage;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -18,15 +19,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MyPageAttachedFile {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long MyPageMainImage_id;   //첨부파일 아이디
+	  @Id
+	    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	    private Long mainImage_id;
+
 
 	
-	@OneToOne
-	@JoinColumn(name="myPage_id")
-	@JsonBackReference
-	private MyPage myPage;
+	  @OneToOne(mappedBy = "mainImage", fetch = FetchType.LAZY)
+	    @JsonBackReference
+	    private MyPage myPage;
 	
 	private String original_filename;  //원본 파일이름
 	private String saved_filename;     //저장할 파일이름

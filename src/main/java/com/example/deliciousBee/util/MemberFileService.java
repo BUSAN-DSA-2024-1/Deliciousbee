@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -14,8 +15,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.deliciousBee.model.file.MemberAttachedFile;
+import com.example.deliciousBee.model.member.BeeMember;
+import com.example.deliciousBee.repository.MemberFileRepository;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
@@ -26,7 +30,9 @@ public class MemberFileService {
 	@Value("${spring.cloud.gcp.storage.bucket}")
     private String bucketName;
 
+	
     private final ResourceLoader resourceLoader;
+    
 
     public MemberFileService(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
@@ -86,5 +92,26 @@ public class MemberFileService {
             return false;
         }
     }
+    @Autowired
+    private MemberFileRepository memberFileRepository;
+	public MemberAttachedFile findFileByMemberId(BeeMember findMember) {
+		return memberFileRepository.findByBeeMember(findMember);
+	}
+
+	public void removeFile(MemberAttachedFile profileImage) {
+	    // 1. Google Cloud Storage에서 파일 삭제
+	    String filename = profileImage.getSaved_filename(); // 저장된 파일 이름
+	    String bucketName = "your-bucket-name"; // Google Cloud Storage의 버킷 이름
+
+	    try {
+	        Storage storage = StorageOptions.getDefaultInstance().getService();
+	        BlobId blobId = BlobId.of(bucketName, filename);
+	        storage.delete(blobId); // 파일 삭제
+	    } catch (Exception e) {
+	    }
+
+	    // 2. DB에서 파일 정보 삭제
+	    memberFileRepository.deleteById(profileImage.getProfileImage_id());
+	}
 }
 

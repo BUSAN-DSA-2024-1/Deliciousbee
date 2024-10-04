@@ -15,24 +15,19 @@ import lombok.ToString;
 @ToString
 public class MyPageUpdateForm {
 
-	private BeeMember beeMember;
 
-	private Long myPage_id;
+	private Long id;
 
 	private String introduce;
 
 	private boolean fileRemoved; // 기본값 false 삭제됬으면 ture 반환, boolea의 getter는 get이아니라 is
 
-	private Long hit;
-	
-	private Long visitor;
 
 	public static MyPage toMyPage(MyPageUpdateForm myPageUpdateForm) {
 		MyPage myPage = new MyPage();
 
-		myPage.setId(myPageUpdateForm.getMyPage_id());
+		myPage.setId(myPageUpdateForm.getId());
 		myPage.setIntroduce(myPageUpdateForm.getIntroduce());
-		myPage.setBeeMember(myPageUpdateForm.getBeeMember());
 
 		return myPage;
 	}

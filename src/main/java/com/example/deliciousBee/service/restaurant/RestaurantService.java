@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import com.example.deliciousBee.dto.report.RestaurantVerificationDto;
 import com.example.deliciousBee.dto.restaurant.RestaurantDto;
-import com.example.deliciousBee.model.board.CategoryType;
 import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.board.VerificationStatus;
 import com.example.deliciousBee.model.file.RestaurantAttachedFile;
@@ -25,11 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -187,38 +182,63 @@ public class RestaurantService {
     public Page<RestaurantDto> searchRestaurants(String keyword, Pageable pageable, String sortBy,
                                                  Double userLatitude, Double userLongitude,
                                                  Double radius) {
-        Page<Restaurant> restaurants;
+        Page<Restaurant> restaurants = null;
+        double[] radiusValues = {500, 1500, 3000, 5000, 10000};
+        int radiusIndex = 0;
 
-        // 기본 반경 값 설정 (500m)
-        if (radius == null) {
-            radius = 6.0; // 반경을 km 단위로 설정 (0.5km = 500m)
-        }
-
-        if (keyword == null || keyword.isEmpty()) {
-            // 검색어가 없는 경우 전체 레스토랑 목록 조회
-            if ("distance".equals(sortBy) && userLatitude != null && userLongitude != null && radius > 0) {
-                restaurants = restaurantRepository.findAllWithinRadius(userLatitude, userLongitude, radius, pageable);
-            } else if ("distance".equals(sortBy) && userLatitude != null && userLongitude != null && radius <= 0) {
-                restaurants = restaurantRepository.findAllSortedByDistance(userLatitude, userLongitude, pageable);
-            } else if ("rating".equals(sortBy)) { // 평점순 정렬 추가
-                restaurants = restaurantRepository.findAllSortedByRating(pageable);
-            } else {
-                restaurants = restaurantRepository.findAll(pageable);
-            }
-        } else {
-            // 키워드가 있는 경우: 검색된 레스토랑 조회
-            if ("distance".equals(sortBy) && userLatitude != null && userLongitude != null && radius > 0) {
-                restaurants = restaurantRepository.searchByNameOrMenuNameWithinRadius(keyword, userLatitude, userLongitude, radius, pageable);
-            } else if ("distance".equals(sortBy) && userLatitude != null && userLongitude != null && radius <= 0) {
-                restaurants = restaurantRepository.searchByNameOrMenuNameSortedByDistance(keyword, userLatitude, userLongitude, pageable);
-            } else if ("rating".equals(sortBy)) { // 평점순 정렬 추가
-                restaurants = restaurantRepository.searchByNameOrMenuNameSortedByRating(keyword, pageable);
-            } else {
-                restaurants = restaurantRepository.searchByNameOrMenuName(keyword, pageable);
+        // radius 파라미터를 기준으로 초기 radiusIndex 설정
+        if (radius != null) {
+            for (int i = 0; i < radiusValues.length; i++) {
+                if (radius <= radiusValues[i]) {
+                    radiusIndex = i;
+                    break;
+                }
+                // 만약 radius가 배열의 모든 값보다 크면 마지막 인덱스를 사용
+                if (i == radiusValues.length - 1) {
+                    radiusIndex = i;
+                }
             }
         }
 
-        // DTO로 변환
+        while (restaurants == null || restaurants.getContent().isEmpty()) {
+            double currentRadius = radiusValues[radiusIndex];
+
+            if (keyword == null || keyword.isEmpty()) {
+                if ("distance".equals(sortBy) && userLatitude != null && userLongitude != null) {
+                    restaurants = restaurantRepository.findAllWithinRadius(userLatitude, userLongitude, currentRadius, pageable);
+                } else if ("rating".equals(sortBy)) {
+                    restaurants = restaurantRepository.findAllSortedByRating(pageable);
+                } else {
+                    restaurants = restaurantRepository.findAll(pageable);
+                }
+            } else {
+                if ("distance".equals(sortBy) && userLatitude != null && userLongitude != null) {
+                    restaurants = restaurantRepository.searchByNameOrMenuNameWithinRadiusAsc(keyword, userLatitude, userLongitude, currentRadius, pageable);
+                } else if ("rating".equals(sortBy)) {
+                    restaurants = restaurantRepository.searchByNameOrMenuNameSortedByRating(keyword, pageable);
+                } else {
+                    restaurants = restaurantRepository.searchByNameOrMenuNameWithinRadius(keyword, userLatitude, userLongitude, currentRadius, pageable);
+                }
+            }
+
+            System.out.println("Empty: " + restaurants.getContent().isEmpty());
+            System.out.println("Radius Index: " + radiusIndex);
+            System.out.println("Current Radius: " + currentRadius);
+
+            if (restaurants != null && restaurants.getContent().isEmpty()) {
+                radiusIndex++;
+                if (radiusIndex >= radiusValues.length) break;
+            }
+        }
+
+        if (restaurants == null || restaurants.getContent().isEmpty()) {
+            log.info("검색 결과가 없습니다.");
+            return Page.empty(pageable);
+        }
+
+        // radius 값 업데이트 (프론트엔드에 반환할 radius 값 설정)
+        radius = radiusValues[Math.min(radiusIndex, radiusValues.length - 1)];
+
         return restaurants.map(restaurant -> {
             RestaurantDto dto = new RestaurantDto(restaurant);
             if (userLatitude != null && userLongitude != null) {

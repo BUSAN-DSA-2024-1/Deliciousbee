@@ -16,6 +16,7 @@
 			<ul>
 				<li><a href="/member/myPage">마이 페이지</a></li>
 				<li><a href="/member/myInfo" class="active">내 정보</a></li>
+				<li><a href="/member/myFollow">팔로워 관리</a></li>
 				<li><a href="/member/myList">내가 쓴글</a></li>
 				<li><a href="/member/myReply">내가 쓴 댓글</a></li>
 				<li><a href="/member/deleteMember">회원탈퇴</a></li>
@@ -25,9 +26,9 @@
 
 			<h1>내 정보</h1>
 			<div class="profile-image-label">
-				 <img th:if="${loginMember.profileImage != null}"
-         th:src="@{'/member/display?filename=' + ${loginMember.profileImage.saved_filename}}"
-         alt="프로필 이미지" class="profile-photo"> <img
+				<img th:if="${loginMember.profileImage != null}"
+					th:src="@{'/member/display?filename=' + ${loginMember.profileImage.saved_filename}}"
+					alt="프로필 이미지" class="profile-photo"> <img
 					th:unless="${loginMember.profileImage != null}"
 					src="/myPageImage/no-profil.png" alt="기본 프로필 이미지"
 					class="profile-photo">

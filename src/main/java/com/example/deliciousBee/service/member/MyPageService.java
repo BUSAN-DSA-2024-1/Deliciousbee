@@ -1,7 +1,7 @@
 package com.example.deliciousBee.service.member;
 
+import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,16 +16,20 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.deliciousBee.model.file.AttachedFile;
 import com.example.deliciousBee.model.file.MemberAttachedFile;
+import com.example.deliciousBee.model.file.MyPageAttachedFile;
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.mypage.MyPage;
+import com.example.deliciousBee.model.mypage.MyPageUpdateForm;
 import com.example.deliciousBee.model.mypage.MyPageVisit;
 import com.example.deliciousBee.model.review.Review;
 import com.example.deliciousBee.repository.BeeMemberRepository;
 import com.example.deliciousBee.repository.MemberFileRepository;
+import com.example.deliciousBee.repository.MyPageFileRepository;
 import com.example.deliciousBee.repository.MyPageRepository;
 import com.example.deliciousBee.repository.MyPageVisitRepository;
 import com.example.deliciousBee.util.CookieUtils;
 import com.example.deliciousBee.util.MemberFileService;
+import com.example.deliciousBee.util.MyPageFileService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -43,28 +47,80 @@ public class MyPageService implements UserDetailsService {
 	private String uploadPath;
 
 	private final BeeMemberRepository beeMemberRepository;
-	private final MemberFileRepository memberFileRepository;
+	private final MyPageFileRepository myPageFileRepository;
 	private final MyPageRepository myPageRepository;
 	private final MyPageVisitRepository myPageVisitRepository;
 	private final HttpSession session;
 	private final HttpServletRequest request;
 	private final HttpServletResponse response;
-	private final MemberFileService memberFileService;
+	private final MyPageFileService myPageFileService;
+	
 
 	// *****************마이페이지 생성***************************
 	@Transactional
-	public void saveMyPage(MyPage myPage) {
+	public void saveMyPage(MyPage myPage, MyPageAttachedFile attachedFile) {
 		myPageRepository.save(myPage);
 
 	}
-
-	// *****************마이페이지 수정******************
+	//마이페이지 수정
 	@Transactional
-	public void updateMyPage(MyPage myPage) {
+    public void updateMyPage(String introduce, boolean isFileRemoved, MultipartFile file, BeeMember loginMember) throws IOException {
+        MyPage myPage = loginMember.getMyPage();
+        myPage.setIntroduce(introduce);
+        log.info("확인용: {}", myPage);
+        if (isFileRemoved) {
+            if (myPage.getMainImage() != null) {
+                myPageFileService.deleteFile(myPage.getMainImage().getSaved_filename());
+                myPageFileRepository.delete(myPage.getMainImage());
+                myPage.setMainImage(null);
+            }
+        }
 
-		 myPageRepository.save(myPage);
-	}
+        if (file != null && !file.isEmpty()) {
+            // 기존 파일 삭제
+            if (myPage.getMainImage() != null) {
+                myPageFileService.deleteFile(myPage.getMainImage().getSaved_filename());
+                myPageFileRepository.delete(myPage.getMainImage());
+            }
+            MyPageAttachedFile newFile = myPageFileService.saveFile(file);
+            myPage.setMainImage(newFile);
+            newFile.setMyPage(myPage);
+            log.info("확인용: {}", myPage);
+            log.info("확인용: {}", newFile);
+        }
 
+        myPageRepository.save(myPage);
+    }
+
+		private void removeExistingFile(MyPage myPage) {
+		    if (myPage.getMainImage() != null) {
+		        myPageFileService.deleteFile(myPage.getMainImage().getSaved_filename());
+		        myPageFileRepository.delete(myPage.getMainImage());
+		        myPage.setMainImage(null);
+		    }
+		}
+
+    // 필요시 파일 저장 로직을 처리하는 메서드 추가
+    private void saveFile(MultipartFile file) {
+        // 파일 저장 로직 구현
+    }
+	// 사진찾기
+			private MyPageAttachedFile findFileById(MyPage myPage) {
+				// 쿼리 메서드
+				MyPageAttachedFile attachedFile = myPageFileRepository.findByMyPage(myPage); // findBy로 시작해야 쿼리만들어줌
+				
+				log.info("확인용: {}", attachedFile);
+				return attachedFile;
+			}
+			
+			//첨부파일 삭제하는 메서드
+				public void removeFile(MyPageAttachedFile attachedFile) {
+					//첨부파일 삭제(서버, DB 둘다 삭제), 파일삭제를 요청했거나 새로운 파일이 업로드되면 기존파일삭제
+					//1)DB에서 삭제
+					myPageFileRepository.deleteById(attachedFile.getMainImage_id()); 
+					//2)서버(로컬)에서 삭제
+					String fullPath = uploadPath + "/" + attachedFile.getSaved_filename();
+				}
 //******************************************************
 	// V4(페이징 추가) 게시물 전체 목록 *(Map->List) 변환해서 리턴
 	public Page<MyPage> findAll(Pageable pageable) { // 페이징 List->Page
