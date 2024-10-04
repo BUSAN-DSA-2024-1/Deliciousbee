@@ -2,12 +2,14 @@ package com.example.deliciousBee.repository;
 
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.member.Follow;
 
 public interface FollowRepository extends JpaRepository<Follow, Long> {
@@ -20,5 +22,9 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 	    boolean existsByFollowerIdAndFollowingId(@Param("followerId") String followerId, @Param("followingId") String followingId);
 	 
 	 @Query("SELECT f FROM Follow f WHERE f.follower.member_id = :followerId")
-	    List<Follow> findByFollowerMemberId(@Param("followerId") String followerId); 
+	    List<Follow> findByFollowerMemberId(@Param("followerId") String followerId);
+
+	 
+	 @Query("SELECT f FROM Follow f WHERE f.following.member_id = :followingId")
+	 List<Follow> findByFollowingMemberId(@Param("followingId") String followingId);
 }

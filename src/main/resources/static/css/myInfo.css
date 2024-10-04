@@ -110,14 +110,14 @@ form {
 
 /* 프로필 사진 스타일 */
 .profile-image-label {
-  cursor: pointer;
   display: block; /* 이미지를 블록 요소로 만들어 클릭 영역을 넓힘 */
+  
 }
 
 .profile-photo {
   width: 100px;
   height: 100px;
   object-fit: cover;
-  border: 2px solid #ddd;
+  border: 5px solid #ddd;
   margin-bottom: 10px; /* 닉네임 입력 필드와의 간격 조정 */
 }

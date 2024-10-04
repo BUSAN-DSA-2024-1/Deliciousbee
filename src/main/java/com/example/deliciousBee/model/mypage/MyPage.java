@@ -7,6 +7,7 @@ import com.example.deliciousBee.model.file.MyPageAttachedFile;
 import com.example.deliciousBee.model.member.BeeMember;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -26,9 +27,9 @@ import net.minidev.json.annotate.JsonIgnore;
 @ToString
 public class MyPage {
 
-	@OneToOne(cascade = CascadeType.ALL) // beeMember회원탈퇴할때 myPage도같이삭제
-	@JoinColumn(name = "member_id")
-	private BeeMember beeMember;
+	@OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private BeeMember beeMember;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY) // 자동 생성 전략 설정
@@ -37,9 +38,10 @@ public class MyPage {
 	private String introduce;
 
 	
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "mainImage_id")
-	private MyPageAttachedFile mainImage;
+	 @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	    @JoinColumn(name = "mainImage_id")
+	    private MyPageAttachedFile mainImage;
+
 
 
 	private Long hit = 0L;  // 조회수
@@ -54,15 +56,14 @@ public class MyPage {
 	
 	 
 
-	public static MyPageUpdateForm toUpdateForm(MyPage myPage, BeeMember beeMember) {
-		MyPageUpdateForm myPageUpdateForm = new MyPageUpdateForm();
-
-		myPageUpdateForm.setMyPage_id(myPage.getId());
-		myPageUpdateForm.setIntroduce(myPage.getIntroduce());
-		myPageUpdateForm.setBeeMember(myPage.getBeeMember());
-
-		return myPageUpdateForm;
-
-	}
+//	public static MyPageUpdateForm toUpdateForm(MyPage myPage) {
+//		MyPageUpdateForm myPageUpdateForm = new MyPageUpdateForm();
+//
+//		myPageUpdateForm.setMyPage_id(myPage.getId());
+//		myPageUpdateForm.setIntroduce(myPage.getIntroduce());
+//
+//		return myPageUpdateForm;
+//
+//	}
 
 }

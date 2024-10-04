@@ -1,6 +1,8 @@
 package com.example.deliciousBee.controller.member;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,12 +29,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.deliciousBee.model.file.AttachedFile;
+import com.example.deliciousBee.model.file.MyPageAttachedFile;
 import com.example.deliciousBee.model.member.BeeMember;
+import com.example.deliciousBee.model.member.BeeUpdateForm;
 import com.example.deliciousBee.model.mypage.MyPage;
 import com.example.deliciousBee.model.mypage.MyPageUpdateForm;
 import com.example.deliciousBee.model.mypage.MyPageVisit;
 import com.example.deliciousBee.model.review.Review;
+import com.example.deliciousBee.repository.MyPageFileRepository;
 import com.example.deliciousBee.repository.MyPageRepository;
 import com.example.deliciousBee.repository.ReviewRepository;
 import com.example.deliciousBee.service.member.BeeMemberService;
@@ -40,6 +47,9 @@ import com.example.deliciousBee.service.member.FollowService;
 import com.example.deliciousBee.service.member.MyPageService;
 import com.example.deliciousBee.service.review.ReviewService;
 import com.example.deliciousBee.util.MemberFileService;
+import com.example.deliciousBee.util.MyPageFileService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -55,6 +65,7 @@ public class MyPageController {
 	@Value("${file.upload.path}") // 폴더를 찾아서 uploadPath한테 줌
 	private String uploadPath; // c드라이브 어디에저장할지 지정
 
+	  private final ObjectMapper objectMapper; 
 	private final MyPageRepository myPageRepository;
 	private final MyPageService myPageService;
 	private final BeeMemberService beeMemberService;
@@ -64,7 +75,8 @@ public class MyPageController {
 	private final FollowService followService;
 	private final ReviewRepository reviewRepository;
 	private final JwtTokenProvider jwtTokenProvider;
-
+	private final MyPageFileRepository myPageFileRepository;
+	private final MyPageFileService myPageFileService;
 
 	@Autowired
 	private MemberFileService memberFileService; // fileStore 주입 받음.
@@ -137,37 +149,44 @@ public class MyPageController {
 
 	    model.addAttribute("averageRating", averageRating); 
 		
+
 	    
-		
 	}
-	@GetMapping("/random-review")
-	@ResponseBody // JSON 형태로 응답
-	public Map<String, String> getRandomReview() {
-	    List<Review> allReviews = reviewService.findAllReviews();
-	    Random random = new Random();
-	    Map<String, String> result = new HashMap<>();
 
-	    if (!allReviews.isEmpty()) {
-	        List<Review> randomReviews = new ArrayList<>();
-	        for (Review review : allReviews) {
-	            if (review.getAttachedFile() != null && !review.getAttachedFile().isEmpty()) {
-	                randomReviews.add(review);
+	 @GetMapping("randomReviews")
+	    @ResponseBody
+	    public String getRandomReviews() throws JsonProcessingException { // 예외 처리 추가
+	        List<Review> allReviews = reviewService.findAllReviews();
+	        List<Map<String, String>> randomReviews = new ArrayList<>(); // JSON에 맞게 변경
+
+	        if (!allReviews.isEmpty()) {
+	            Collections.shuffle(allReviews);
+	            List<Review> selectedReviews = allReviews.subList(0, Math.min(allReviews.size(), 100));
+
+	            for (Review review : selectedReviews) {
+	                Map<String, String> reviewData = new HashMap<>();
+	                
+	                // 이미지 URL 설정
+	                if (review.getAttachedFile() != null && !review.getAttachedFile().isEmpty()) {
+	                    reviewData.put("imageUrl", "/review/display?filename=" + review.getAttachedFile().get(0).getSaved_filename());
+	                } else {
+	                    reviewData.put("imageUrl", "/myPageImage/no-review-img.jpg");
+	                }
+	                
+	                // 레스토랑 이름 추가
+	                reviewData.put("restaurantName", review.getRestaurant().getName());
+
+	                // restaurantId와 reviewId 추가
+	                reviewData.put("restaurantId", String.valueOf(review.getRestaurant().getId())); // 레스토랑 ID 추가
+	                reviewData.put("reviewId", String.valueOf(review.getId())); // 리뷰 ID 추가
+
+	                randomReviews.add(reviewData);
 	            }
 	        }
 
-	        if (!randomReviews.isEmpty()) {
-	            int randomIndex = random.nextInt(randomReviews.size());
-	            Review randomReview = randomReviews.get(randomIndex);
-	            result.put("restaurantName", randomReview.getRestaurant().getName());
-	            if (!randomReview.getAttachedFile().isEmpty()) { 
-	                result.put("imageUrl", "/review/display?filename=" + randomReview.getAttachedFile().get(0).getSaved_filename());
-	            }
-	        }
+	        return objectMapper.writeValueAsString(randomReviews);
 	    }
-
-	    return result;
-	}
-
+	
 	
 	// **********************마이페이지 수정하기 페이지 이동****************************
 	@GetMapping("updateMyPage")
@@ -179,32 +198,29 @@ public class MyPageController {
 		model.addAttribute("myPage", myPage); // myPage를 모델에 추가합니다.
 		model.addAttribute("loginMember", loginMember);
 		 handleMyPageAccess(myPage, loginMember, "createDate", model); // "createDate" 또는 원하는 sort 값 전달
-		return "member/updateMyPage";
+		 return "member/updateMyPage";
 	}
 
 	// **********************마이페이지에서 수정하기*********************
 	@PostMapping("updateMyPage")
-	public String updateMyPage(@AuthenticationPrincipal BeeMember loginMember,
-			@Validated @ModelAttribute("myPageUpdateForm") MyPageUpdateForm myPageUpdateForm,
-		    BindingResult result,
-		    @RequestParam(name = "file", required = false) MultipartFile file,
-			HttpServletRequest request, Model model) {
+    public String updateMyPage(@AuthenticationPrincipal BeeMember loginMember,
+                               @RequestParam(name = "introduce") String introduce,
+                               @RequestParam(name = "isFileRemoved", required = false, defaultValue = "false") boolean isFileRemoved,
+                               @RequestParam(name = "file", required = false) MultipartFile file,
+                               RedirectAttributes redirectAttributes) {
 
-		if (result.hasErrors()) {
-			return "member/myPage";
-		}
-		if (loginMember == null) {
-			return "redirect:/member/login";
-		}
+        if (loginMember == null) {
+            return "redirect:/member/login";
+        }
 
-		MyPage myPage = loginMember.getMyPage(); 
-	    myPage.setIntroduce(myPageUpdateForm.getIntroduce()); // MyPageUpdateForm에서 introduce 값 사용
-		    
-		myPageRepository.save(myPage); // MyPage 객체 저장
-		return "redirect:/member/myPage";
-	}
-
-
+        try {
+            myPageService.updateMyPage(introduce, isFileRemoved, file, loginMember);
+            redirectAttributes.addFlashAttribute("message", "마이페이지가 성공적으로 수정되었습니다.");
+        } catch (IOException e) {
+            redirectAttributes.addFlashAttribute("error", "파일 업로드 중 오류가 발생했습니다.");
+        }
+        return "redirect:/member/myPage";
+    }
 	// *******************사람들 마이페이지 리스트 **********************
 	@GetMapping("myPageList")
 	public String myPageList(@RequestParam(name = "searchText", defaultValue = "") String searchText,
