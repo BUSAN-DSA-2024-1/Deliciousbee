@@ -745,11 +745,7 @@
       const reviewId = $('#reportModal').data('review-id');
       const reason = $('#reportReason').val();
       const token = localStorage.getItem('token');
-      if (!token) {
-        alert('로그인이 필요합니다');
-        return;
-      }
-
+      
       $.ajax({
         url: '/restaurant/rtread/report/submit/' + reviewId,
         type: 'POST',
