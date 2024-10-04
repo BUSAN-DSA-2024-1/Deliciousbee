@@ -114,16 +114,24 @@ public class BeeMember implements UserDetails, OAuth2User {
 	public void setAttributes(Map<String, Object> attributes) {
 		this.attributes = attributes;
 	}
-	
-	
+
+
 	@Override
 	public String toString() {
-		return "BeeMember{" + "member_id='" + member_id + '\'' + ", password='" + password + '\'' + ", national="
-				+ national + ", nickname='" + nickname + '\'' + ", gender=" + gender + ", birth=" + birth + ", email='"
-				+ email + '\'' + ", isSocialUser=" + isSocialUser +", role=" + role + 
-		           ", profileImage_id =" + profileImage.getProfileImage_id() + 
-		           '}';
+		return "BeeMember{" +
+				"member_id='" + member_id + '\'' +
+				", password='" + password + '\'' +
+				", national=" + national +
+				", nickname='" + nickname + '\'' +
+				", gender=" + gender +
+				", birth=" + birth +
+				", email='" + email + '\'' +
+				", isSocialUser=" + isSocialUser +
+				", role=" + role +
+				", profileImage_id =" + (profileImage != null ? profileImage.getProfileImage_id() : "No profile image") +
+				'}';
 	}
+
 
 
 }
