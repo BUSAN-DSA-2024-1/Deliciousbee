@@ -50,11 +50,9 @@ public class ReportController {
 		Map<String, Object> response = new HashMap<>();
 		
 		if (loginMember == null) {
-			log.info("asdasdasdasdasdadadadadadadadadadasdqwewewqeqwewqeqe21222222222");
 			response.put("message", "신고 제출에 실패하였습니다.");
 		}
 		try {
-			log.info("-------------------------------------------------------여기 오시나요?");
 			report.setBeeMember(loginMember);
 			report.setReportDate(LocalDate.now());
 
@@ -64,12 +62,10 @@ public class ReportController {
 			if (success) {
 				response.put("message", "신고가 성공적으로 제출되었습니다.");
 			} else {
-				log.info("***************************************************여기로 오시나요?");
 				response.put("message", "신고 제출에 실패하였습니다.");
 			}
 
 		} catch (Exception e) {
-			log.info("sadsasadaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 			response.put("success", false);
 			response.put("message", "서버 오류가 발생했습니다.");
 			log.error("Report submission error", e);

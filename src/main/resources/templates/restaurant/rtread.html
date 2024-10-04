@@ -343,11 +343,13 @@
                   </div>
 
                   <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="customMenuCheckbox" name="customMenuCheckbox">
-                    <label class="form-check-label" for="customMenuCheckbox">기타</label>
+                    <input class="form-check-input" type="checkbox" id="updateReviewCustomMenuCheckbox"
+                      name="updateReviewCustomMenuCheckbox">
+                    <label class="form-check-label" for="updateReviewCustomMenuCheckbox">기타</label>
                   </div>
-                  <input type="text" class="form-control" id="customMenuInput" name="customMenuInput" disabled>
-                  <input type="hidden" id="customMenuName" name="customMenuName">
+                  <input type="text" class="form-control" id="updateReviewCustomMenuInput"
+                    name="updateReviewCustomMenuInput" disabled>
+                  <input type="hidden" id="updateReviewCustomMenuName" name="updateReviewCustomMenuName">
                 </div>
 
                 <hr class="Review-Write-hr">
@@ -363,13 +365,14 @@
 
                   <!-- custom KeyWord Form -->
                   <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="customKeywordCheckbox"
-                      name="customKeywordCheckbox">
-                    <label class="form-check-label-review-keyword" for="customKeywordCheckbox">존재하지 않은 키워드를
+                    <input class="form-check-input" type="checkbox" id="updateReviewCustomKeywordCheckbox"
+                      name="updateReviewCustomKeywordCheckbox">
+                    <label class="form-check-label-review-keyword" for="updateReviewCustomKeywordCheckbox">존재하지 않은 키워드를
                       작성해주세요</label>
                   </div>
-                  <input type="text" class="form-control" id="customKeywordInput" name="customKeywordInput" disabled>
-                  <input type="hidden" id="customKeywordName" name="customKeywordName">
+                  <input type="text" class="form-control" id="updateReviewCustomKeywordInput"
+                    name="updateReviewCustomKeywordInput" disabled>
+                  <input type="hidden" id="updateReviewCustomKeywordName" name="updateReviewCustomKeywordName">
                 </div>
 
 
@@ -379,12 +382,19 @@
                   <input type="date" class="form-control" id="updateReviewVistDate" name="updateReviewVistDate"
                     required>
                 </div>
+                <!-- 사진 업로드 리뷰 수정 모달 -->
+                <hr class="Review-Write-hr">
                 <div class="form-group">
-                  <label for="updateReviewAttachedFile">리뷰 사진 업로드</label>
+                  <label for="updateReviewAttachedFile">추가 사진 업로드</label>
                   <input type="file" class="form-control-file" id="updateReviewAttachedFile"
                     name="updateReviewAttachedFile" multiple>
-                  <span id="updateReviewAttachedFileName"></span>
                 </div>
+                <hr class="Review-Write-hr">
+                <div class="form-group">
+                  <label for="updateReviewAttachedFile">기존 사진</label>
+                  <div id="updateReviewAttachedFileName" class="mt-2"></div>
+                </div>
+
                 <input type="hidden" name="restaurant_id" th:value="${restaurant_id}">
               </div>
               <div class="modal-footer">
@@ -737,14 +747,6 @@
       });
     }
 
-
-
-
-
-
-
-
-
     // 수정 기능
     function showUpdateReview(button) {
       const reviewId = button.dataset.reviewId;
@@ -753,21 +755,26 @@
         url: '/review/get/' + reviewId,
         type: 'GET',
         success: function (data) {
-          const reviewContents = data.reviewContents || data.review_contents;
-          const rating = data.rating || data.review_rating;
-          const tasteRating = data.tasteRating || data.taste_rating;
-          const priceRating = data.priceRating || data.price_rating;
-          const kindRating = data.kindRating || data.kind_rating;
-          const reviewMenuList = data.reviewMenuList || data.review_menuList
-          const visitDate = data.visitDate || data.visit_date;
+          $('#updateReviewContents').val(data.reviewContents || data.review_contents);
+          $('#updateReviewRating').val(data.rating || data.review_rating);
+          $('#updateReviewTasteRating').val(data.tasteRating || data.taste_rating);
+          $('#updateReviewPriceRating').val(data.priceRating || data.price_rating);
+          $('#updateReviewkKindRating').val(data.kindRating || data.kind_rating);
+          $('#updateReviewVistDate').val(data.visitDate || data.visit_date);
 
-          $('#updateReviewContents').val(reviewContents);
-          $('#updateReviewRating').val(rating);
-          $('#updateReviewTasteRating').val(priceRating);
-          $('#updateReviewPriceRating').val(priceRating);
-          $('#updateReviewkKindRating').val(priceRating);
-          $('#updateReviewMenuList').val(reviewMenuList);
-          $('#updateReviewVistDate').val(visitDate);
+          if (data.attachedFile && data.attachedFile.length > 0) {
+            let fileNamesHTML = '';
+            for (let i = 0; i < data.attachedFile.length; i++) {
+              const attachedFile = data.attachedFile[i];
+              fileNamesHTML += `<div class="d-inline-block mr-4">
+                ${attachedFile.original_filename}
+                <button class="btn btn-danger btn-sm ml-2 delete-file-button" data-file-id="${attachedFile.attachedFile_id}">삭제</button>
+                </div>`;
+            }
+            $('#updateReviewAttachedFileName').html(fileNamesHTML);
+          } else {
+            $('#updateReviewAttachedFileName').text('');
+          }
 
           $('#updateReviewModal').modal('show');
         },
@@ -778,10 +785,106 @@
       })
     }
 
+    //  수정 커스텀 메뉴, 키워드 활성화 처리
+    $(document).ready(function () {
+      $('#updateReviewCustomMenuCheckbox').change(function () {
+        const customInput = $('#updateReviewCustomMenuInput');
+        if ($(this).is(':checked')) {
+          customInput.prop('disabled', false);
+        } else {
+          customInput.prop('disabled', true);
+          customInput.val('');
+          $('#updateReviewCustomMenuName').val('');
+        }
+      });
+
+      $('#updateReviewCustomMenuInput').on('input', function () {
+        $('#updateReviewCustomMenuName').val($(this).val());
+      });
+
+      $('#updateReviewCustomKeywordCheckbox').change(function () {
+        const customInput = $('#updateReviewCustomKeywordInput');
+        if ($(this).is(':checked')) {
+          customInput.prop('disabled', false);
+        } else {
+          customInput.prop('disabled', true);
+          customInput.val('');
+          $('#updateReviewCustomMenuName').val('');
+        }
+      });
+
+      $('#updateReviewCustomKeywordInput').on('input', function () {
+        $('#updateReviewCustomKeywordName').val($(this).val());
+      });
+
+    });
+
+    // 수정 데이터 서버 전달
     function submitUpdate() {
       const reviewId = $('#updateReviewModal').data('review-id');
-      console.log(reviewId);
+      const reviewContents = $('#updateReviewContents').val();
+      const rating = $('#updateReviewRating').val();
+      const tasteRating = $('#updateReviewTasteRating').val();
+      const priceRating = $('#updateReviewPriceRating').val();
+      const kindRating = $('#updateReviewkKindRating').val();
+      const visitDate = $('#updateReviewVistDate').val();
+
+      const formData = new FormData();
+      formData.append('reviewId', reviewId);
+      formData.append('reviewContents', reviewContents);
+      formData.append('rating', rating);
+      formData.append('tasteRating', tasteRating);
+      formData.append('priceRating', priceRating);
+      formData.append('kindRating', kindRating);
+      formData.append('visitDate', visitDate);
+
+      const attachedFile = document.getElementById('updateReviewAttachedFile').files;
+      for (let i = 0; i < attachedFile.length; i++) {
+        formData.append('attachedFile', attachedFile[i]); 
+      }
+
+
+      $.ajax({
+        url: "/review/update/" + reviewId,
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (response) {
+          if (response.success) {
+            alert('리뷰가 성공적으로 수정되었습니다');
+            console.log('리뷰가 성공적으로 수정되었습니다');
+            location.reload();
+          }
+          else {
+            alert('리뷰 수정에 실패했습니다.');
+          }
+        },
+        error: function (xhr) {
+          console.error('AJAX 요청 실패:', xhr);
+        }
+      });
     }
+
+    // 파일 삭제 이벤트 처리
+    $(document).on('click', '.delete-file-button', function () {
+      const attachedFileId = $(this).data('file-id');
+      $.ajax({
+        url: "/review/update/remove/" + attachedFileId,
+        type: "POST",
+        success: function (response) {
+          if (response.success) {
+            alert('파일이 정상적으로 삭제되었습니다.');
+            $(this).closest('div').remove();
+          }
+        },
+        error: function (xhr) {
+          console.error('AJAX 요청 실패:', xhr);
+        }
+      });
+    });
+
+
 
 
 
@@ -1008,7 +1111,6 @@
         menuContainer.toggleClass('open');
         console.log('버튼 클릭됨:', $(this).closest('.review-item').data('review-id'));
       });
-
     }
 
     // 페이지 클릭 시 열린 메뉴 닫기
