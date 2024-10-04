@@ -81,8 +81,9 @@ public class SecurityConfig {
                 .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable())) // 헤더 설정
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/restaurant/rtwrite", "/comments/save" , "/restaurant/rtread/report/**").hasRole("USER")
-                        .requestMatchers("/", "/member/login", "/member/deleteMember", "/member/mailSend", "/member/mailCheck","/member/join", "/css/**", "images/**", "/js/**", "/login/**", "/logout/**", "/posts/**", "/comments/**", "/follow/**", "/unfollow/**", "/restaurant/display/**", "/image/**", "/restaurant/search", "/api/restaurants/search", "/restaurant/rtread/**","/member/api/check-auth", "/oauth2/**","/review/**","/restaurant/**").permitAll() // 인증 없이 접근 가능
+
+                        .requestMatchers("/restaurant/rtwrite", "/comments/save").hasRole("USER")
+                        .requestMatchers("/", "/member/login", "/member/deleteMember", "/member/mailSend", "/member/mailCheck","/member/join", "/css/**", "images/**", "/js/**", "/login/**", "/logout/**", "/posts/**", "/comments/**", "/follow/**", "/unfollow/**", "/restaurant/display/**", "/image/**", "/restaurant/search", "/api/restaurants/search", "/restaurant/rtread/**","/member/api/check-auth", "/oauth2/**","/review/**","/restaurant/**" , "/restaurant/rtread/report/**").permitAll() // 인증 없이 접근 가능
                         .anyRequest().authenticated() // 그 외의 요청은 인증 필요
                 )
                 .exceptionHandling(exceptions -> exceptions

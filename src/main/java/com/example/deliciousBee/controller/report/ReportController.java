@@ -45,28 +45,24 @@ public class ReportController {
 	private final RestaurantReportService restaurantReportService;
 
 
-
-	// 리뷰 신고
 	@PostMapping("/restaurant/rtread/report/submit/{reviewId}")
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> submitReport(
-			@RequestBody Report report,
+			@RequestBody ReportDto reportDto,
 			@PathVariable("reviewId") Long reviewId,
 			@AuthenticationPrincipal BeeMember loginMember) {
 
 		Map<String, Object> response = new HashMap<>();
 		try {
+			Report report = new Report();
 			report.setBeeMember(loginMember);
 			report.setReportDate(LocalDate.now());
+			report.setReason(reportDto.getReason());
+			// 필요한 경우 추가 필드 설정
 
-			// 신고 제출 서비스 호출
 			boolean success = reportService.sendReport(reviewId, report);
 			response.put("success", success);
-			if (success) {
-				response.put("message", "신고가 성공적으로 제출되었습니다.");
-			} else {
-				response.put("message", "신고 제출에 실패하였습니다.");
-			}
+			response.put("message", success ? "신고가 성공적으로 제출되었습니다." : "신고 제출에 실패하였습니다.");
 
 		} catch (Exception e) {
 			response.put("success", false);

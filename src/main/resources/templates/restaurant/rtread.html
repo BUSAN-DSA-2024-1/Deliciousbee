@@ -63,20 +63,30 @@
       <div class="col-lg-8">
         <!-- Featured Restaurant -->
         <div class="card mb-4" th:object="${restaurant}">
-          <div class="image-gallery">
-            <div th:each="file : ${restaurant.attachedFile}">
-              <a href="#!">
-                <img class="card-img-top" th:src="@{'/restaurant/display?filename='+${file.saved_filename}}"
-                  alt="Featured Restaurant" />
-              </a>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="small text-muted" th:text="${restaurant.create_at}">January 1, 2023</div>
-            <h2 class="card-title" th:text="${restaurant.name}">Featured Post Title</h2>
-            <p class="card-text" th:text="${restaurant.description}"></p>
-          </div>
+    <div class="image-wrapper">
+        <div th:each="file : ${restaurant.attachedFile}">
+            <a href="#!" class="image-gallery">
+                <img class="card-img-top2" th:src="@{'/restaurant/display?filename='+${file.saved_filename}}"
+                     alt="Featured Restaurant" />
+            </a>
         </div>
+    </div>
+    <div class="card-body">
+        <div class="report-position">
+            <div class="small text-muted" th:text="${restaurant.create_at}">January 1, 2023</div>
+            <button class="update-btn" title="가게정보가 잘못됐어요"
+                    th:data-restaurant-id="${restaurant.id}"
+                    th:data-restaurant-name="${restaurant.name}"
+                    th:onclick="openRestaurantReportModal(this)">
+                🚨
+            </button>
+        </div>
+        <h2 class="card-title" th:text="${restaurant.name}">Featured Post Title</h2>
+        <p class="card-text" th:text="${restaurant.description}"></p>
+        <button class="show-more" style="display: none;" onclick="showMoreImages(this)">더보기</button>
+    </div>
+</div>
+
         <hr>
         <h3>Restaurant Info</h3>
         <a class="card-text no-style-link" th:href="@{${restaurant.homepage_url}}" th:text="'웹사이트 방문'"
@@ -335,7 +345,8 @@
                   <label for="recommendItems">추천 메뉴</label>
                   <div th:each="menu : ${restaurant.menuList}">
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" th:value="${menu.id}" name="updateReviewMenuList" id="updateReviewMenuList">
+                      <input class="form-check-input" type="checkbox" th:value="${menu.id}" name="updateReviewMenuList"
+                        id="updateReviewMenuList">
                       <label class="form-check-label" th:text="${menu.name}">Menu Name</label>
                       <span th:text="'    ' +${menu.price} + '원'"></span>
                     </div>
@@ -375,11 +386,13 @@
                 <hr class="Review-Write-hr">
                 <div class="form-group">
                   <label for="updateReviewVistDate">방문 시기</label>
-                  <input type="date" class="form-control" id="updateReviewVistDate" name="updateReviewVistDate" required>
+                  <input type="date" class="form-control" id="updateReviewVistDate" name="updateReviewVistDate"
+                    required>
                 </div>
                 <div class="form-group">
                   <label for="updateReviewAttachedFile">리뷰 사진 업로드</label>
-                  <input type="file" class="form-control-file" id="updateReviewAttachedFile" name="updateReviewAttachedFile" multiple>
+                  <input type="file" class="form-control-file" id="updateReviewAttachedFile"
+                    name="updateReviewAttachedFile" multiple>
                   <span id="updateReviewAttachedFileName"></span>
                 </div>
                 <input type="hidden" name="restaurant_id" th:value="${restaurant_id}">
@@ -519,7 +532,7 @@
                 <!-- Category list-->
                 <div class="button-container">
                   <div th:each="reviewKeyword : ${review.keywords}">
-                    <div class="review-keyword">
+                    <div class="review-keyword" th:if="${reviewKeyword != null && reviewKeyword.keyWord != null}">
                       <i class="review-keyword-icon"></i>
                       <span th:text="${reviewKeyword.keyWord.keywordName}">키워드 출력 부분</span>
                     </div>
@@ -556,8 +569,28 @@
     </div>
   </footer>
 
+<div id="restaurantReportModal" class="restaurant-modal-container" style="display: none;">
+    <p class="restaurant-report-title">레스토랑 신고</p>
+    <form class="restaurant-report-form">
+        <p class="modal-title">레스토랑명</p>
+        <input type="text" class="modal-input" id="restaurantName" readonly>
+        <p class="modal-title">신고 내용</p>
+        <textarea class="inputbox" id="reportContent" placeholder="신고 내용을 입력하세요" required></textarea>
+        <div class="restaurant-report-button-container">
+            <button type="button" class="form-btn submit-btn">신고 제출</button>
+            <button type="button" class="form-btn" onclick="closeRestaurantReportModal()">닫기</button>
+        </div>
+    </form>
+</div>
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Load jQuery first -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Load Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   <!-- JavaScript -->
   <script th:inline="javascript">
@@ -692,47 +725,47 @@
       });
     }
 
-    // 신고 기능
+    // 신고모달 기능 
     function showReportReasons(button) {
-      const reviewId = button.dataset.reviewId; // data-review-id 값 가져오기
-      $('#reportModal').data('review-id', reviewId); // 모달에 data-review-id 설정
+      const reviewId = button.dataset.reviewId;
+      $('#reportModal').data('review-id', reviewId);
       $('#reportModal').modal('show');
     }
 
+    // 신고기능 구현
     function submitReport() {
       const reviewId = $('#reportModal').data('review-id');
       const reason = $('#reportReason').val();
-      console.log(reviewId);
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('로그인이 필요합니다');
+        return;
+      }
 
       $.ajax({
-        url: 'report/submit/' + reviewId,
+        url: '/restaurant/rtread/report/submit/' + reviewId,
         type: 'POST',
-        contentType: "application/json",
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
         data: JSON.stringify({ "reason": reason }),
         success: function (data) {
           if (data.success) {
             alert('신고가 제출되었습니다');
             location.reload();
           } else {
-            alert('신고 제출에 실패했습니다.');
+            alert(data.message || '신고 제출에 실패했습니다.');
           }
           $('#reportModal').modal('hide');
         },
         error: function (xhr) {
           console.error('AJAX 통신 실패', xhr);
-          alert('신고 제출에 실패했습니다.');
+          alert('AJAX 신고 제출에 실패했습니다.');
           $('#reportModal').modal('hide');
         }
       });
     }
-
-
-
-
-
-
-
-
 
     // 수정 기능
     function showUpdateReview(button) {
@@ -749,13 +782,6 @@
           const kindRating = data.kindRating || data.kind_rating;
           const reviewMenuList = data.reviewMenuList || data.review_menuList
           const visitDate = data.visitDate || data.visit_date;
-          const attachedFile = data.attachedFile || data.attached_file;
-          if(attachedFile) {
-            $('updateReviewAttachedFileName').text(attachedFile);
-          } 
-          else {
-            $('updateReviewAttachedFileName').text('');
-          }
 
           $('#updateReviewContents').val(reviewContents);
           $('#updateReviewRating').val(rating);
@@ -765,7 +791,6 @@
           $('#updateReviewMenuList').val(reviewMenuList);
           $('#updateReviewVistDate').val(visitDate);
           $('#updateReviewAttachedFile').val(attachedFile);
-
           $('#updateReviewModal').on('shown.bs.modal', function () {
             // 선택된 메뉴 ID 배열 초기화
             selectedMenuIds = [];
@@ -805,13 +830,6 @@
             }
           });
 
-
-
-
-
-
-
-
           $('#updateReviewModal').modal('show');
         },
         error: function (xhr) {
@@ -828,173 +846,235 @@
 
 
 
-
-
-
-
-
-
     // 정렬 및 페이징 기능
-    function latestList(sortBy, page) {
-      const restaurantId = /*[[${restaurant.id}]]*/ ''; // 레스토랑 ID
-      const pageUrl = `/review/allreview/${restaurantId}/sort`; // 서버 API URL
+function latestList(sortBy, page) {
+  const restaurantId = /*[[${restaurant.id}]]*/ '';
+  const pageUrl = `/review/allreview/${restaurantId}/sort`;
 
-      $.ajax({
-        url: pageUrl,
-        type: 'GET',
-        data: {
-          page: page, // 현재 페이지 번호
-          sortBy: sortBy // 정렬 기준
-        },
-        xhrFields: {
-          withCredentials: true
-        },
-        success: function (response) {
-          const reviewsContainer = $('.restaurantCard');
-          reviewsContainer.empty();
-          window.totalPages = response.totalPages;
-          window.currentPage = response.currentPage;
+  $.ajax({
+    url: pageUrl,
+    type: 'GET',
+    data: {
+      page: page,
+      sortBy: sortBy
+    },
+    xhrFields: {
+      withCredentials: true
+    },
+    success: function (response) {
+      const reviewsContainer = $('.restaurantCard');
+      reviewsContainer.empty();
+      window.totalPages = response.totalPages;
+      window.currentPage = response.currentPage;
 
-          // 서버에서 받은 리뷰 목록을 렌더링
-          if (Array.isArray(response.reviews)) {
-            response.reviews.forEach(function (review) {
-              // 첨부파일 처리 
-              let attachedFileHTML = '';
-              if (review.attachedFile && review.attachedFile.length > 0) {
-                review.attachedFile.forEach(function (file) {
-                  attachedFileHTML += `
-                <div>
-                  <img src="/review/display?filename=${file.saved_filename}" alt="Review Image" class="card-img-top">
+      if (Array.isArray(response.reviews)) {
+        response.reviews.forEach(function (review) {
+          let attachedFileHTML = '<div class="image-gallery">';
+          let modalHTML = '';
+
+          if (review.attachedFile && review.attachedFile.length > 0) {
+            review.attachedFile.forEach(function (file, index) {
+              attachedFileHTML += `
+                <div class="gallery-item ${index >= 2 ? 'hidden-image' : ''}">
+                  <img src="/review/display?filename=${file.saved_filename}" alt="Review Image" class="imagination">
                 </div>
               `;
-                });
-              }
-              // 키워드 작업
-              let reviewKeywordHTML = '';
-              if (review.keywords && review.keywords.length > 0) {
-                review.keywords.forEach(function (keyword) {
-                  reviewKeywordHTML += `
-                <div class="review-keyword customKeyWord-style">`;
-                  if (keyword.customKeyWordName != null) {
-                    reviewKeywordHTML += `
-                    <span class="review-keyword-icon customKeyWord-icon"></span>
-                    <span>${keyword.customKeyWordName}</span>
-                  `;
-                  }
-                  else {
-                    reviewKeywordHTML += `
-                    <span class="review-keyword-icon"></span>
-                    <span>${keyword.keyWord.keywordName}</span>
-                  `
-                  }
 
-                  reviewKeywordHTML += '</div>';
-                });
-              }
+              modalHTML += `
+                <div class="modal-image">
+                  <img src="/review/display?filename=${file.saved_filename}" alt="Review Image">
+                </div>
+              `;
+            });
 
+            if (review.attachedFile.length > 2) {
+              attachedFileHTML += `
+                <button type="button" class="show-more" data-bs-toggle="modal" data-bs-target="#imageModal-${review.id}">+</button>
+              `;
+            }
 
-              // 메뉴 처리
-              let reviewMenuHTML = '';
-              if (review.reviewMenuList && review.reviewMenuList.length > 0) {
-                review.reviewMenuList.forEach(function (menu) {
-                  reviewMenuHTML += `
-                    <span>Menu : </span>
-                    <button type="button" class="btn menu-button" name="menu-button">
-                      ${menu.menu != null ? menu.menu.name : ''}
-                      ${menu.customMenuName != null ? menu.customMenuName : ''}
-                    </button>
-                  `
-                });
-              }
-
-              const reviewHTML = `
-                <div class="col-lg-12">
-                  <div class="card mb-4">
-                    <div class="card-header">
-                      User Info
-                      <h3>${review.userName}</h3>
-                      <hr>
-                      ${reviewMenuHTML}
+            modalHTML = `
+              <div class="modal fade" id="imageModal-${review.id}" tabindex="-1" aria-labelledby="imageModalLabel-${review.id}" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-xl">
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      ${modalHTML}
                     </div>
-                    ${attachedFileHTML}
-                    <div class="card-body">
-                      <div class="small text-muted">${review.createDate}</div>
-                      <h2 class="card-title">${review.reviewContents}</h2>
-                      <div class="rating" data-review-id="${review.id}">
-                        <div class="stars" data-rating="${review.rating}"></div>
-                      </div>
-                      <div>
-                        ${review.kindRating === 1 ? '응대 : 나쁨 / ' : ''}
-                        ${review.kindRating === 2 ? '응대 : 보통 / ' : ''}
-                        ${review.kindRating === 3 ? '응대 : 좋음 / ' : ''}
-                        ${review.kindRating === null || review.kindRating === undefined ? '평점 없음 / ' : ''}
-
-                        ${review.priceRating === 1 ? '가격 : 나쁨 / ' : ''}
-                        ${review.priceRating === 2 ? '가격 : 보통 / ' : ''}
-                        ${review.priceRating === 3 ? '가격 : 좋음 / ' : ''}
-                        ${review.priceRating === null || review.priceRating === undefined ? '평점 없음 / ' : ''}
-
-                        ${review.tasteRating === 1 ? '음식 : 나쁨' : ''}
-                        ${review.tasteRating === 2 ? '음식 : 보통' : ''}
-                        ${review.tasteRating === 3 ? '음식 : 좋음' : ''}
-                        ${review.tasteRating === null || review.tasteRating === undefined ? '평점 없음' : ''}
-                      </div>
-                      <div class="button-container">
-                        <input type="hidden" class="review-id" value="${review.id}">
-                        <button type="button" class="btn btn-success mr-2 like-button" onclick="likeReview(this)" data-review-id="${review.id}">
-                          좋아요 <span class="like-count">${review.likeCount}</span>
-                        </button>
-                        <button type="button" class="btn btn-outline-danger mr-2" data-toggle="modal" data-target="#reportModal" data-review-id="${review.id}" onclick="showReportReasons(this)">신고</button> 
-                        ${review.canEdit ? `
-                          <button type="button" class="btn btn-outline-secondary mr-2" data-toggle="modal" data-target="#updateReviewModal" data-review-id="${review.id}" onclick="showUpdateReview(this)">수정</button>
-                          <button type="button" class="btn btn-outline-secondary mr-2" data-bs-toggle="button" onclick="deleteReview(this)">삭제</button>
-                        ` : ''}
-                      </div>
-                      <div class="button-container">
-                        ${reviewKeywordHTML}
-                      </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
                     </div>
                   </div>
                 </div>
-              `;
-              reviewsContainer.append(reviewHTML);
-            });
-
-            // 페이징 버튼 생성
-            paginationHTML = `
-              <nav aria-label="Page navigation example" class="nav-review-paging">
-                <ul class="pagination" id="review-pagination">
-                  <li class="page-item" id="previous-page">
-                    <a class="page-link" href="#" aria-label="Previous" data-sort-by="${sortBy}">
-                      <span aria-hidden="true">«</span>
-                    </a>
-                  </li>
-                  ${Array.from({ length: totalPages }, (_, index) => index + 1).map(page => `
-                    <li class="page-item" ${page === currentPage ? 'class="active"' : ''}>
-                      <a class="page-link" href="#" data-page="${page}" data-sort-by="${sortBy}">${page}</a>
-                    </li>
-                  `).join('')}
-                  <li class="page-item" id="next-page">
-                    <a class="page-link" href="#" aria-label="Next" data-sort-by="${sortBy}">
-                      <span aria-hidden="true">»</span>
-                    </a>
-                  </li>
-                </ul>
-              </nav>
+              </div>
             `;
 
-            setStarRatings();
-            updatePagination(sortBy);
+            attachedFileHTML += '</div>' + modalHTML;
           } else {
-            console.error("Response is not an array:", response);
+            attachedFileHTML += `
+              <div class="image-container"> 
+                <img src="/image/nothing.png" alt="Review Image" class="cardking">
+              </div>
+            `;
+            attachedFileHTML += '</div>';
           }
-        },
-        error: function (xhr, status, error) {
-          console.error('AJAX 요청 실패:', status, error);
-          console.error('응답 내용:', xhr.responseText);
-        }
-      });
+
+          // 키워드 작업
+          let reviewKeywordHTML = '';
+          if (review.keywords && review.keywords.length > 0) {
+            review.keywords.forEach(function (keyword) {
+              reviewKeywordHTML += `
+                <div class="review-keyword customKeyWord-style">`;
+              if (keyword.customKeyWordName != null) {
+                reviewKeywordHTML += `
+                  <span class="review-keyword-icon customKeyWord-icon"></span>
+                  <span>${keyword.customKeyWordName}</span>
+                `;
+              } else {
+                reviewKeywordHTML += `
+                  <span class="review-keyword-icon"></span>
+                  <span>${keyword.keyWord.keywordName}</span>
+                `;
+              }
+              reviewKeywordHTML += '</div>';
+            });
+          }
+
+          // 메뉴 처리
+          let reviewMenuHTML = '';
+          if (review.reviewMenuList && review.reviewMenuList.length > 0) {
+            review.reviewMenuList.forEach(function (menu) {
+              reviewMenuHTML += `
+                <button type="button" class="btn menu-button" name="menu-button">
+                  ${menu.menu != null ? menu.menu.name : ''}
+                  ${menu.customMenuName != null ? menu.customMenuName : ''}
+                </button>
+              `;
+            });
+          }
+
+          const reviewHTML = `
+            <div class="col-lg-12">
+            <div class="card mb-4">
+            <div class="card-header">
+                  <div class="menu-date">
+                    <span class="User-Info"> User Info </span>
+                   <div class="menu-container">
+                     <button class="menu-button1">
+                     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16px"
+                         height="16px" viewBox="0 0 16 16" version="1.1">
+                         <g id="surface1">
+                           <path style=" stroke:none;fill-rule:nonzero;fill:rgb(255%,255%,255%);fill-opacity:1;"
+                             d="M 8.804688 6.890625 C 9.085938 7.113281 9.277344 7.398438 9.34375 7.75 C 9.386719 8.179688 9.3125 8.542969 9.042969 8.890625 C 8.777344 9.179688 8.457031 9.339844 8.066406 9.359375 C 7.660156 9.363281 7.332031 9.242188 7.03125 8.96875 C 6.757812 8.667969 6.636719 8.339844 6.640625 7.933594 C 6.660156 7.542969 6.820312 7.222656 7.109375 6.957031 C 7.617188 6.5625 8.269531 6.535156 8.804688 6.890625 Z M 8.804688 6.890625 " />
+                           <path style=" stroke:none;fill-rule:nonzero;fill:rgb(255%,255%,255%);fill-opacity:1;"
+                             d="M 8.910156 11.644531 C 9.164062 11.871094 9.328125 12.207031 9.351562 12.542969 C 9.359375 12.96875 9.261719 13.3125 8.96875 13.628906 C 8.644531 13.941406 8.296875 14.015625 7.859375 14.007812 C 7.503906 13.992188 7.203125 13.808594 6.960938 13.558594 C 6.683594 13.230469 6.632812 12.851562 6.65625 12.4375 C 6.710938 12.09375 6.914062 11.777344 7.1875 11.5625 C 7.761719 11.210938 8.375 11.230469 8.910156 11.644531 Z M 8.910156 11.644531 " />
+                           <path style=" stroke:none;fill-rule:nonzero;fill:rgb(255%,255%,255%);fill-opacity:1;"
+                             d="M 8.773438 2.210938 C 9.074219 2.425781 9.273438 2.722656 9.34375 3.09375 C 9.371094 3.546875 9.296875 3.894531 9.007812 4.257812 C 8.765625 4.519531 8.4375 4.660156 8.082031 4.695312 C 7.675781 4.710938 7.324219 4.566406 7.023438 4.296875 C 6.738281 3.996094 6.640625 3.621094 6.648438 3.214844 C 6.671875 2.851562 6.839844 2.554688 7.101562 2.304688 C 7.578125 1.898438 8.25 1.890625 8.773438 2.210938 Z M 8.773438 2.210938 " />
+                         </g>
+                       </svg>
+                     </button>
+                     <ul class="dropdown-menu">
+                       <li class="dropmenu-mother"><button type="button" data-toggle="modal" data-target="#reportModal" data-review-id="${review.id}" onclick="showReportReasons(this)">신고</button></li>
+                       <li sec:authorize="isAuthenticated() and #authentication.principal.member_id == #vars.review.beeMember.member_id"><a href="/review/update/${review.id}">수정</a></li>
+                       <li class="dropmenu-mother"><input type="hidden" class="review-id" value="${review.id}"><button type="button" data-review-id="${review.id}" data-bs-toggle="button" onclick="deleteReview(this)">삭제</button></li>
+                     </ul>
+                   </div>
+                  </div>
+
+                  <h3>${review.userName}</h3>
+                </div>
+                  ${attachedFileHTML}
+                <div class="card-body">
+                  <div class="I-am-ironMan">${review.createDate}</div>
+                  <div class="button-container">${reviewKeywordHTML}</div>
+                  <h2 class="card-title">${review.reviewContents}</h2>
+                  <div class="star-menu">
+                    <div class="rating" data-review-id="${review.id}">
+                      <div class="stars" data-rating="${review.rating}"></div>
+                    </div>
+                    <div class="menu">${reviewMenuHTML}</div>
+                  </div>
+
+                  <div class="kind-heart">
+                    <div>
+                    ${review.kindRating === 1 ? '응대 : 나쁨 / ' : ''}
+                    ${review.kindRating === 2 ? '응대 : 보통 / ' : ''}
+                    ${review.kindRating === 3 ? '응대 : 좋음 / ' : ''}
+                    ${review.kindRating === null || review.kindRating === undefined ? '평점 없음 /' : ''}
+
+                    ${review.priceRating === 1 ? '가격 : 나쁨 / ' : ''}
+                    ${review.priceRating === 2 ? '가격 : 보통 / ' : ''}
+                    ${review.priceRating === 3 ? '가격 : 좋음 / ' : ''}
+                    ${review.priceRating === null || review.priceRating === undefined ? '평점 없음 /' : ''}
+
+                    ${review.tasteRating === 1 ? '음식 : 나쁨' : ''}
+                    ${review.tasteRating === 2 ? '음식 : 보통' : ''}
+                    ${review.tasteRating === 3 ? '음식 : 좋음' : ''}
+                    ${review.tasteRating === null || review.tasteRating === undefined ? '평점 없음' : ''}
+                    </div>
+                    <div class="con-like">
+                      <button class="like-button" onclick="likeReview(this)" data-review-id="${review.id}">
+                        <div class="checkmark">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="outline" viewBox="0 0 24 24">
+                        <path d="M17.5,1.917a6.4,6.4,0,0,0-5.5,3.3,6.4,6.4,0,0,0-5.5-3.3A6.8,6.8,0,0,0,0,8.967c0,4.547,4.786,9.513,8.8,12.88a4.974,4.974,0,0,0,6.4,0C19.214,18.48,24,13.514,24,8.967A6.8,6.8,0,0,0,17.5,1.917Zm-3.585,18.4a2.973,2.973,0,0,1-3.83,0C4.947,16.006,2,11.87,2,8.967a4.8,4.8,0,0,1,4.5-5.05A4.8,4.8,0,0,1,11,8.967a1,1,0,0,0,2,0,4.8,4.8,0,0,1,4.5-5.05A4.8,4.8,0,0,1,22,8.967C22,11.87,19.053,16.006,13.915,20.313Z"></path>
+                      </svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="filled" viewBox="0 0 24 24">
+                        <path d="M17.5,1.917a6.4,6.4,0,0,0-5.5,3.3,6.4,6.4,0,0,0-5.5-3.3A6.8,6.8,0,0,0,0,8.967c0,4.547,4.786,9.513,8.8,12.88a4.974,4.974,0,0,0,6.4,0C19.214,18.48,24,13.514,24,8.967A6.8,6.8,0,0,0,17.5,1.917Z"></path>
+                      </svg>
+                        </div>
+                        <span class="like-count">${review.likeCount}</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+
+          reviewsContainer.append(reviewHTML);
+        });
+
+
+        paginationHTML = `
+          <nav aria-label="Page navigation example" class="nav-review-paging">
+            <ul class="pagination" id="review-pagination">
+              <li class="page-item" id="previous-page">
+                <a class="page-link" href="#" aria-label="Previous" data-sort-by="${sortBy}">
+                  <span aria-hidden="true">«</span>
+                </a>
+              </li>
+              ${Array.from({ length: totalPages }, (_, index) => index + 1).map(page => `
+                <li class="page-item" ${page === currentPage ? 'class="active"' : ''}>
+                  <a class="page-link" href="#" data-page="${page}" data-sort-by="${sortBy}">${page}</a>
+                </li>
+              `).join('')}
+              <li class="page-item" id="next-page">
+                <a class="page-link" href="#" aria-label="Next" data-sort-by="${sortBy}">
+                  <span aria-hidden="true">»</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        `;
+
+        $('#review-pagination-container').html(paginationHTML);  // 페이지네이션 컨테이너에 HTML 추가
+
+        setStarRatings();
+        updatePagination(sortBy);
+      } else {
+        console.error("Response is not an array:", response);
+      }
+    },
+    error: function (xhr, status, error) {
+      console.error('AJAX 요청 실패:', status, error);
+      console.error('응답 내용:', xhr.responseText);
     }
+  });
+}
+
+$(document).on('click', '.show-more', function() {
+  const modalId = $(this).attr('data-bs-target');
+  $(modalId).modal('show'); 
+});
 
     function initializeReviewInteractions() {
       // 메뉴 버튼 클릭 이벤트 (이벤트 위임 사용)
@@ -1004,14 +1084,6 @@
         menuContainer.toggleClass('open');
         console.log('버튼 클릭됨:', $(this).closest('.review-item').data('review-id'));
       });
-
-      // 신고 버튼 클릭 이벤트
-      $(document).on('click', '[data-target="#reportModal"]', function () {
-        const reviewId = $(this).data('review-id');
-        $('#reportModal').modal('show');
-        // 여기에 신고 모달에 필요한 데이터를 설정하는 코드 추가
-      });
-
 
     }
 
@@ -1087,10 +1159,66 @@
       initializeReviewInteractions();
     });
 
+ // 레스토랑 신고 모달 열기
+    function openRestaurantReportModal(button) {
+        const restaurantId = button.getAttribute('data-restaurant-id');
+        const restaurantName = button.getAttribute('data-restaurant-name');
 
+        // 모달 필드 채우기
+        document.getElementById('restaurantName').value = restaurantName;
+        document.getElementById('reportContent').value = ''; // 이전 내용 초기화
+
+        // 현재 레스토랑 ID 설정
+        currentRestaurantId = restaurantId;
+
+        // 
+        const restaurantReportModal = document.getElementById("restaurantReportModal");
+        restaurantReportModal.style.display = "block";
+    }
+
+    // 레스토랑 신고 모달 닫기
+    function closeRestaurantReportModal() {
+        const restaurantReportModal = document.getElementById("restaurantReportModal");
+        restaurantReportModal.style.display = "none";
+    }
+
+    // 신고 제출 버튼 클릭 이벤트
+    document.querySelector('.restaurant-report-form .submit-btn').addEventListener('click', function() {
+        const reportContent = document.getElementById('reportContent').value.trim();
+        if (!reportContent) {
+            alert("신고 내용을 입력해주세요.");
+            return;
+        }
+
+        // 신고 제출
+        fetch(`/restaurants/${currentRestaurantId}/reports`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include', // 인증 정보 포함
+            body: JSON.stringify({ reportContent: reportContent })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("레스토랑 신고가 성공적으로 제출되었습니다.");
+                    closeRestaurantReportModal();
+                    // 필요 시, 콘텐츠 새로고침 또는 UI 업데이트
+                } else {
+                    alert("레스토랑 신고 제출에 실패하였습니다.");
+                    console.error('Report submission failed:', data.message);
+                }
+            })
+            .catch(error => {
+                alert("오류가 발생했습니다. 다시 시도해주세요.");
+                console.error('오류 발생:', error);
+            });
+    });
+    
+    
   </script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=initMap"
-    async defer></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=initMap" async defer></script>
 
 </body>
 

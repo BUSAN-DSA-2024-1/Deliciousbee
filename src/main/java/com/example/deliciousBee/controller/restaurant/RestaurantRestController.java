@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
@@ -49,12 +50,20 @@ public class RestaurantRestController {
     @GetMapping("search")
     public ResponseEntity<PagedModel<EntityModel<RestaurantDto>>> getRestaurants(
             @RequestParam(value = "keyword", required = false) String keyword,
-            Pageable pageable,
+            Pageable pageable, // @RequestParam으로 Pageable 객체를 받음
             @RequestParam(value = "sortBy", required = false, defaultValue = "default") String sortBy,
             @RequestParam(value = "latitude", required = false) Double userLatitude,
             @RequestParam(value = "longitude", required = false) Double userLongitude,
-            @RequestParam(value = "radius", required = false, defaultValue = "6.0") Double radius, // 반경 추가 (기본값 0.5km)
+            @RequestParam(value = "radius", required = false, defaultValue = "500") Double radius,
+            @RequestParam(value = "page", defaultValue = "0") int page,
             PagedResourcesAssembler<RestaurantDto> assembler) {
+
+        // Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sort)); // 제거
+
+        // page 파라미터를 사용하여 Pageable 객체 수정 (필요한 경우)
+        if (page > 0) {
+            pageable = PageRequest.of(page - 1, pageable.getPageSize(), pageable.getSort());
+        }
 
         Page<RestaurantDto> restaurants = restaurantService.searchRestaurants(keyword, pageable, sortBy, userLatitude, userLongitude, radius);
 

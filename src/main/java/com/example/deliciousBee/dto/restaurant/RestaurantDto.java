@@ -24,6 +24,8 @@ public class RestaurantDto {
     private String description;
     private double average_rating;
     private List<String> imageUrls; // 이미지 URL 리스트
+    private Double usedRadius; // 실제 사용된 반경
+
 
     // Restaurant 엔티티를 받아서 RestaurantDto를 생성하는 생성자
     public RestaurantDto(Restaurant restaurant) {
