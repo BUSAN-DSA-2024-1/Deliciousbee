@@ -13,4 +13,6 @@ public interface BeeMemberRepository extends JpaRepository<BeeMember, String> {
     @Query("SELECT b FROM BeeMember b WHERE b.member_id = :member_id")
     Optional<BeeMember> findByMemberid(@Param("member_id") String member_id);
     boolean existsByEmail(String email);
+
+
 }

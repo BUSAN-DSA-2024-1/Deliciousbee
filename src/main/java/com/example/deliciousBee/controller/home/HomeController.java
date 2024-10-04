@@ -47,7 +47,6 @@ public class HomeController {
 		auth.put("isAdmin", false); // 기본값 false
 		auth.put("username", ""); // 빈 문자열로 초기화
 
-
 		if (token != null && jwtTokenProvider.validateToken(token)) {
 			String memberId = jwtTokenProvider.getMemberIdFromJWT(token);
 			BeeMember beeMember = beeMemberService.findMemberById(memberId);
@@ -55,7 +54,7 @@ public class HomeController {
 			if (beeMember != null) {
 				auth.put("isAuthenticated", true);
 				auth.put("isAdmin", beeMember.getRole() == Role.ADMIN); // Enum 직접 비교
-				auth.put("username", beeMember.getUsername());
+				auth.put("username", beeMember.getMember_id());
 			}
 		}
 		return auth;
@@ -92,4 +91,7 @@ public class HomeController {
 		return "admin/adminpage"; //
 	}
 
+
+	@GetMapping("/message")
+	public String messagePage() {return "shop/message";}
 }

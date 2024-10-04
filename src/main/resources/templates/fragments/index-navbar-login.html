@@ -10,32 +10,36 @@
     </div>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-        <li class="nav-item admin-page" style="display: none;">
+
+        <li class="nav-item admin-page" th:if="${auth.isAdmin}">
           <a href="#" onclick="location.href='/admin'" >관리자 페이지</a>
         </li>
-        <li class="nav-item restaurant-write" style="display: none;">
+
+        <li class="nav-item restaurant-write" th:if="${auth.isAuthenticated}">
           <a href="#" class="nav-link" onclick="location.href='/restaurant/rtwrite'">맛집등록</a>
         </li>
-        <li class="nav-item"><a class="nav-li  nk" href="#!">커뮤니티</a></li>
 
-        <div class="tooltip-container logged-in-menu" style="display: none;">
+        <li class="nav-item">
+          <a class="nav-li nk" href="#!">커뮤니티</a>
+        </li>
+
+        <div class="tooltip-container logged-in-menu" th:if="${auth.isAuthenticated}">
           <div class="button-content">
             <span class="text">내 정보</span>
           </div>
           <div class="tooltip-content">
             <div class="infos">
-              <a href="#" id="myPageLink" class="info">
-                <p>마이페이지</p>
-              </a>
-              <a href="#" class="info" id="logoutButton">
-                <p>로그아웃</p>
-              </a>
+              <a href="#" id="myPageLink" class="info"> <p>마이페이지</p> </a>
+              <a class="info"onclick="window.open('/message', '_blank', 'width=700,height=500')"><p>메세지함</p></a>
+              <a href="#" class="info" id="logoutButton"> <p>로그아웃</p> </a>
             </div>
           </div>
         </div>
-        <li class="nav-item logged-out-menu" style="display: block;">
+
+        <li class="nav-item logged-out-menu" th:unless="${auth.isAuthenticated}">
           <a class="nav-link" id="loginButton" href="#">로그인</a>
         </li>
+
       </ul>
     </div>
   </div>
