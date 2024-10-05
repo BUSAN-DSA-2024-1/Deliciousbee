@@ -48,4 +48,12 @@ public class FollowService {
                 .map(Follow::getFollowing)
                 .toList();
     }
+    
+ // 특정 사용자를 팔로우하는 사용자 목록 조회
+    public List<BeeMember> getFollowerList(String memberId) {
+        return followRepository.findByFollowingMemberId(memberId) // 팔로워 목록을 가져오려면 해당 메소드 사용
+                .stream()
+                .map(Follow::getFollower) // 팔로워의 목록
+                .toList();
+    }
 }

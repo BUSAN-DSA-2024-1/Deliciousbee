@@ -21,6 +21,7 @@ import com.example.deliciousBee.model.file.AttachedFile;
 import com.example.deliciousBee.model.like.ReviewLike;
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.review.Review;
+import com.example.deliciousBee.model.review.ReviewConverter;
 import com.example.deliciousBee.repository.FileRepository;
 import com.example.deliciousBee.repository.ReportRepository;
 import com.example.deliciousBee.repository.RestaurantRepository;
@@ -155,11 +156,16 @@ public class ReviewService {
 	}
 
 	// 리뷰 업데이트
+	@Transactional
 	public void updateReview(Review updateReview, boolean fileRemoved, MultipartFile[] files) {
-
+		
 		Review findReview = findReview(updateReview.getId());
 		findReview.setReviewContents(updateReview.getReviewContents());
 		findReview.setRating(updateReview.getRating());
+		findReview.setTasteRating(updateReview.getTasteRating());
+		findReview.setPriceRating(updateReview.getPriceRating());
+		findReview.setKindRating(updateReview.getKindRating());
+		findReview.setVisitDate(updateReview.getVisitDate());
 
 		// 기존 파일 가져오기
 		List<AttachedFile> attachedFiles = findFilesByReviewId(findReview.getId());
@@ -168,21 +174,6 @@ public class ReviewService {
 			removeFiles(attachedFiles);
 			attachedFiles = null;
 		}
-
-		// 새로운 파일처리
-//		if (files != null && files.length > 0) {
-//			attachedFiles = new ArrayList<>();
-//			for (MultipartFile file : files) {
-//				if (file.isEmpty()) {
-//					continue;
-//				}
-//				AttachedFile savedFile = fileService.saveFile(file);
-//				if (savedFile != null) {
-//					savedFile.setReview(findReview);
-//					attachedFiles.add(savedFile);
-//				}
-//			}
-//		}
 
 		if (attachedFiles != null && !attachedFiles.isEmpty()) {
 			saveReview(findReview, attachedFiles);

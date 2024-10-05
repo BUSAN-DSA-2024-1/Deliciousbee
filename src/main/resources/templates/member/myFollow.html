@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/myFollow.css">
+    <title>내가 쓴글</title>
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="bee-image"> 
+            <img src="/image/bee.jpg" alt="메인 페이지로 이동">
+        </a>
+    </header>
+
+    <main class="container">
+        <nav class="sidebar">
+            <ul>
+                <li><a href="/member/myPage">마이 페이지</a></li>
+                <li><a href="/member/myInfo">내 정보</a></li>
+                <li><a href="/member/myFollow" class="active">팔로워 관리</a></li>
+                <li><a href="/member/myList">내가 쓴글</a></li>
+                <li><a href="/member/myReply">내가 쓴 댓글</a></li>
+                <li><a href="/member/deleteMember">회원탈퇴</a></li>
+            </ul>
+        </nav>
+
+        <section class="main">
+            <div class="follow-list">
+                <h3>팔로잉 목록</h3>
+                <p>팔로잉수: <span th:text="${followingList.size()}"></span></p>
+                <ul>
+                    <li th:each="following : ${followingList}">
+                        <a th:href="@{/member/myPage(id=${following.myPage.id})}" th:text="${following.nickname}"></a>
+                   		
+                    </li>
+                </ul>
+            </div>
+            <div class="follow-list">
+                <h3>팔로워 목록</h3>
+                <p>팔로워수: <span th:text="${followerList.size()}"></span></p>
+                <ul>
+                    <li th:each="follower : ${followerList}">
+                        <a th:href="@{/member/myPage(id=${follower.myPage.id})}" th:text="${follower.nickname}"></a>
+                    </li>
+                </ul>
+            </div>
+		</section>
+    </main>
+</body>
+</html>

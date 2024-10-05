@@ -13,19 +13,6 @@ body {
 	height: auto;
 }
 
-.myinfo-button {
-	height: 20px;
-	text-align: center;
-	background-color: #f8f9fa; /* 배경색 */
-	border: 1px solid #0d0c22; /* 테두리 */
-	border-radius: 5px; /* 둥근 모서리 */
-	padding: 8px 16px; /* 내부 여백 */
-	font-size: 14px; /* 폰트 크기 */
-	cursor: pointer; /* 마우스 커서 모양 */
-	transition: background-color 0.3s ease; /* 배경색 변경 애니메이션 */
-	margin-top: 6px;
-	margin-bottom: 10px;
-}
 
 .owner-profile input[type="text"] { /* 소개글 입력 칸 스타일 */
 	border: none; /* 테두리 제거 */
@@ -45,58 +32,43 @@ body {
 	background-color: #e9e9e9; /* 약간 더 밝은 회색 */
 }
 
-.main-info {
+.main-image {
 	margin-left: 200px;
 	margin-right: 200px;
-	text-align: center;
-	justify-content: center;
 	height: 350px;
 	position: relative; /* main-info를 기준으로 자식 요소 positioning */
 }
 
-.main-image {
-	position: absolute;
-	top: 50%; /* 위에서 50% 위치 */
-	left: 50%;
-	transform: translate(-50%, -50%); /* 가운데 정렬 */
-	width: 120px;
-	height: 120px;
-	border: 1px solid black;
-	border-radius: 50%;
-	overflow: hidden;
-	z-index: 1;
+
+.default-main-image, .main-image-img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover; 
 }
 
 .profile-image {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 150px; /* profile-image 크기를 main-image보다 작게 조정 */
-	height: 150px;
-	border: 1px solid black;
-	border-radius: 50%;
-	overflow: hidden;
-	z-index: 2; /* profile-image를 main-image보다 위에 배치 */
+    position: absolute;
+    bottom: 30%; 
+    left: 50%; 
+    transform: translateX(-50%); 
+    width: 130px; 
+    height: 130px; 
+    overflow: hidden; 
+    border-radius: 50%; 
+    border: 5px solid grey; 
 }
 
-.default-profile-image {
-	width: 100%;
-	height: 100%;
-	object-fit: cover; /* 이미지 비율 유지 */
-	z-index: 2;
+.my-profile-image, .default-profile-image  {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
 }
 
-.default-main-image {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	z-index: 1;
-}
+
 
 /* 마이페이지 소개 부분 */
 .myPageOwner {
-	background-color: #f5f5f5;
+	background-color: white;
 	background-size: 100% 100%; /* 가로 세로 모두 100%로 설정 */
 	background-repeat: no-repeat;
 	background-position: center;
@@ -109,10 +81,9 @@ body {
 	margin-right: 200px;
 	margin-top: auto;
 	margin-bottom: 3px;
-	border: 1px solid #0d0c22;
 	border-radius: 5px;
 	padding: 20px;
-	box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
 	text-align: center;
 }
 
@@ -124,9 +95,10 @@ body {
 .nickname-header {
 	display: flex;
 	flex-direction: row;
-	border-bottom: 1px solid #4e5458;
+	border-bottom: 2px solid grey;  
 	width: 110%; /* 선의 길이를 50%로 줄임 */
 	height: 50px;
+	position: relative;
 }
 
 .nickname {
@@ -146,81 +118,146 @@ body {
 }
 
 .introduce {
-	border: 1px solid #0d0c22; /* 테두리 색상: 꿀 색상 */
-	background-color: rgba(255, 255, 255, 0.8); /* 배경색: 반투명 흰색 */
-	border-radius: 8px; /* 둥근 모서리 */
 	text-align: left;
-	color: #333;
-	/* 글자 색: 어두운 회색 */
-	line-height: 1.6;
-	font-size: 14px;
 	margin-left: 10px;
 	margin-right: 30px;
-	padding: 15px; /* 내부 여백 추가 */
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	padding: 15px;
-	margin-right: 30px;
-	margin-left: 10px;
-	font-size: 14px;
-	line-height: 1.6;
-	color: #333;
-	text-align: left; /* 그림자 효과 */
+	border: none; /* 테두리 제거 */
+	font-size: 14px; /* 글꼴 크기 */
+	width: 90%; /* 넓이 100% */
+	border-radius: 5px; /* 모서리 둥글게 */
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+	background-color: #f5f5f5; /* 옅은 회색 배경 */
+	color: #333; /* 어두운 회색 글씨 */
+	position: relative; /* 입력 칸에 position: relative 설정 */
+	z-index: 1; /* z-index 값을 설정 */
 }
 
 .owner-stats {
-	display: flex;
-	flex-direction: column;
-	gap: 2px;
-	color: black;
+    display: flex;
+    flex-direction: column;
+    gap: 1px; /* 간격 약간 넓게 */
+    color: #333; /* 진한 회색 텍스트 */
+    text-align: left; /* 텍스트 왼쪽 정렬 */
+    font-size: 16px;
+    font-style: italic;
+    border-left: 2px solid grey; /* 테두리 색상 변경, 두껍게 */
+    width: 35%;
+    margin-top: 15px;
+    margin-left: 80px;
+    padding-left: 20px;
+    position: relative; /* 애니메이션 효과를 위한 position 설정 */
+     perspective: 1000px;
+}
+.owner-stats span::before {  /* 예시: span 앞에 하트 아이콘 추가 */
+    content: '\f004'; /* Font Awesome 하트 아이콘 */
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    margin-right: 5px;
+}
+.owner-stats span {
+    background-color: rgba(255, 255, 255, 0.9); /* 밝은 배경 */
+    border-radius: 12px; /* 더 둥근 모서리 */
+    padding: 10px 15px; /* 패딩 증가 */
+    margin-bottom: 5px;
+    font-size: 16px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* 은은한 그림자 */
+  transform-style: preserve-3d; /* 3D 변형 유지 */
+    transition: transform 0.5s ease, box-shadow 0.3s ease; 
+     border-radius: 20px; /* 값을 조정하여 둥글기를 조절 */
+    padding: 10px 15px; /* 패딩 추가 */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /
+}
+
+.owner-stats span:hover {
+    transform: translateY(-5px) rotateX(10deg); /* 위로 이동하며 X축 회전 */
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3); /* 그림자 강조 */
+}
+
+.owner-stats a {
 	text-align: center;
-	font-size: 15px;
-	font-style: italic;
-	border-left: 1px solid #4e5458;
-	width: 35%;
-	color: orange;
-	margin-top: 15px;
-	margin-left: 80px;
-	padding-left: 20px;
+    color: #A52A2A; /* 진한 빨간색 */
+    text-decoration: none;
+    font-weight: 600; /* 약간 굵게 */
+    display: inline-block;  /* hover 효과 적용을 위해 */
+    transition: color 0.3s ease;
+      animation: pulse 2.0s infinite; /* 맥박 효과 */
+       cursor: pointer;
+       
+       
+       
 }
 
-.owner-stats span { /* span 스타일 추가 */
-	border: 1px solid #0d0c22; /* 테두리 색상: 꿀 색상 */
-	background-color: rgba(255, 255, 255, 0.8); /* 배경색: 반투명 흰색 */
-	border-radius: 8px; /* 둥근 모서리 */
-	display: block; /* 각 span을 블록 요소로 변경 */
-	padding: 8px;
-	border-radius: 5px;
-	margin-bottom: 5px; /* 아래쪽 여백 추가 */
-	font-size: 16px;
+.owner-stats a:hover {
+    color: orange; /* 오렌지색으로 변경 */
+    cursor: pointer; /* 호버 시 커서를 포인터로 변경 */
+}
+.today_visitor {
+    display: inline-flex; /* 텍스트와 아이콘을 나란히 배치 */
+    align-items: center;
+    gap: 5px; /* 아이콘과 텍스트 간격 */
 }
 
-.owner-stats a { /* 링크 스타일 추가 */
-	color: maroon; /* 검은색 텍스트 */
-	text-decoration: none; /* 밑줄 제거 */
-	font-weight: bold; /* 굵은 글씨 */
+.today_visitor::before { /* 방문자 아이콘 추가 */
+    content: '\f0c0'; /* Font Awesome 사람 아이콘 */
+    font-family: "Font Awesome 5 Free"; /* Font Awesome 폰트 지정 */
+    font-weight: 900; /* 아이콘 굵게 */
+    font-size: 18px;
+    transition: transform 0.3s ease; /* 호버 효과를 위한 transition */
 }
 
-a.today_visitor {
-	transition: color 0.3s ease; /* 부드러운 전환 효과 추가 */
-  font-weight: normal;
-  cursor:  pointer; /* 커서를 기본값으로 변경 */
+.today_visitor:hover::before {
+    transform: translateY(-3px); /* 아이콘 위로 이동 */
 }
 
-.today_visitor:hover {
-	color: yellow; /* 마우스 호버 시 흰색으로 변경 */
+/* 움직이는 효과 추가 (선택사항) */
+@keyframes float {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+    100% { transform: translateY(0); }
 }
 
-.today_visitor:active {
-	color: #d9d9d9; /* 클릭 시 약간 어두운 흰색으로 변경 */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
 }
+
+.owner-stats:hover {
+    animation: sway 2s infinite ease-in-out; /* 좌우 흔들림 효과 */
+}
+
 
 .review-sort-container {
-	margin-top: 10px;
-	margin-left: 200px;
+  margin-top: 10px;
+  margin-left: 200px;
+  display: flex; /* 레이블과 셀렉트 박스를 나란히 배치 */
+  align-items: center; /* 수직 중앙 정렬 */
 }
 
-.review-sort-container label {
-	margin-right: 5px;
+
+.sort-select {
+  cursor: pointer;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+  border: 2px solid #F8D573; /* 테두리 색상 (꿀벌 느낌) */
+  background-color: #FFF8DC; /* 배경색 (꿀벌 느낌) */
+  color: #333; /* 글자 색상 */
+  padding: 8px 12px; /* 안쪽 여백 */
+  border-radius: 5px; /* 둥근 모서리 */
+  appearance: none; /* 브라우저 기본 스타일 제거 */
+  padding-right: 2em; /* 화살표를 위한 공간 확보 */
+}
+
+
+.sort-select:hover {
+  background-color: #FFFACD; /* hover 시 배경색 변경 */
+  transform: scale(1.02); /* hover 시 약간 확대 */
+}
+
+.sort-select:focus {
+  outline: none; /* 포커스 시 outline 제거 */
+  box-shadow: 0 0 0 3px rgba(255, 222, 96, 0.5); /* 꿀벌 색상의 포커스 효과 */
 }
 
 .myPageMain {
@@ -233,16 +270,16 @@ a.today_visitor {
 
 .ranking {
 	margin-top: 20px;
+	margin-bottom : 40px;
 	flex: 2; /* 순위 컨테이너가 나머지 공간을 차지하도록 */
 	position: sticky; /* 스크롤 시 고정 */
 	top: 10px; /* 상단에 고정 */
-	border: 1px solid #0d0c22;
-	border-radius: 10px;
 	margin-left: 5px;
 	padding: 20px;
-	background-color: #f5f5f5;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	background-color: white;
 	max-height: 570px; /* 랭킹 박스 높이 조절 */
+	border-radius: 10px;
+	box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2);
 }
 
 .ranking h2 {
@@ -282,22 +319,61 @@ a.today_visitor {
 
 /* 오늘의 리뷰 스타일 */
 .random-review {
-	color: #61686c;
-	margin-top: 20px;
-	border-top: 2px dashed #c49b4c; /* 점선으로 변경 */
-	padding-top: 15px;
+    margin-top: 20px;
+    padding: 5px;
+    border: 1px solid #ddd; /* Border around the review section */
+    border-radius: 8px; /* Rounded corners */
+    background-color: #f9f9f9; /* Light background color */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow effect */
 }
-
 .random-review h3 {
-	color: #61686c; /* 제목 색상 변경 */
-	text-align: center;
-	margin-bottom: 10px;
+	margin-top: 4px;
+    text-align: center; /* Center align the heading */
+    font-size: 18px; /* Adjust the font size */
+    color: #333; /* Dark color for the heading */
 }
 
 .random-review-item {
-	display: flex;
-	flex-direction: column;
-	align-items: center; /* 이미지 및 텍스트 가운데 정렬 */
+    display: flex; 
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center align items */
+    margin-top: 10px; /* Spacing above items */
+}
+
+.random-review-image {
+    text-align: center; /* Center align the image */
+}
+
+.random-review-image img {
+    width: 150px; /* Set a specific width for images */
+    height: 150px; /* Set a specific height for images */
+    border-radius: 5px; /* Rounded corners for images */
+}
+
+.random-review-content {
+    flex: 2; /* Allow content to take more space */
+    padding-left: 15px; /* Spacing between image and text */
+    color: #007bff;
+    text-align: center;
+}
+
+.random-review-content:hover {
+	color: yellow;
+}
+#nextReviewsButton {
+    display: block; /* Center the button */
+    margin: 20px auto; /* Center with auto margins */
+    padding: 10px 20px; /* Button padding */
+    background-color: #007bff; /* Button color */
+    color: white; /* Text color */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners for the button */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth background change */
+}
+
+#nextReviewsButton:hover {
+    background-color: #0056b3; /* Darker color on hover */
 }
 
 .restaurant-name {
@@ -411,6 +487,7 @@ a.today_visitor {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 추가 */
 }
 
+
 #largeImageModal #largeImage {
   margin: 20px; /* 이미지 주변에 여백 추가 */
 }
@@ -434,17 +511,6 @@ a.today_visitor {
 
 
 
-.random-review p {
-	color: #888; /* 텍스트 색상 변경 */
-	text-align: center;
-	font-style: italic;
-}
-
-.random-review {
-	margin-top: 10px;
-	border-top: 1px solid #61686c;
-}
-
 .update-icon {
 	position: absolute;
 	width: 40px;
@@ -453,26 +519,57 @@ a.today_visitor {
 }
 
 /* 버튼 스타일 */
-/* 버튼 스타일 */
-.goUpdate-button {
-	/* 기존 스타일 유지 */
-	margin-top: 30px;
-	margin-bottom: 80px;
-	margin-left: 200px;
-	margin-right: 200px;
-	text-align: right;
+
+.goUpdate-button .update-btn {
+	margin-top: 9px;
+    background-color: transparent; /* 배경색 없음 */
+    border: none; /* 버튼 테두리 제거 */
+    cursor: pointer;
+    padding: 0;
+    position: relative; /* 툴팁 위치를 위한 상대 위치 설정 */
+     position: absolute; /* 부모 요소를 기준으로 배치 */
+    right: 0; /* 오른쪽 벽에 붙이기 */
+    
 }
 
-.goUpdate-button button {
-	background-color: #e0e0e0;
-	color: brown; /* 갈색 글씨 */
-	border: 2px solid #61686c;
-	border-radius: 6px; /* 둥근 모서리 */
-	padding: 10px 20px; /* 넉넉한 패딩 */
-	font-size: 16px; /* 폰트 크기 */
-	cursor: pointer;
-	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
-	transition: background-color 0.3s ease; /* 호버 효과 */
+.goUpdate-button .update-btn img {
+    width: 32px; /* 아이콘 크기 조절 */
+    height: 32px;
+    transition: transform 0.3s ease; /* 마우스 올릴 때 애니메이션 */
+}
+
+/* 마우스를 올렸을 때 아이콘 확대 */
+.goUpdate-button .update-btn:hover img {
+    transform: scale(1.1); /* 아이콘 크기 살짝 확대 */
+}
+
+/* 툴팁 기본 설정 */
+.goUpdate-button .update-btn::after {
+    content: "마이페이지 수정하기"; /* 툴팁 텍스트 */
+    position: absolute;
+    bottom: 120%; /* 아이콘 위에 툴팁 표시 */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: black;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    opacity: 0; /* 기본적으로 보이지 않음 */
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 1; /* 툴팁이 다른 요소 위에 표시되도록 설정 */
+}
+
+/* 마우스를 올렸을 때 툴팁 표시 */
+.goUpdate-button .update-btn:hover::after {
+    opacity: 1; /* 툴팁 표시 */
+}
+
+.goMyInfo-button {
+	content: "내 정보"; /* 툴팁 텍스트 */
+    
 }
 
 .follow-button-wrapper {
@@ -480,62 +577,262 @@ a.today_visitor {
 	flex-direction: row;
 }
 
-.follow-button {
-	background-color: grey;
-	color: white; /* 흰색 텍스트 */
-	border: none;
-	border-radius: 5px; /* 둥근 모서리 */
-	padding: 10px 20px;
-	cursor: pointer;
-	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
-	transition: background-color 0.3s ease; /* 호버 효과 */
-	margin-top: 5px;
-	margin-right: 8px;
+.follow-button, .nofollow {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    position: relative;
+    margin-right: 20px; /* 필요에 따라 조정 */
+    transition: transform 0.3s ease;
+    margin-top: 6px;
 }
 
-.follow-button:hover {
-	background-color: #FFA500; /* 주황색 배경 */
+.follow-button img, .nofollow img {
+    width: 32px; /* 이미지 크기 조정 */
+    height: 32px;
+    transition: transform 0.3s ease;
 }
 
-.nofollow {
-	background-color: orange;
-	color: white; /* 흰색 텍스트 */
-	border: none;
-	border-radius: 5px; /* 둥근 모서리 */
-	padding: 10px 20px;
-	cursor: pointer;
-	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
-	transition: background-color 0.3s ease; /* 호버 효과 */
-	margin-top: 5px;
-	margin-right: 8px;
+.follow-button:hover img, .nofollow:hover img {
+    transform: scale(1.1);
 }
 
-.nofollow:hover {
-	background-color: #FFA500; /* 주황색 배경 */
+/* 팔로우 버튼 툴팁 */
+.follow-button::after {
+    content: "언팔로우"; /* 팔로우 상태일 때 툴팁 */
+    /* ... (나머지 툴팁 스타일) */
 }
 
+.nofollow::after {
+    content: "팔로우"; /* 팔로우하지 않은 상태일 때 툴팁 */
+     /* ... (나머지 툴팁 스타일 - .follow-button과 동일하게) */
+}
+
+/* 툴팁 스타일 (follow-list와 동일하게 유지) */
+.follow-button::after, .nofollow::after {
+    position: absolute;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: black;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+}
+.follow-button:hover::after, .nofollow:hover::after{
+opacity: 1;
+}
 .no-login-follow {
 	margin-top: 15px;
 	font-size: 14px;
 }
 
 .follow-list {
-	background-color: #FFE08C; /* 밝은 노란색 배경 */
-	color: brown; /* 갈색 글씨 */
-	border: 2px solid #61686c; /* 진한 갈색 테두리 */
-	border-radius: 6px; /* 둥근 모서리 */
-	padding: 6px 6px; /* 넉넉한 패딩 */
-	font-size: 13px; /* 폰트 크기 */
-	cursor: pointer;
-	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
-	transition: background-color 0.3s ease; /* 호버 효과 */
-	margin-right: 5px;
-	margin-top: 5px;
-	margin-bottom: 5px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    position: relative;
+    margin-right: 10px; /* 버튼 간 간격 조정 */
+    transition: transform 0.3s ease; /* 마우스 올릴 때 애니메이션 */
 }
 
-.follow-list button:hover {
-	background-color: #FFA500; /* 주황색 배경 */
+.follow-list img {
+    width: 32px;
+    height: 32px;
+    transition: transform 0.3s ease; /* 마우스 올릴 때 애니메이션 */
+}
+
+.follow-list:hover img {
+    transform: scale(1.1);
+}
+
+/* 팔로워 목록 툴팁 */
+.follow-list[onclick^="showFollowersModal"]::after {
+    content: "팔로워 목록";
+    position: absolute;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: black;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+}
+
+.follow-list[onclick^="showFollowersModal"]:hover::after {
+    opacity: 1;
+}
+
+
+/* 팔로잉 목록 툴팁 */
+.follow-list[onclick^="showFollowingModal"]::after {
+    content: "팔로잉 목록";
+    position: absolute;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: black;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+}
+
+.follow-list[onclick^="showFollowingModal"]:hover::after {
+    opacity: 1;
+}
+
+/* 모달 공통 스타일 */
+.list-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 220, 150, 0.8); /* 주황색 계열 배경, 투명도 조절 */
+    z-index: 100;
+    overflow-y: auto;
+    backdrop-filter: blur(5px); /* 배경 blur 효과 (지원 브라우저에서만 적용) */
+    animation: fadeIn 0.5s ease-in-out; /* 나타날 때 애니메이션 */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); } /* 위에서 나타나도록 */
+    to { opacity: 1; transform: translateY(0); }
+}
+
+
+.follow-modal-content, .visit-modal-content {
+    background-color: #fff9e6; /* 아이보리색 배경 */
+    border-radius: 25px; /* 더 둥근 모서리 */
+    padding: 40px;
+    box-shadow: 0 5px 15px rgba(255, 165, 0, 0.4);  /* 주황색 그림자 */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    max-height: 80%;
+    overflow-y: auto;
+    animation: popIn 0.4s ease-in-out; /* 나타날 때 팝업 애니메이션 */
+}
+
+
+@keyframes popIn {
+    from { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+    to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+.follow-modal-content h3, .visit-modal-content h3 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #e67300; /* 진한 주황색 */
+    font-size: 2.2rem; /* 폰트 크기 증가 */
+    font-family: 'Fredoka One', cursive; /* 귀여운 폰트 */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    animation: slideInDown 0.5s ease-in-out; /* 위에서 아래로 슬라이드 애니메이션 */
+
+}
+@keyframes slideInDown {
+    from { transform: translateY(-30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.follow-modal-content p, .visit-modal-content p {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #8b5a2b; /* 갈색 */
+    font-size: 1.3rem;
+    animation: fadeInUp 0.5s ease-in-out 0.2s backwards; /* 아래에서 위로 나타나도록, 딜레이 추가 */
+}
+
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.follow-modal-content ul, .visit-modal-content ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.follow-modal-content li, .visit-modal-content li {
+    padding: 12px 0;
+    margin-bottom: 12px;
+    border-bottom: 1px dashed #ffcc80; /* 연한 주황색 점선 */
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    animation: zoomIn 0.3s ease-in-out 0.3s backwards;  /* 줌인 애니메이션, 딜레이 추가 */
+
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ... (나머지 스타일) */
+
+
+.follow-modal-content li::before, .visit-modal-content li::before {
+    content: "🍯"; /* 꿀 모양 */
+    margin-right: 15px;
+    font-size: 1.3em;
+    animation: rotate 2s linear infinite; /* 회전 애니메이션 */
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+
+
+.close-modal {
+    color: #e67300; /* 진한 주황색 */
+    font-size: 32px;
+    font-weight: bold;
+    transition: transform 0.3s, color 0.3s, text-shadow 0.3s; /* text-shadow 추가 */
+}
+
+.close-modal:hover {
+   filter: drop-shadow(0 0 5px #ff9933); /* 그림자 효과 */
+    /* 또는 */
+    font-size: 36px; /* 폰트 크기 증가 */
 }
 
 /*    리뷰    */
@@ -551,18 +848,18 @@ a.today_visitor {
 }
 
 .review-box {
-	border: 1px solid #61686c;
+	 height: auto;      /* 높이 자동 조정 */
+    min-height: 270px; /* 최소 높이 설정 (선택) */
+    max-height: none;  /* 최대 높이 제한 제거 */
 	padding: 8px;
 	margin-bottom: 10px;
-	border-radius: 8px;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-	background-color: #F8F8F8;
+	border-radius: 10px;
+	box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);	
+	background-color: white;
 	width: 100%;
-	max-height: 270px;
 }
 
 .restaurant_name_head {
-	border-bottom: 1px solid #61686c;
 	background-color: #FAFAFA;
 	padding: 10px;
 	border-radius: 5px; /* 둥근 테두리 */
@@ -637,8 +934,7 @@ a {
 	flex: 8;
 	margin-top: 20px;
 	margin-bottom: 400px;
-	border: 1px solid #61686c;
-	background-color: #F8F8F8;
+	background-color: white;
 	border-radius: 10px;
 	box-shadow: 0 20px 30px rgba(0, 0, 0, 0.1);
 	font-size: 20px;
@@ -674,36 +970,38 @@ a {
 }
 
 .review-rating {
-	text-align: center; /* 가운데 정렬 */
-	margin-top: 5px;
-	margin-bottom: 7px;
+  text-align: center;
+  margin-top: 5px;
+  margin-bottom: 7px;
 }
 
 .review-rating p {
-	display: inline-block; /* 인라인 블록으로 배치 */
-	margin: 0 5px; /* 좌우 마진만 적용 */
-	font-size: 14px;
-	font-family: 'Arial', sans-serif;
-	font-weight: bold;
+  display: inline-block;
+  margin: 0 5px;
+  font-size: 14px;
+  font-family: 'Arial', sans-serif;
+  font-weight: bold;
 }
 
 .review-rating .gauge-container {
-	display: inline-block;
-	width: 60px; /* 게이지 전체 너비 (조정 가능) */
-	height: 10px;
-	background-color: #e0e0e0;
-	border-radius: 5px;
-	overflow: hidden;
-	vertical-align: middle; /* 세로 가운데 정렬 */
-	margin: 0 5px; /* 게이지 좌우 마진 */
+  display: inline-block;
+  width: 60px;
+  height: 10px;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+  vertical-align: middle;
+  margin: 0 5px;
+  margin-bottom: 3px;
 }
 
 .review-rating .gauge {
-	display: block;
-	height: 100%;
-	background-color: #4caf50;
-	border-radius: 5px;
+  display: block;
+  height: 100%;
+  border-radius: 5px;
 }
+
+
 
 .review-comment {
 	padding-right: 10px;
@@ -720,11 +1018,35 @@ a {
 }
 
 .recommendItems {
-	margin-left: 10px;
-	margin-top: 13px;
-	font-weight: bold; /* 추천 메뉴 텍스트 굵게 */
-	color: orange; /* 추천 메뉴 텍스트 오렌지색 */
+    margin-left: 10px;
+    margin-top: 10px;
+    font-weight: bold; /* 추천 메뉴 텍스트 굵게 */
+    color: orange; /* 추천 메뉴 텍스트 오렌지색 */
+    overflow-x: auto; /* 가로 스크롤 추가 */
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    max-width: 100%; /* 부모 요소의 너비를 넘지 않도록 설정 (선택) */
+    max-height: 100%;
+     scrollbar-width: thin; /* 스크롤바 너비 */
+    scrollbar-color: white;
+    
+  
 }
+
+.recommendItems::-webkit-scrollbar {
+    height: 5px !important;
+}
+
+.recommendItems::-webkit-scrollbar-thumb {
+    background-color: #8b4513 !important;
+    border-radius: 5px !important;
+}
+
+.recommendItems::-webkit-scrollbar-track {
+    background-color: #f5f5f5 !important;
+    border-radius: 5px !important;
+}
+
+
 
 .review_content {
 	margin-left: 10px;
@@ -733,6 +1055,21 @@ a {
 	line-height: 1.5; /* 줄 간격 */
 	height: 100px; /* 원하는 높이로 고정 */
 	overflow: auto; /* 넘치는 내용 스크롤바 표시 */
+	  max-height: 90px; /* 최대 높이 제한 (선택 - 필요한 경우) */
+}
+
+.review_content::-webkit-scrollbar {
+    width: 5px;  /* 스크롤바 가로 두께 */
+    height: 5px; /* 스크롤바 세로 두께 */
+}
+
+.review_content::-webkit-scrollbar-thumb {
+    background-color: rgba(128, 128, 128, 0.5); /* 스크롤바 핸들 색상 (선택) */
+    border-radius: 3px; /* 스크롤바 핸들 모서리 둥글게 (선택) */
+}
+
+.review_content::-webkit-scrollbar-track {
+    background-color: rgba(200, 200, 200, 0.2); /* 스크롤바 트랙 색상 (선택) */
 }
 
 .review-create-date {
@@ -903,125 +1240,7 @@ a {
 	margin: 5px 0;
 }
 
-.modal {
-	display: none;
-	position: fixed;
-	z-index: 10;
-	left: 0;
-	top: 0;
-	width: 100%;
-	height: 100%;
-	overflow: auto;
-	background-color: rgba(0, 0, 0, 0.4);
-}
 
-.follow-modal-content {
-	background-image: url("/myPageImage/honey3.jpg");
-	background-size: 100% 100%; /* 가로 세로 모두 100%로 설정 */
-	background-repeat: no-repeat;
-	background-position: center;
-	background-color: #fefefe;
-	margin: 15% auto;
-	padding: 20px;
-	border: 1px solid #61686c;
-	width: 30%; /* 모달 넓이 조절 */
-	border-radius: 10px; /* 모서리 둥글게 */
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-	margin: 15% auto; /* 그림자 효과 */
-	position: relative;
-}
-
-.follow-modal-content h3 {
-	text-align: center;
-	margin-bottom: 20px;
-	color: #333; /* 어두운 텍스트 색상 */
-	font-family: 'Arial Rounded MT Bold', sans-serif; /* 둥근 폰트 */
-}
-
-.follow-modal-content ul {
-	list-style: none;
-	padding: 0;
-}
-
-.follow-modal-content li {
-	padding: 10px;
-	border-bottom: 1px solid #ddd; /* 각 항목 사이 구분선 */
-	text-align: left;
-}
-
-.follow-modal-content li a {
-	text-align: center;
-	color: #333; /* 어두운 텍스트 색상 */
-	text-decoration: none; /* 밑줄 제거 */
-	font-weight: bold; /* 굵은 글씨 */
-	display: block; /* 링크를 전체 너비로 */
-}
-
-.follow-modal-content li a:hover {
-	text-decoration: underline; /* 마우스 호버 시 밑줄 */
-	color: #FFA500; /* 주황색 */
-}
-
-/* 오늘의 방문자 목록 모달 스타일 */
-.visit-modal-content {
-	background-image: url("/myPageImage/honey.jpg");
-	background-size: 100% 100%; /* 가로 세로 모두 100%로 설정 */
-	background-repeat: no-repeat;
-	background-position: center;
-	width: auto; /* width를 auto로 설정하여 이미지 크기에 맞춤 */
-	margin-left: auto; /* 좌우 여백 자동 조정 */
-	margin-right: auto; /* 좌우 여백 자동 조정 */
-	background-color: #fff;
-	margin: 15% auto;
-	padding: 20px;
-	border: 2px solid #61686c; /* 주황색 테두리 추가 */
-	width: 30%;
-	border-radius: 12px;
-	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-	overflow-y: auto;
-	max-height: 400px;
-	  position: relative;
-}
-
-.visit-modal-content h3 {
-	font-size: 1.2em;
-	margin-bottom: 15px;
-	color: #333;
-	text-align: center;
-	font-family: 'Arial Rounded MT Bold', sans-serif;
-	border-bottom: 1px solid #61686c; /* 제목 아래 주황색 선 추가 */
-	padding-bottom: 10px; /* 제목 아래 여백 추가 */
-}
-
-.visit-modal-content ul {
-	list-style: none;
-	padding: 0;
-}
-
-.visit-modal-content li {
-	padding: 8px 0;
-	border-bottom: 1px solid #0d0c22;
-	text-align: center;
-	background-color: #f9f9f9; /* 밝은 회색 배경 추가 */
-	margin-bottom: 5px; /* 아래쪽 여백 추가 */
-	border-radius: 5px; /* 둥근 모서리 추가 */
-}
-
-.visit-modal-content li:last-child {
-	border-bottom: none;
-	margin-bottom: 0; /* 마지막 항목 아래 여백 제거 */
-}
-
-.visit-modal-content a {
-	text-decoration: none;
-	color: #007bff;
-	transition: color 0.3s;
-	font-weight: bold;
-}
-
-.visit-modal-content a:hover {
-	color: #FFA500;
-}
 
 .form-container {
 	width: 350px;
