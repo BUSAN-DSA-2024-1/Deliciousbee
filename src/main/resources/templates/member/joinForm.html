@@ -4,6 +4,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
 	<title>델리비 회원가입</title>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 	<link rel="stylesheet" href="/css/index.css">
@@ -62,6 +63,8 @@
 			justify-content: space-around;
 			margin-bottom: 15px;
 		}
+		
+		
 	</style>
 </head>
 <body>
@@ -120,8 +123,12 @@
 		<input type="password" th:field="*{password}" placeholder="비밀번호 (4~20자)">
 		<div th:errors="*{password}" class="error"></div>
 
-		<input type="text" th:field="*{nickname}" placeholder="닉네임 (2~8자)">
-		<div th:errors="*{nickname}" class="error"></div>
+		<div class="nickname-container">  <!-- 닉네임 관련 요소들을 감싸는 컨테이너 -->
+			<input type="text" th:field="*{nickname}" placeholder="닉네임 (2~8자)" id="nicknameInput">
+			<span id="nicknameCheckResult"></span> <!-- 결과 메시지 영역 -->
+			<button type="button" id="nicknameCheckButton" onclick="checkNickname()">닉네임 중복확인</button>
+		</div>
+		<div th:errors="*{nickname}" class="error"></div> 
 
 		<div class="radio-group">
 			<th:block th:each="gender : ${T(com.example.deliciousBee.model.member.GenderType).values()}">
@@ -322,6 +329,66 @@
 		} else {
 			return false;
 		}
+	}
+	  let isNicknameValid = false;
+	    let isNicknameChecked = false;
+
+	    $("#nicknameInput").on("input", function () {
+	        const currentNickname = $(this).val().trim();
+	        const nicknameLength = currentNickname.length;
+
+	        if (nicknameLength < 2 || nicknameLength > 8) {
+	            $("#nicknameCheckResult").text(" (2~8자 사이여야 합니다.)").css("color", "red");
+	            isNicknameValid = false;
+	            isNicknameChecked = false;
+	            $("#nicknameCheckButton").prop("disabled", true);
+	        } else {
+	            $("#nicknameCheckResult").empty();
+	            isNicknameValid = true;
+	            $("#nicknameCheckButton").prop("disabled", false);
+	        }
+	    });
+
+		function checkNickname() {
+			if (!isNicknameValid) {
+				return;
+			}
+
+			let nickname = $("#nicknameInput").val().trim();
+
+
+	    $.ajax({
+	        url: "/member/checkNickname", // Ensure this URL matches your controller
+	        type: "POST",
+	        data: { nickname: nickname },
+	        success: function(response) {
+	            if (response.isDuplicate) {
+	                $("#nicknameCheckResult").text("이미 사용 중인 닉네임입니다.").css("color", "red");
+	            } else {
+	                $("#nicknameCheckResult").text("사용 가능한 닉네임입니다.").css("color", "green");
+	                isNicknameChecked = true; 
+	            }
+	        },
+	        error: function(xhr, status, error) {
+	            console.error("Error:", error);
+	            alert("닉네임 중복 확인에 실패했습니다.");
+	        }
+	    });
+	}
+	
+	function formCheck() {
+	    // ... (기존 유효성 검사 코드)
+
+	    if (!isNicknameChecked) {
+	        alert("닉네임 중복 체크를 해주세요.");
+	        return false; // 가입 막기
+	    }
+
+	    if (confirm("가입하시겠습니까?")) {
+	        return true; // 가입 진행
+	    } else {
+	        return false; // 가입 취소
+	    }
 	}
 </script>
 </body>

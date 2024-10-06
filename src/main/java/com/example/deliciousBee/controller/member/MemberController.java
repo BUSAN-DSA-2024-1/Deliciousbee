@@ -196,6 +196,13 @@ public class MemberController {
 			result.reject("duplicate", "아이디가 중복되었습니다");
 			return "/member/joinForm"; // 회원가입 성공후 list로 보내는데 url에 안남기고
 		}
+		
+		// 닉네임 체크
+		 BeeMember findNickname = beeMemberService.findMemberByNickname(beeMember.getNickname());
+		    if (findNickname != null) { // 닉네임이 이미 존재하는 경우
+		        result.reject("duplicateNickname", "이미 사용 중인 닉네임입니다.");
+		        return "/member/joinForm"; 
+		    }
 
 		// 회원가입 진행
 		beeMember.setRole(Role.USER); // 회원가입시 기본권한
@@ -210,6 +217,20 @@ public class MemberController {
 
 		return "redirect:/"; // redirect:/url에 안남기고
 	}
+	
+	
+	@PostMapping("/checkNickname")
+	@ResponseBody    
+	public ResponseEntity<Map<String, Boolean>> checkNickname(@RequestParam("nickname") String nickname) {
+		log.info("파라미터 닉네임: {}", nickname); // 요청된 닉네임 출력
+
+	    boolean isDuplicate = beeMemberService.isNicknameExists(nickname);
+
+	    log.info("원래있는 닉네임: {}", isDuplicate); // 중복 여부 출력
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("isDuplicate", isDuplicate);
+        return ResponseEntity.ok(response);
+    }
 
 	// **************로그인 페이지 이동
 
@@ -265,6 +286,7 @@ public class MemberController {
 		// 회원 정보 업데이트
 		BeeMember updatedMember = BeeUpdateForm.toBeeMember(beeUpdateForm);
 		updatedMember.setMember_id(loginMember.getMember_id()); // 회원 ID 유지
+		updatedMember.setEmail(loginMember.getEmail());
 		updatedMember.setBirth(loginMember.getBirth());
 		updatedMember.setGender(loginMember.getGender());
 		beeMemberService.updateMember(updatedMember, beeUpdateForm.isFileRemoved(), file); // 서비스 호출하여 업데이트 수행

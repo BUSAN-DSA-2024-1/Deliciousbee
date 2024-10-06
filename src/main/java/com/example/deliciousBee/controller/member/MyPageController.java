@@ -7,12 +7,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Sort;
+import com.example.deliciousBee.model.member.Role;
+import jakarta.servlet.http.Cookie;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestHeader;
 import com.example.deliciousBee.security.jwt.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
@@ -86,6 +92,7 @@ public class MyPageController {
 	public String myPage(@AuthenticationPrincipal BeeMember loginMember,
 			@RequestParam(name = "id", required = false) Long id,
 			@RequestParam(name = "sort", defaultValue = "createDate") String sort,
+			@RequestParam(name = "page", defaultValue = "0") int page,
 			Model model) {
 			MyPage myPage = null;
 
@@ -106,13 +113,13 @@ public class MyPageController {
 			}
 		}
 
-		handleMyPageAccess(myPage, loginMember, sort, model);
+		handleMyPageAccess(myPage, loginMember, sort, page, model);
 
 		return "member/myPage";
 	}
 
 
-	private void handleMyPageAccess(MyPage myPage, BeeMember loginMember, String sort, Model model) {
+	private void handleMyPageAccess(MyPage myPage, BeeMember loginMember, String sort, int page, Model model) {
 		myPageService.increaseHitCount(myPage.getId()); // 조회수 증가
 		myPageService.increaseVisitCount(myPage.getId(), loginMember); // 방문자 수 증가
 		
@@ -133,19 +140,22 @@ public class MyPageController {
 	    boolean isOwner = loginMember != null && loginMember.getMyPage().getId().equals(myPage.getId());
 	    model.addAttribute("isOwner", isOwner); // isOwner 변수를 모델에 추가
 	    
-	    List<Review> reviews;
+	    Pageable pageable = PageRequest.of(page, 6, Sort.by(sort).descending());
+
+	    Page<Review> reviews;
 	    if ("visitDate".equals(sort)) {
-	        reviews = reviewRepository.findByBeeMemberOrderByVisitDateDesc(myPage.getBeeMember());
+	        reviews = reviewRepository.findByBeeMemberOrderByVisitDateDesc(myPage.getBeeMember(), pageable);
 	    } else {
-	        reviews = reviewRepository.findByBeeMemberOrderByCreateDateDesc(myPage.getBeeMember());
+	        reviews = reviewRepository.findByBeeMemberOrderByCreateDateDesc(myPage.getBeeMember(), pageable);
 	    }
 	    model.addAttribute("reviews", reviews);
-	    
+	    model.addAttribute("currentSort", sort); 
 	    //평균 별점
-	    double averageRating = reviews.stream()
+	    List<Review> allMemberReviews = reviewRepository.findByBeeMember(myPage.getBeeMember());
+	    double averageRating = allMemberReviews.stream()
 	            .mapToInt(Review::getRating)
 	            .average()
-	            .orElse(0.0); 
+	            .orElse(0.0); // 평균 값 계산
 
 	    model.addAttribute("averageRating", averageRating); 
 		
@@ -153,51 +163,68 @@ public class MyPageController {
 	    
 	}
 
-	 @GetMapping("randomReviews")
-	    @ResponseBody
-	    public String getRandomReviews() throws JsonProcessingException { // 예외 처리 추가
-	        List<Review> allReviews = reviewService.findAllReviews();
-	        List<Map<String, String>> randomReviews = new ArrayList<>(); // JSON에 맞게 변경
+	@GetMapping("randomReviews")
+    @ResponseBody
+    public String getRandomReviews() throws JsonProcessingException { // 예외 처리 추가
+        List<Review> allReviews = reviewService.findAllReviews();
+        List<Map<String, String>> randomReviews = new ArrayList<>(); // JSON에 맞게 변경
 
-	        if (!allReviews.isEmpty()) {
-	            Collections.shuffle(allReviews);
-	            List<Review> selectedReviews = allReviews.subList(0, Math.min(allReviews.size(), 100));
+        if (!allReviews.isEmpty()) {
+            // 이미지를 가진 리뷰만 필터링
+            List<Review> reviewsWithImages = allReviews.stream()
+                .filter(review -> review.getAttachedFile() != null && !review.getAttachedFile().isEmpty())
+                .collect(Collectors.toList());
 
-	            for (Review review : selectedReviews) {
-	                Map<String, String> reviewData = new HashMap<>();
-	                
-	                // 이미지 URL 설정
-	                if (review.getAttachedFile() != null && !review.getAttachedFile().isEmpty()) {
-	                    reviewData.put("imageUrl", "/review/display?filename=" + review.getAttachedFile().get(0).getSaved_filename());
-	                } else {
-	                    reviewData.put("imageUrl", "/myPageImage/no-review-img.jpg");
-	                }
-	                
-	                // 레스토랑 이름 추가
-	                reviewData.put("restaurantName", review.getRestaurant().getName());
+            // 리뷰 목록을 무작위로 섞음
+            Collections.shuffle(reviewsWithImages);
 
-	                // restaurantId와 reviewId 추가
-	                reviewData.put("restaurantId", String.valueOf(review.getRestaurant().getId())); // 레스토랑 ID 추가
-	                reviewData.put("reviewId", String.valueOf(review.getId())); // 리뷰 ID 추가
+            // 최대 100개의 리뷰를 선택
+            List<Review> selectedReviews = reviewsWithImages.subList(0, Math.min(reviewsWithImages.size(), 100));
 
-	                randomReviews.add(reviewData);
-	            }
-	        }
+            // 선택된 리뷰의 데이터를 맵에 저장
+            for (Review review : selectedReviews) {
+                Map<String, String> reviewData = new HashMap<>();
+                
+                // 이미지 URL 설정 (이미 isEmpty() 체크를 했으므로 null 체크 필요 없음)
+                reviewData.put("imageUrl", "/review/display?filename=" + review.getAttachedFile().get(0).getSaved_filename());
 
-	        return objectMapper.writeValueAsString(randomReviews);
-	    }
-	
+                // 레스토랑 이름, restaurantId, reviewId 추가
+                reviewData.put("restaurantName", review.getRestaurant().getName());
+                reviewData.put("restaurantId", String.valueOf(review.getRestaurant().getId()));
+                reviewData.put("reviewId", String.valueOf(review.getId()));
+
+                randomReviews.add(reviewData);
+            }
+        }
+
+
+        return objectMapper.writeValueAsString(randomReviews);
+    }
 	
 	// **********************마이페이지 수정하기 페이지 이동****************************
 	@GetMapping("updateMyPage")
-	public String goUpdateMyPage(@AuthenticationPrincipal BeeMember loginMember, Model model) {
+	public String goUpdateMyPage(@AuthenticationPrincipal BeeMember loginMember,
+			@RequestParam(name = "sort", defaultValue = "createDate") String sort,
+			@RequestParam(name = "page", defaultValue = "0") int page,
+			Model model) {
 		if (loginMember == null) {
 			return "redirect:/member/login";
 		}
 		MyPage myPage = loginMember.getMyPage(); // MyPage 객체를 가져옵니다.
 		model.addAttribute("myPage", myPage); // myPage를 모델에 추가합니다.
 		model.addAttribute("loginMember", loginMember);
-		 handleMyPageAccess(myPage, loginMember, "createDate", model); // "createDate" 또는 원하는 sort 값 전달
+		
+		Pageable pageable = PageRequest.of(page, 6, Sort.by(sort).descending());
+
+	    Page<Review> reviews;
+	    if ("visitDate".equals(sort)) {
+	        reviews = reviewRepository.findByBeeMemberOrderByVisitDateDesc(myPage.getBeeMember(), pageable);
+	    } else {
+	        reviews = reviewRepository.findByBeeMemberOrderByCreateDateDesc(myPage.getBeeMember(), pageable);
+	    }
+	    model.addAttribute("reviews", reviews);
+	    model.addAttribute("currentSort", sort);
+		handleMyPageAccess(myPage, loginMember, sort, page, model); // "createDate" 또는 원하는 sort 값 전달
 		 return "member/updateMyPage";
 	}
 
@@ -252,6 +279,50 @@ public class MyPageController {
 		model.addAttribute("reviewCount", reviewCount);
 		return "member/MyPageList";
 
+	}
+	
+	
+	@ModelAttribute("auth") // "auth"라는 이름으로 모델에 추가
+	public Map<String, Object> authenticationDetails(HttpServletRequest request) {
+	    String token = extractJwtFromRequest(request); // 요청에서 JWT 추출 (아래 설명 참조)
+
+	    Map<String, Object> auth = new HashMap<>();
+	    auth.put("isAuthenticated", false); // 기본값 false
+	    auth.put("isAdmin", false); // 기본값 false
+	    auth.put("username", ""); // 빈 문자열로 초기화
+
+
+	    if (token != null && jwtTokenProvider.validateToken(token)) {
+	       String memberId = jwtTokenProvider.getMemberIdFromJWT(token);
+	       BeeMember beeMember = beeMemberService.findMemberById(memberId);
+
+	       if (beeMember != null) {
+	          auth.put("isAuthenticated", true);
+	          auth.put("isAdmin", beeMember.getRole() == Role.ADMIN); // Enum 직접 비교
+	          auth.put("username", beeMember.getUsername());
+	       }
+	    }
+	    return auth;
+	}
+
+	// 요청에서 JWT 추출 (Authorization 헤더 또는 쿠키)
+	private String extractJwtFromRequest(HttpServletRequest request) {
+	    String bearerToken = request.getHeader("Authorization");
+	    if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+	       return bearerToken.substring(7);
+	    }
+
+	    // Authorization 헤더에 없으면 쿠키에서 확인
+	    Cookie[] cookies = request.getCookies();
+	    if (cookies != null) {
+	       for (Cookie cookie : cookies) {
+	          if ("Authorization".equals(cookie.getName())) {
+	             return cookie.getValue();
+	          }
+	       }
+	    }
+
+	    return null; // 토큰 없음
 	}
 
 }

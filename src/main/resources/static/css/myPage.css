@@ -150,7 +150,7 @@ body {
      perspective: 1000px;
 }
 .owner-stats span::before {  /* 예시: span 앞에 하트 아이콘 추가 */
-    content: '\f004'; /* Font Awesome 하트 아이콘 */
+    content: '\f007'; /* Font Awesome 하트 아이콘 */
     font-family: "Font Awesome 5 Free";
     font-weight: 900;
     margin-right: 5px;
@@ -258,6 +258,49 @@ body {
 .sort-select:focus {
   outline: none; /* 포커스 시 outline 제거 */
   box-shadow: 0 0 0 3px rgba(255, 222, 96, 0.5); /* 꿀벌 색상의 포커스 효과 */
+}
+
+.pagination-container {
+    text-align: center; /* 중앙 정렬 */
+    margin: 20px 0; /* 상하 여백 추가 */
+}
+
+.pagination {
+    list-style-type: none; /* 기본 목록 스타일 제거 */
+    padding: 0; /* 패딩 제거 */
+    display: inline-flex; /* 인라인 플렉스 박스 사용 */
+    gap: 10px; /* 버튼 사이의 간격 */
+}
+
+.pagination li {
+    display: inline; /* 인라인 디스플레이 설정 */
+}
+
+.page-link {
+    padding: 10px 15px; /* 버튼 패딩 */
+    border: 1px solid #007bff; /* 버튼 테두리 */
+    border-radius: 5px; /* 모서리 둥글게 */
+    color: #007bff; /* 링크 색상 */
+    text-decoration: none; /* 밑줄 제거 */
+    background-color: #f8f9fa; /* 기본 배경 색상 */
+    transition: background-color 0.3s, color 0.3s; /* 부드러운 전환 효과 */
+    font-weight: 500; /* 글자 두께 조정 */
+}
+
+.page-link:hover {
+    background-color: #007bff; /* hover 시 배경 색상 변경 */
+    color: white; /* hover 시 텍스트 색상 변경 */
+}
+
+.pagination .active .page-link {
+    background-color: #007bff; /* 활성 페이지의 배경 색상 */
+    color: white; /* 활성 페이지의 텍스트 색상 */
+    border: 1px solid #007bff; /* 활성 페이지의 테두리 색상 */
+}
+
+/* 페이지 번호 밑줄 제거 */
+.pagination a {
+    text-decoration: none; /* 링크의 밑줄 제거 */
 }
 
 .myPageMain {
@@ -778,13 +821,10 @@ opacity: 1;
   }
 }
 
-.follow-modal-content ul, .visit-modal-content ul {
-    list-style-type: none;
-    padding: 0;
-}
 
 .follow-modal-content li, .visit-modal-content li {
-    padding: 12px 0;
+    list-style-type: none;
+    padding: 0;
     margin-bottom: 12px;
     border-bottom: 1px dashed #ffcc80; /* 연한 주황색 점선 */
     font-size: 1.1rem;
@@ -805,7 +845,6 @@ opacity: 1;
   }
 }
 
-/* ... (나머지 스타일) */
 
 
 .follow-modal-content li::before, .visit-modal-content li::before {
@@ -815,12 +854,35 @@ opacity: 1;
     animation: rotate 2s linear infinite; /* 회전 애니메이션 */
 }
 
+
+
 @keyframes rotate {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
 
+.follow-modal-content a, 
+.visit-modal-content a {
+    font-size: 20px;
+    color: #ff69b4; /* 핫 핑크 색상 */
+    text-decoration: none; /* 기본 밑줄 제거 */
+    font-weight: bold; /* 두껍게 */
+    border-radius: 12px; /* 둥근 모서리 */
+    padding: 8px 12px; /* 패딩 추가 */
+    background-color: rgba(255, 105, 180, 0.2); /* 반투명 핫 핑크 배경 */
+    transition: background-color 0.3s ease, transform 0.3s ease; /* 부드러운 전환 효과 */
+}
 
+.follow-modal-content a:hover, 
+.visit-modal-content a:hover {
+    background-color: rgba(255, 105, 180, 0.4); /* 마우스 오버 시 배경색 변화 */
+    transform: scale(1.05); /* 약간 확대 효과 */
+}
+
+.follow-modal-content a:active, 
+.visit-modal-content a:active {
+    transform: scale(0.95); /* 클릭 시 살짝 줄어드는 효과 */
+}
 
 .close-modal {
     color: #e67300; /* 진한 주황색 */
@@ -843,20 +905,18 @@ opacity: 1;
 	overflow-y: auto; /* 스크롤바 설정 */
 	gap: 15px;
 	justify-content: space-between;
-	margin-bottom: 200px;
+	margin-bottom: 50px;
 	margin-top: 20px;
 }
 
 .review-box {
-	 height: auto;      /* 높이 자동 조정 */
-    min-height: 270px; /* 최소 높이 설정 (선택) */
-    max-height: none;  /* 최대 높이 제한 제거 */
 	padding: 8px;
 	margin-bottom: 10px;
-	border-radius: 10px;
-	box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);	
-	background-color: white;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	background-color: white;;
 	width: 100%;
+	max-height: 270px;
 }
 
 .restaurant_name_head {
@@ -1005,7 +1065,6 @@ a {
 
 .review-comment {
 	padding-right: 10px;
-	margin-bottom: 15px;
 	margin-left: 20px;
 	margin-right: 0px;
 	border-top: 1px solid #61686c;
@@ -1027,25 +1086,20 @@ a {
     max-width: 100%; /* 부모 요소의 너비를 넘지 않도록 설정 (선택) */
     max-height: 100%;
      scrollbar-width: thin; /* 스크롤바 너비 */
-    scrollbar-color: white;
-    
-  
+    scrollbar-color: rgba(128, 128, 128, 0.5) rgba(200, 200, 200, 0.2); /* 핸들 색상, 트랙 색상 */	
 }
 
-.recommendItems::-webkit-scrollbar {
-    height: 5px !important;
-}
+
 
 .recommendItems::-webkit-scrollbar-thumb {
-    background-color: #8b4513 !important;
-    border-radius: 5px !important;
+    background-color: rgba(128, 128, 128, 0.5);
+    border-radius: 2px;
 }
 
 .recommendItems::-webkit-scrollbar-track {
-    background-color: #f5f5f5 !important;
-    border-radius: 5px !important;
+    background-color: rgba(200, 200, 200, 0.2);
+    border-radius: 2px;
 }
-
 
 
 .review_content {
@@ -1073,11 +1127,10 @@ a {
 }
 
 .review-create-date {
-	text-align: right;
-	text-align: right;
-	font-size: 12px; /* 방문 날짜보다 작은 글씨 크기 */
-	color: #888; /* 옅은 회색으로 눈에 덜 띄게 */
-	margin-top: 5px; /* 위쪽 여백 추가 (선택 사항) */
+	text-align:right;
+    font-size: 12px;
+    color: #888;
+     margin-top: 8px;
 }
 
 .main-content {

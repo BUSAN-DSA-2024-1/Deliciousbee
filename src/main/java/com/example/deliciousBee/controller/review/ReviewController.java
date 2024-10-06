@@ -70,6 +70,8 @@ public class ReviewController {
 	private final ReviewKeyWordService reviewKeyWordService;
 	private final ObjectMapper objectMapper;
 
+	 private List<Review> cachedReviewsWithImages = null; 
+	
 	@PostMapping("write/{restaurant_id}")
 	public String postWriteReview(@Validated @ModelAttribute("writeForm") ReviewWriteForm reviewWriteForm,
 			BindingResult result, @RequestParam(name = "file", required = false) MultipartFile[] files,
