@@ -32,7 +32,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
             String keyword, Pageable pageable);
 
 
-    @Query("SELECT r FROM Restaurant r WHERE (r.name LIKE %:keyword% OR r.menu_name LIKE %:keyword%) AND r.verificationStatus = 'APPROVED'")
+    @Query("SELECT DISTINCT r FROM Restaurant r WHERE (r.name LIKE %:keyword% OR r.menu_name LIKE %:keyword%) AND r.verificationStatus = 'APPROVED'")
     Page<Restaurant> searchByNameOrMenuName(@Param("keyword") String keyword, Pageable pageable);
 
 
@@ -45,7 +45,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
             "6371000 * acos(cos(radians(:userLatitude)) * cos(radians(r.latitude)) * cos(radians(r.longitude) - radians(:userLongitude)) + sin(radians(:userLatitude)) * sin(radians(r.latitude))) ASC")
     Page<Restaurant> searchByNameOrMenuNameSortedByDistance(@Param("keyword") String keyword, @Param("userLatitude") Double userLatitude, @Param("userLongitude") Double userLongitude, Pageable pageable);
 
-    @Query("SELECT r FROM Restaurant r WHERE (r.name LIKE %:keyword% OR r.menu_name LIKE %:keyword%) " +
+    @Query("SELECT DISTINCT r FROM Restaurant r WHERE (r.name LIKE %:keyword% OR r.menu_name LIKE %:keyword%) " +
             "AND r.verificationStatus = 'APPROVED' " +
             "AND 6371000 * acos(cos(radians(:userLatitude)) * cos(radians(r.latitude)) * " +
             "cos(radians(r.longitude) - radians(:userLongitude)) + sin(radians(:userLatitude)) * " +
@@ -58,7 +58,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
                                                            @Param("userLongitude") Double userLongitude,
                                                            @Param("radius") Double radius,
                                                            Pageable pageable);
-    @Query("SELECT r FROM Restaurant r WHERE (r.name LIKE %:keyword% OR r.menu_name LIKE %:keyword%) " +
+    @Query("SELECT DISTINCT r FROM Restaurant r WHERE (r.name LIKE %:keyword% OR r.menu_name LIKE %:keyword%) " +
             "AND r.verificationStatus = 'APPROVED' " +
             "AND 6371000 * acos(cos(radians(:userLatitude)) * cos(radians(r.latitude)) * " +
             "cos(radians(r.longitude) - radians(:userLongitude)) + sin(radians(:userLatitude)) * " +
@@ -75,7 +75,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 
 
 
-    @Query("SELECT r FROM Restaurant r WHERE r.verificationStatus = 'APPROVED' " +
+    @Query("SELECT DISTINCT r FROM Restaurant r WHERE r.verificationStatus = 'APPROVED' " +
             "AND 6371000 * acos(cos(radians(:userLatitude)) * cos(radians(r.latitude)) * " +
             "cos(radians(r.longitude) - radians(:userLongitude)) + sin(radians(:userLatitude)) * " +
             "sin(radians(r.latitude))) < :radius " +  // 반경 필터
@@ -86,9 +86,9 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
                                          @Param("userLongitude") Double userLongitude,
                                          @Param("radius") Double radius,
                                          Pageable pageable);
-    @Query("SELECT r FROM Restaurant r WHERE r.verificationStatus = 'APPROVED' ORDER BY r.average_rating DESC")
+    @Query("SELECT DISTINCT r FROM Restaurant r WHERE r.verificationStatus = 'APPROVED' ORDER BY r.average_rating DESC")
     Page<Restaurant> findAllSortedByRating(Pageable pageable);
 
-    @Query("SELECT r FROM Restaurant r WHERE (r.name LIKE %:keyword% OR r.menu_name LIKE %:keyword%) AND r.verificationStatus = 'APPROVED' ORDER BY r.average_rating DESC")
+    @Query("SELECT DISTINCT r FROM Restaurant r WHERE (r.name LIKE %:keyword% OR r.menu_name LIKE %:keyword%) AND r.verificationStatus = 'APPROVED' ORDER BY r.average_rating DESC")
     Page<Restaurant> searchByNameOrMenuNameSortedByRating(@Param("keyword") String keyword, Pageable pageable);
 }
