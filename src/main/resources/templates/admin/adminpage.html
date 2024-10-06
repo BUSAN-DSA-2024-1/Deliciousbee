@@ -6,7 +6,6 @@
     <title>Delicious Bee - 관리자 페이지</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/index.css">
     <style>
 
         /* 공통 모달 컨테이너 스타일 */
@@ -273,6 +272,7 @@
         <button onclick="loadContent('pendingRestaurants')" class="active">등록된 점포</button>
         <button onclick="loadContent('reportedReviews')">신고된 리뷰</button>
         <button onclick="loadContent('reportedRestaurants')">신고된 레스토랑</button>
+        <button id="logoutButton">로그아웃</button>
     </div>
 
     <div class="content-section" id="content">
@@ -409,31 +409,31 @@
                             let rows = '';
                             data.pending.forEach(restaurant => {
                                 rows += `
-                                    <tr>
-                                        <td>${restaurant.id}</td>
-                                        <td>${restaurant.name}</td>
-                                        <td>${restaurant.address}</td>
-                                        <td><a href="/restaurant/rtread/${restaurant.id}" class="btn btn-primary">보기</a></td>
-                                        <td><button onclick="approveRestaurant(${restaurant.id})" class="btn btn-success">승인</button></td>
-                                    </tr>
-                                `;
+                                <tr>
+                                    <td>${restaurant.id}</td>
+                                    <td>${restaurant.name}</td>
+                                    <td>${restaurant.address}</td>
+                                    <td><a href="/restaurant/rtread/${restaurant.id}" class="btn btn-primary">보기</a></td>
+                                    <td><button onclick="approveRestaurant(${restaurant.id})" class="btn btn-success">승인</button></td>
+                                </tr>
+                            `;
                             });
                             const content = `
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>점포 ID</th>
-                                            <th>점포명</th>
-                                            <th>주소</th>
-                                            <th>보기</th>
-                                            <th>승인</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${rows}
-                                    </tbody>
-                                </table>
-                            `;
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>점포 ID</th>
+                                        <th>점포명</th>
+                                        <th>주소</th>
+                                        <th>보기</th>
+                                        <th>승인</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${rows}
+                                </tbody>
+                            </table>
+                        `;
                             document.getElementById('content').innerHTML = content;
                         } else {
                             alert("미승인 레스토랑 목록을 가져오는데 실패했습니다.");
@@ -466,29 +466,29 @@
                             let rows = '';
                             data.reports.forEach(report => {
                                 rows += `
-                                    <tr>
-                                        <td>${report.reviewId}</td>
-                                        <td>${report.reason}</td>
-                                        <td>${report.reportDate}</td>
-                                        <td><button onclick="openReviewModal(${report.id}, ${report.reviewId})" data-report-id="${report.id}">관리</button></td>
-                                    </tr>
-                                `;
+                                <tr>
+                                    <td>${report.reviewId}</td>
+                                    <td>${report.reason}</td>
+                                    <td>${report.reportDate}</td>
+                                    <td><button onclick="openReviewModal(${report.id}, ${report.reviewId})" data-report-id="${report.id}">관리</button></td>
+                                </tr>
+                            `;
                             });
                             const content = `
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>리뷰 ID</th>
-                                            <th>내용</th>
-                                            <th>신고일</th>
-                                            <th>관리</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${rows}
-                                    </tbody>
-                                </table>
-                            `;
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>리뷰 ID</th>
+                                        <th>내용</th>
+                                        <th>신고일</th>
+                                        <th>관리</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${rows}
+                                </tbody>
+                            </table>
+                        `;
                             document.getElementById('content').innerHTML = content;
                         } else {
                             alert("신고된 리뷰 목록을 가져오는데 실패했습니다.");
@@ -523,32 +523,32 @@
                                 console.log('Processing report:', report); // 디버깅용 로그
                                 if (report && report.id) {
                                     rows += `
-                                        <tr>
-                                            <td>${report.restaurantId}</td>
-                                            <td>${report.restaurantName}</td>
-                                            <td>${report.reportDate}</td>
-                                            <td><button onclick="handleReport(${report.id}, ${report.restaurantId})">관리</button></td>
-                                        </tr>
-                                    `;
+                                    <tr>
+                                        <td>${report.restaurantId}</td>
+                                        <td><a href="/restaurant/${report.restaurantId}/edit" class="btn btn-link">${report.restaurantName}</a></td>
+                                        <td>${report.reportDate}</td>
+                                        <td><button onclick="handleReport(${report.id}, ${report.restaurantId})" class="btn btn-warning">관리</button></td>
+                                    </tr>
+                                `;
                                 } else {
                                     console.error('Invalid report data:', report);
                                 }
                             });
                             const content = `
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>레스토랑 ID</th>
-                                            <th>레스토랑명</th>
-                                            <th>신고일</th>
-                                            <th>관리</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${rows}
-                                    </tbody>
-                                </table>
-                            `;
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>레스토랑 ID</th>
+                                        <th>레스토랑명</th>
+                                        <th>신고일</th>
+                                        <th>관리</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${rows}
+                                </tbody>
+                            </table>
+                        `;
                             document.getElementById('content').innerHTML = content;
                         } else {
                             alert("신고된 레스토랑 목록을 가져오는데 실패했습니다.");
@@ -565,6 +565,7 @@
                 document.getElementById('content').innerHTML = '<p>Invalid content type.</p>';
         }
     }
+
 
     function approveRestaurant(restaurantId){
         if (confirm("승인하시겠습니까?")) {
@@ -846,6 +847,36 @@
                     console.error('오류 발생:', error);
                 });
         }
+    }
+
+
+
+    var logoutButton = document.getElementById('logoutButton');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            logout();
+        });
+    }
+
+    // 로그아웃 함수
+    function logout() {
+        fetch('member/logout', {
+            method: 'POST',
+            credentials: 'include'  // 쿠키 포함
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert('로그아웃되었습니다.');
+                    window.location.href = '/';
+                } else {
+                    alert('로그아웃에 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('로그아웃 오류:', error);
+                alert('로그아웃 중 오류가 발생했습니다.');
+            });
     }
 </script>
 </body>

@@ -1,0 +1,393 @@
+<!-- src/main/resources/templates/restaurant/rtedit.html -->
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delicious Bee - 맛집 수정</title>
+    <!-- 부트스트랩 CSS -->
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            let menuIndex = /*[[${restaurant.menuList.size()}]]*/0;
+
+            // 메뉴 추가 버튼 이벤트
+            document.querySelector('.add-menu').addEventListener('click', function() {
+                menuIndex++;
+                let newMenuItem = document.createElement('div');
+                newMenuItem.classList.add('form-group', 'menu-item', 'd-flex', 'align-items-center');
+                newMenuItem.innerHTML = `
+                    <input type="text" class="form-control flex-grow-1" name="menu_name[]" placeholder="메뉴 이름" id="menu_name_${menuIndex}" style="margin-right: 10px;" />
+                    <input type="text" class="form-control flex-grow-1" name="price_range[]" placeholder="가격" id="price_range_${menuIndex}" />
+                    <button type="button" class="btn btn-primary remove-menu" style="margin-left: 5px;">-</button>
+                `;
+                document.querySelector('#menu-container').appendChild(newMenuItem);
+            });
+
+            // 메뉴 삭제 버튼 이벤트
+            document.querySelector('#menu-container').addEventListener('click', function(event) {
+                if (event.target.classList.contains('remove-menu')) {
+                    const menuItems = document.querySelectorAll('.menu-item');
+                    if (menuItems.length > 1) {
+                        menuItems[menuItems.length - 1].remove();
+                    } else {
+                        alert("최소한 하나의 메뉴와 가격대를 입력해야 합니다.");
+                    }
+                }
+            });
+        });
+
+        let map;
+        let geocoder;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 35.1796, lng: 129.0756 },
+                zoom: 11
+            });
+            geocoder = new google.maps.Geocoder();
+        }
+
+        function geocodeAddress() {
+            const address = document.getElementById('address').value;
+            geocoder.geocode({ 'address': address }, function(results, status) {
+                if (status === 'OK') {
+                    const location = results[0].geometry.location;
+                    const formattedAddress = results[0].formatted_address;
+                    map.setCenter(location);
+                    map.setZoom(18);
+                    const marker = new google.maps.Marker({
+                        map: map,
+                        position: location
+                    });
+
+                    document.getElementById('latitude').value = location.lat();
+                    document.getElementById('longitude').value = location.lng();
+                    document.getElementById('true-address').value = formattedAddress;
+                } else {
+                    alert('Geocode was not successful for the following reason: ' + status);
+                }
+            });
+        }
+
+        function updateRestaurant() {
+            const form = document.getElementById('restaurantForm');
+            const formData = new FormData(form);
+
+            // 선택된 상세 카테고리들을 배열로 저장
+            const selectedCategories = [];
+            document.querySelectorAll('input[name="category[]"]:checked').forEach(function(checkbox) {
+                selectedCategories.push(checkbox.value);
+            });
+
+            // 쉼표로 구분된 문자열로 변환하여 FormData에 추가
+            formData.append('categories', selectedCategories.join(','));
+
+            const restaurantId = /*[[${restaurant.id}]]*/0;
+
+            fetch(`/api/restaurants/${restaurantId}/update`, {
+                method: 'POST',
+                body: formData,
+                credentials: 'include'
+            })
+
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/';
+                    } else {
+                        alert('맛집 수정에 실패했습니다.');
+                    }
+                });
+        }
+
+        // 카테고리 Enum 정의
+        const categoryEnum = {
+            "한식": ["백반", "죽", "국수", "찌개", "탕", "전골", "족발", "보쌈", "한정식", "분식"],
+            "일식": ["초밥", "회", "돈가스", "일본식카레", "일본식면요리"],
+            "중식": ["중식"],
+            "양식": ["파스타", "스테이크"],
+            "아시안": ["아시안"],
+            "패스트푸드": ["피자", "햄버거", "핫도그", "샌드위치"],
+            "디저트": ["카페", "디저트"]
+        };
+
+        // 기존 선택된 카테고리들을 JavaScript 변수로 전달
+        const selectedCategoriesJS = /*[[${selectedCategoriesJson}]]*/ [];
+
+        function updateSubcategories(mainCategory) {
+            const checkboxContainer = document.getElementById("category-checkboxes");
+            checkboxContainer.innerHTML = '';
+
+            if (!mainCategory) return;
+
+            const subcategories = categoryEnum[mainCategory] || [];
+
+            subcategories.forEach(subcategory => {
+                const label = document.createElement("label");
+                label.classList.add("checkbox-inline");
+                label.style.marginRight = "10px";
+
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.name = "category[]";
+                checkbox.value = subcategory;
+                checkbox.id = `category_${subcategory}`;
+
+                // 기존 선택된 카테고리인지 확인하여 체크 상태 설정
+                if (selectedCategoriesJS.includes(subcategory)) {
+                    checkbox.checked = true;
+                }
+
+                label.appendChild(checkbox);
+                label.appendChild(document.createTextNode(subcategory));
+                checkboxContainer.appendChild(label);
+            });
+        }
+
+        // 페이지 로드 시 메인 카테고리에 따른 서브 카테고리 생성 및 체크 상태 설정
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSubcategories(document.getElementById('mainCategory').value);
+        });
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=initMap" async defer></script>
+    <style>
+        /* 기존의 스타일들 */
+        body {
+            background: linear-gradient(135deg, #f5f5f5 0%, #d9d9d9 100%);
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        .container {
+            margin-top: 10px;
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        header {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .lead {
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #000; /* 라벨 텍스트 색상 검정 */
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #ffa500;
+            box-shadow: 0 0 0 0.2rem rgba(255, 165, 0, 0.25);
+        }
+
+        .form-control-file {
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            padding: 5px;
+            transition: border-color 0.3s;
+        }
+
+        .form-control-file:focus {
+            border-color: #ffa500;
+        }
+
+        .btn-primary {
+            background-color: #61686c;
+            border: none;
+            color: #fff; /* 텍스트 색상 흰색 */
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 10px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #4e5458;
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        .btn-primary:active {
+            background-color: #3d4144;
+            transform: scale(1.00);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-control::placeholder {
+            color: #aaa;
+        }
+
+        #map {
+            height: 300px;
+            width: 400px;
+        }
+
+        #mapget {
+            display: flex;
+            flex-direction: row;
+        }
+
+        #address {
+            margin-top: 10%;
+            height: 30px;
+            width: 50%;
+            margin-right: 5px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+
+        #adrbutton {
+            margin-top: 10%;
+            margin-right: 5px;
+            height: 30px;
+            width: 100px;
+            background-color: #61686c; /* 버튼 배경색 */
+            border: none;
+            color: #fff; /* 텍스트 색상 흰색 */
+            font-weight: bold;
+            border-radius: 10px;
+            transition: background-color 0.3s, transform 0.3s;
+            font-size: 15px;
+        }
+
+        .hidden-field {
+            display: none;
+        }
+
+        .existing-image {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .existing-image img {
+            margin-right: 10px;
+            border-radius: 5px;
+        }
+    </style>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <!-- 헤더 -->
+    <header class="text-center">
+        <h2>맛집 수정</h2>
+        <p class="lead">맛집 정보를 수정해주세요</p>
+    </header>
+    <div class="text-center">
+        <a class="btn btn-primary mt-2" href="/">목록으로 돌아가기</a>
+    </div>
+    <!-- 맛집 수정 폼 -->
+    <form id="restaurantForm" enctype="multipart/form-data">
+        <input type="hidden" id="restaurant_id" name="restaurant_id" th:value="${restaurant.id}">
+        <input type="text" id="latitude" name="latitude" class="hidden-field" th:value="${restaurant.latitude}">
+        <input type="text" id="longitude" name="longitude" class="hidden-field" th:value="${restaurant.longitude}">
+        <input type="text" id="true-address" name="true-address" class="hidden-field" th:value="${restaurant.address}">
+        <div class="form-group">
+            <label for="name">맛집 이름</label>
+            <input type="text" class="form-control" id="name" name="name" required th:value="${restaurant.name}">
+        </div>
+
+        <div class="form-group">
+            <label for="address">주소</label>
+            <div id="mapget">
+                <input id="address" type="text" placeholder="주소를 입력해주세요" name="address" th:value="${restaurant.address}">
+                <button id="adrbutton" type="button" onclick="geocodeAddress()">주소 확인</button>
+                <div id="map"></div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="phone_number">전화번호</label>
+            <input type="text" class="form-control" id="phone_number" name="phone_number" th:value="${restaurant.phone_number}">
+        </div>
+
+        <!-- 메뉴 목록도 기존 데이터를 기반으로 동적으로 생성 -->
+        <div id="menu-container">
+            <div class="form-group menu-item d-flex align-items-center" th:each="menu, iterStat : ${restaurant.menuList}">
+                <input type="text" class="form-control flex-grow-1" name="menu_name[]" placeholder="메뉴 이름" th:id="'menu_name_' + (${iterStat.index} + 1)" th:value="${menu.name}" style="margin-right: 10px;" />
+                <input type="text" class="form-control flex-grow-1" name="price_range[]" placeholder="가격" th:id="'price_range_' + (${iterStat.index} + 1)" th:value="${menu.price}" />
+                <!-- 메뉴 추가/삭제 버튼 -->
+                <button type="button" class="btn btn-primary add-menu" style="margin-left: 10px;">+</button>
+                <button type="button" class="btn btn-primary remove-menu" style="margin-left: 5px;">-</button>
+            </div>
+        </div>
+
+        <!-- 메인 카테고리 선택 시 기존 선택된 값 유지 -->
+        <div class="form-group">
+            <label for="mainCategory">메인 카테고리</label>
+            <select class="form-control" id="mainCategory" name="mainCategory" required onchange="updateSubcategories(this.value)">
+                <option value="">메인 카테고리 선택</option>
+                <option value="한식" th:selected="${restaurant.mainCategory == '한식'}">한식</option>
+                <option value="일식" th:selected="${restaurant.mainCategory == '일식'}">일식</option>
+                <option value="중식" th:selected="${restaurant.mainCategory == '중식'}">중식</option>
+                <option value="양식" th:selected="${restaurant.mainCategory == '양식'}">양식</option>
+                <option value="아시안" th:selected="${restaurant.mainCategory == '아시안'}">아시안</option>
+                <option value="패스트푸드" th:selected="${restaurant.mainCategory == '패스트푸드'}">패스트푸드</option>
+                <option value="디저트" th:selected="${restaurant.mainCategory == '디저트'}">디저트</option>
+            </select>
+        </div>
+
+        <!-- 서브 카테고리 체크박스도 기존 선택된 값 유지 -->
+        <div class="form-group" id="subcategory-container">
+            <label>카테고리</label>
+            <div id="category-checkboxes">
+                <!-- 체크박스는 JavaScript로 동적으로 생성되므로, 기존 선택된 카테고리를 전달 -->
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="description">설명</label>
+            <textarea class="form-control" id="description" name="description" rows="3" required th:text="${restaurant.description}"></textarea>
+        </div>
+
+        <!-- 이미지 업로드 부분 -->
+        <div class="form-group">
+            <label for="image">이미지 업로드</label>
+            <input type="file" class="form-control-file" id="image" name="file" multiple>
+            <!-- 기존 업로드된 이미지들을 표시하고, 삭제할 수 있는 옵션 추가 -->
+<!--            <div id="existing-images" th:if="${#lists.isNotEmpty(restaurant.attachedFile)}">-->
+<!--                <div th:each="file : ${restaurant.attachedFile}" class="existing-image">-->
+<!--                    <img th:src="@{/uploads/{filename}(filename=${file.savedFilename})}" th:alt="${file.originalFilename}" width="100">-->
+<!--                    <label>-->
+<!--                        <input type="checkbox" name="delete_file_ids" th:value="${file.id}"> 삭제-->
+<!--                    </label>-->
+<!--                </div>-->
+<!--            </div>-->
+        </div>
+        <button type="button" class="btn btn-primary" onclick="updateRestaurant()">수정</button>
+
+    </form>
+</div>
+
+<!-- 부트스트랩 JS 및 의존성 스크립트 -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script
+        src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script
+        src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
