@@ -44,6 +44,7 @@
               </a>
             </div>
           </div>
+          
           <div class="card-body">
             <div class="report-position">
               <div class="small text-muted" th:text="${restaurant.create_at}">January 1, 2023</div>
@@ -57,12 +58,17 @@
             <button class="show-more" style="display: none;" onclick="showMoreImages(this)">더보기</button>
           </div>
         </div>
-        <h2 class="card-title" th:text="${restaurant.name}">Featured Post Title</h2>
-        <p class="card-text" th:text="${restaurant.description}"></p>
     </div>
+    
+    <div class="col-lg-4">
+        <div class="card mb-4 sidebar-card">
+          <div class="card-header">Map Contents</div>
+          <div class="card-body" id="map">여기에는 해당 지도를 넣어주시면됩니다</div>
+        </div>
+      </div>
 </div>
 
-
+        <div class="col-lg-8"> 
         <hr>
         <h3>Restaurant Info</h3>
         <a class="card-text no-style-link" th:href="@{${restaurant.homepage_url}}" th:text="'웹사이트 방문'"
@@ -515,6 +521,7 @@
                       th:onclick="deleteReview(this)">삭제</button>
                   </div> -->
                 </div>
+                  </div> 
                 <!-- Category list-->
                 <div class="button-container">
                   <div th:each="reviewKeyword : ${review.keywords}">
@@ -540,12 +547,6 @@
         </nav>
       </div>
 
-      <div class="col-lg-4">
-        <div class="card mb-4 sidebar-card">
-          <div class="card-header">Map Contents</div>
-          <div class="card-body" id="map">여기에는 해당 지도를 넣어주시면됩니다</div>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -566,6 +567,7 @@
         <button type="button" class="form-btn submit-btn">신고 제출</button>
         <button type="button" class="form-btn" onclick="closeRestaurantReportModal()">닫기</button>
       </div>
+     
     </form>
   </div>
 
