@@ -1,6 +1,7 @@
 package com.example.deliciousBee.service.member;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -39,6 +40,10 @@ public class BeeMemberService implements UserDetailsService {
 	private final MemberFileRepository memberFileRepository;
 	private final MyPageRepository myPageRepository;
 	private final MemberFileService memberFileService;
+
+	private static final String NICKNAME_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	private static final int NICKNAME_LENGTH = 8;
+	private static final SecureRandom random = new SecureRandom();
 
 	@Transactional // 에러가 터지면 커밋안해준다 롤백해줌, 해당쿼리를 롤백해줌
 	public void saveMember(BeeMember beeMember, MultipartFile file) {
@@ -190,9 +195,23 @@ public class BeeMemberService implements UserDetailsService {
 	@Transactional
 	public BeeMember findOrCreateBeeMember(OAuthAttributes attributes) {
 		return beeMemberRepository.findByEmail(attributes.getEmail()).orElseGet(() -> {
-			BeeMember newBeeMember = BeeMember.builder().member_id(UUID.randomUUID().toString())
-					.password(UUID.randomUUID().toString()) // 비밀번호는 필요 없을 경우 null로 설정
-					.email(attributes.getEmail()).nickname(attributes.getName()).isSocialUser(true).role(Role.USER)
+			String nickname;
+			String provider = attributes.getProvider();
+
+
+			if ("google".equalsIgnoreCase(provider) || "line".equalsIgnoreCase(provider)) {
+				nickname = generateUniqueNickname();  // 구글 로그인 시 랜덤 닉네임 생성
+			} else {
+				nickname = attributes.getName();  // 다른 경우, 이름 사용
+			}
+
+			BeeMember newBeeMember = BeeMember.builder()
+					.member_id(UUID.randomUUID().toString())
+					.password(UUID.randomUUID().toString())  // 비밀번호는 UUID로 대체
+					.email(attributes.getEmail())
+					.nickname(nickname)  // 생성된 닉네임 할당
+					.isSocialUser(true)
+					.role(Role.USER)
 					.build();
 
 			return beeMemberRepository.save(newBeeMember);
@@ -217,4 +236,35 @@ public class BeeMemberService implements UserDetailsService {
 		return beeMember;
 	}
 
+
+
+	/**
+	 * 유일한 8자리 랜덤 닉네임을 생성합니다.
+	 */
+	private String generateUniqueNickname() {
+		String nickname;
+		int attempts = 0;
+		int maxAttempts = 5;  // 닉네임 중복 방지 시도 횟수 제한
+
+		do {
+			nickname = generateRandomNickname();
+			attempts++;
+			if (attempts > maxAttempts) {
+				throw new RuntimeException("유일한 닉네임 생성에 실패했습니다.");
+			}
+		} while (beeMemberRepository.existsByNickname(nickname));  // 중복 체크
+
+		return nickname;
+	}
+
+	/**
+	 * 8자리 랜덤한 문자열을 생성합니다.
+	 */
+	private String generateRandomNickname() {
+		StringBuilder sb = new StringBuilder(NICKNAME_LENGTH);
+		for (int i = 0; i < NICKNAME_LENGTH; i++) {
+			sb.append(NICKNAME_CHARS.charAt(random.nextInt(NICKNAME_CHARS.length())));
+		}
+		return sb.toString();
+	}
 }

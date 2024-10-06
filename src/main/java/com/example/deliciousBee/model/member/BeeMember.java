@@ -38,8 +38,8 @@ public class BeeMember implements UserDetails, OAuth2User {
 	private String password;
 	@Enumerated(EnumType.STRING)
 	private NationalType national;
-	@Column(length = 50, nullable = false)
-	private String nickname;
+	@Column(length = 50, nullable = false ,unique = true)
+	private String nickname;  // 닉네임을 유일하게 설정
 	@Column(length = 10)
 	@Enumerated(EnumType.STRING)
 	private GenderType gender;
