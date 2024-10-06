@@ -16,7 +16,10 @@ public interface ReportRepository extends JpaRepository<Report, Long>{
 	@Query("SELECT r.review.id FROM Report r WHERE r.beeMember.id = :memberId")
 	List<Long> findReportedReviewId(@Param("memberId")String memberId);
 
-	List<Report> findByReviewId(Long reviewId);
+		List<Report> findByReviewId(Long reviewId);
+
+
+	Optional<Report> findFirstByReviewId(Long reviewId);
 
 	Optional<ReportDto> findReportDtoById(Long Id);
 

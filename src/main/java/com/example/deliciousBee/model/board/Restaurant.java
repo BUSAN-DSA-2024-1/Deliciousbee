@@ -72,11 +72,10 @@ public class Restaurant {
 	private LocalDateTime updated_at;
 
 	private Double average_rating;
-	
+
 	public Double getAverage_rating() {
-	    return average_rating != null ? Math.round(average_rating * 10.0) / 10.0 : null; // 소수점 한 자리로 반올림하여 반환
+		return average_rating != null ? Math.round(average_rating * 10.0) / 10.0 : null; // 소수점 한 자리로 반올림하여 반환
 	}
-	
 	private Long review_count;
 
 	@Enumerated(EnumType.STRING)

@@ -31,6 +31,7 @@ public class ReviewConverter {
 		review.setTasteRating(reviewUpdateForm.getTasteRating());
 		review.setPriceRating(reviewUpdateForm.getPriceRating());
 		review.setKindRating(reviewUpdateForm.getKindRating());
+		review.setVisitDate(reviewUpdateForm.getVisitDate());
 		return review;
 	}
 
@@ -38,12 +39,12 @@ public class ReviewConverter {
 	public static ReviewUpdateForm reviewToReviewUpdateForm(Review review) {
 		ReviewUpdateForm reviewUpdateForm = new ReviewUpdateForm();
 		reviewUpdateForm.setReviewId(review.getId());
-		reviewUpdateForm.setReviewContents(review.getReviewContents());
-
+		reviewUpdateForm.setReviewContents(reviewUpdateForm.getReviewContents());
 		reviewUpdateForm.setRating(review.getRating());
 		reviewUpdateForm.setTasteRating(review.getTasteRating());
 		reviewUpdateForm.setPriceRating(review.getPriceRating());
 		reviewUpdateForm.setKindRating(review.getKindRating());
+		reviewUpdateForm.setVisitDate(review.getVisitDate());
 		return reviewUpdateForm;
 	}
 
