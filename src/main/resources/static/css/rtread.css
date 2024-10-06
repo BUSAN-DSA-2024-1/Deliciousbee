@@ -61,18 +61,16 @@ a {
     gap: 15px;
 }
 
-.image-wrapper {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    /* 줄 바꿈 허용 */
-}
-
 .card-img-top2 {
     height: 300px;
-    /* 비율 유지 */
-    object-fit: cover;
-    /* 이미지 비율 유지 */
+    width: 100%; /* 너비를 100%로 설정 */
+    object-fit: fill; /* 이미지 비율을 무시하고 영역을 채움 */
+}
+
+.imagination {
+    height: 300px;
+    width: 100%; /* 너비를 100%로 설정 */
+    object-fit: fill; /* 이미지 비율을 무시하고 영역을 채움 */
 }
 
 
@@ -109,11 +107,9 @@ a {
 }
 
 .gallery-item {
-    /* width: 100px; (필요 없음) */
-    display: flex;
-    max-height: 300px;
-    /* 최대 높이 설정 */
-    justify-content: center;
+    height: 300px;
+    width: 100%; /* 너비를 100%로 설정 */
+    object-fit: fill; /* 이미지 비율을 무시하고 영역을 채움 */
 }
 
 .gallery-item img {
@@ -181,6 +177,14 @@ a {
   overflow-y: auto; /* 필요시 스크롤바 추가 */
 }
 
+.modal-content {
+    max-width: 900px;
+    /* 최대 너비 설정 */
+    margin: 0 auto;
+    /* 가운데 정렬 */
+}
+
+
 .modal-footer2 .btn-secondary {
     background-color: #fff;
     color: #000;
@@ -223,10 +227,18 @@ a {
 }
 
 .modal-image img {
-  width: 100%;  /* 이미지 너비 100% */
-  height: 100%; /* 이미지 높이 100% */
-  object-fit: cover; /* 이미지 비율 유지하며 채우기 */
+ 	width: 100%;  /* 이미지 너비 100% */
+ 	height: 100%; /* 이미지 높이 100% */
+  	object-fit: cover; /* 이미지 비율 유지하며 채우기 */
+    flex-wrap: wrap;
+    /* 여러 줄로 배치 */
+    justify-content: center;
+    /* 가운데 정렬 */
+    gap: 10px;
+    /* 이미지 간 간격 */
 }
+
+
 
 
 .cardking {
@@ -559,8 +571,6 @@ a {
     border-bottom: 1px solid #e0e0e0;
 }
 
-/* 메뉴 버튼 클릭 시 드롭다운 메뉴 표시 */
-
 .menu-container.open .dropdown-menu {
     display: block;
 }
@@ -625,3 +635,4 @@ a {
 	display: flex;
 	justify-content: center; /* flexbox를 사용한 정렬 */
   }
+  

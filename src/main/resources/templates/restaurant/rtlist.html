@@ -387,6 +387,18 @@
         margin-top: 11%;
     }
 
+.card-text {
+    display: flex;
+    align-items: center; /* 수직 중앙 정렬 */
+}
+
+.review-count {
+	font-size: 12px;
+	color: gray;
+    margin-left: 3px; /* 간격 조절 */
+}
+
+
     .card-footer .card-text  {
 
         margin: 0; /* 여백 제거 */
@@ -1066,28 +1078,34 @@
                     : 'default_image_url.jpg';
 
                 html += `
-                <div class="col-12 mb-4">
-                    <div class="card" data-latitude="${restaurant.latitude}" data-longitude="${restaurant.longitude}" data-maincategory="${restaurant.mainCategory}">
-                        <a href="/restaurant/rtread/${restaurant.id}">
-                            <img src="${imageUrl}" alt="Restaurant Image" class="card-img-left">
-                        </a>
-                        <div class="card-body">
-                            <a href="/restaurant/rtread?id=${restaurant.id}">
-                                <h2 class="card-title">${restaurant.name}</h2>
-                            </a>
-                            <h5 class="badge bg-primary"> # ${restaurant.categories} </h5>
-                            <h4 class="text">${restaurant.address}</h4>
-                            <small class="text-muted">${restaurant.description}</small>
-                            <div class="card-footer">
-                                <h3 class="card-text">★${restaurant.average_rating}</h3>
-                                <button class="update-btn" title="가게정보가 잘못됐어요"
-                                    data-restaurant-id="${restaurant.id}"
-                                    data-restaurant-name="${restaurant.name}"
-                                    onclick="openRestaurantReportModal(this)">
-                                    신고
-                                </button>
+
+        <div class="col-12 mb-4">
+            <div class="card" data-latitude="${restaurant.latitude}" data-longitude="${restaurant.longitude}" data-maincategory="${restaurant.mainCategory}">
+                <a href="/restaurant/rtread/${restaurant.id}">
+                    <img src="${imageUrl}" alt="Restaurant Image" class="card-img-left">
+                </a>
+                <div class="card-body">
+                    <a href="/restaurant/rtread/${restaurant.id}">
+                        <h2 class="card-title">${restaurant.name}</h2>
+                    </a>
+                    <h5 class="badge bg-primary"> # ${restaurant.categories} </h5>
+                    <h4 class="text">${restaurant.address}</h4>
+                    <small class="text-muted">${restaurant.description}</small>
+                    <div class="card-footer">
+                        <h3 class="card-text">★${restaurant.average_rating} 
+                        <div class="review-count">(${restaurant.review_count})</div></h3>
+                        <h3 class="card-text">현 위치에서 ${formatDistance(restaurant.distance)}</h3>
+                      <!--   <button class="update-btn" title="가게정보가 잘못됐어요"
+                            data-restaurant-id="${restaurant.id}"
+                            data-restaurant-name="${restaurant.name}"
+                            onclick="openRestaurantReportModal(this)">
+                            신고
+                        </button> -->
+
+               
                             </div>
                         </div>
+
                     </div>
                 </div>
             `;
@@ -1351,6 +1369,26 @@
             renderFilters('purposeFilters', purposes);
         }
     });
+
+    
+    function formatDistance(distance) {
+        if (distance >= 1000) {
+            // 1000 이상일 때 km로 변환
+            let distanceInKm = distance / 1000;
+
+            // 1의 자리 숫자일 때는 소수점 첫째 자리까지 표시, 그 외에는 반올림하여 자연수만 표시
+            if (distanceInKm < 10) {
+                return distanceInKm.toFixed(1) + " km";
+            } else {
+                return Math.round(distanceInKm) + " km";
+            }
+        } else {
+            // 1000 이하일 때 m로 변환하고 소수점 첫째 자리에서 반올림 후 자연수 부분만 표시
+            let distanceInMeters = Math.round(distance);
+            return distanceInMeters + " m";
+        }
+    }
+
 
 </script>
 
