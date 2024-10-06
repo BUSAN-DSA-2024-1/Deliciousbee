@@ -14,12 +14,7 @@ import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.deliciousBee.dto.restaurant.RestaurantDto;
@@ -85,6 +80,7 @@ public class RestaurantRestController {
                                                        @RequestParam("price_range[]") List<String> priceRanges,
                                                        @RequestPart(name = "file", required = false) MultipartFile[] files) {
 
+        System.out.println("달러다럴");
         // 로그인 여부 확인
         if (loginMember == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -96,7 +92,7 @@ public class RestaurantRestController {
 
         // 레스토랑 객체 생성 및 속성 설정
         Restaurant restaurant = new Restaurant();
-        
+
         restaurant.setCategories(categories);
         restaurant.setName(name);
         restaurant.setAddress(address);
@@ -106,7 +102,7 @@ public class RestaurantRestController {
         restaurant.setLatitude(latitude);
         restaurant.setLongitude(longitude);
         restaurant.setMember(findMember);
-        
+
         // 메뉴 추가 로직
         List<Menu> menus = new ArrayList<>();
         for (int i = 0; i < menuNames.size(); i++) {
@@ -117,12 +113,12 @@ public class RestaurantRestController {
             menus.add(menu);
         }
         restaurant.setMenuList(menus);
-        
-        
+
+
 
         // 업로드한 파일 정보를 저장할 리스트
         List<RestaurantAttachedFile> attachedFiles = new ArrayList<>();
-        
+
         // 파일 업로드 처리 (Google Cloud Storage)
         if (files != null && files.length > 0) {
             for (MultipartFile file : files) {
@@ -153,81 +149,100 @@ public class RestaurantRestController {
 
         return new ResponseEntity<>(restaurant, HttpStatus.CREATED);
     }
-    
-//    @PutMapping("/update/{id}")
-//    public ResponseEntity<?> update(@PathVariable("id") Long id, 
-//                                     @AuthenticationPrincipal BeeMember loginMember,
-//                                     @RequestParam("name") String name,
-//                                     @RequestParam("address") String address,
-//                                     @RequestParam("phone_number") String phoneNumber,
-//                                     @RequestParam("description") String description,
-//                                     @RequestParam("category") CategoryType category,
-//                                     @RequestParam("mainCategory") String mainCategory,
-//                                     @RequestParam("latitude") Double latitude,
-//                                     @RequestParam("longitude") Double longitude,
-//                                     @RequestPart(name = "files", required = false) MultipartFile[] files,
-//                                     BindingResult result) {
-//
-//      // 로그인 여부 확인 및 권한 검증 (필요에 따라 추가)
-//      if (loginMember == null) {
-//          return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-//      }
-//
-//      BeeMember findMember = beeMemberService.findMemberById(loginMember.getMember_id());
-//      
-//      // 입력값 검증
-//      if (result.hasErrors()) {
-//        return ResponseEntity.badRequest().body(result.getAllErrors());
-//      }
-//
-//      // 레스토랑 존재 여부 확인
-//      if (!restaurantService.existsById(id)) {
-//        return ResponseEntity.notFound().build();
-//      }
-//
-//      Restaurant existingRestaurant = restaurantService.findRestaurant(id);
-//      
-//      existingRestaurant.setName(name);
-//      existingRestaurant.setAddress(address);
-//      existingRestaurant.setPhone_number(phoneNumber);
-//      existingRestaurant.setDescription(description);
-//      existingRestaurant.setCategory(category);
-//      existingRestaurant.setMainCategory(mainCategory);
-//      existingRestaurant.setLatitude(latitude);
-//      existingRestaurant.setLongitude(longitude);
-//      existingRestaurant.setMember(findMember);
-//      
-//      List<RestaurantAttachedFile> attachedFiles = new ArrayList<>();
-//
-//      // 파일 업로드 처리 (Google Cloud Storage)
-//      if (files != null && files.length > 0) {
-//          for (MultipartFile file : files) {
-//              if (!file.isEmpty()) {
-//                  try {
-//                      // GCS에 파일 저장
-//                      AttachedFile uploadedFile = fileService.saveFile(file);
-//
-//                      // 업로드된 파일 정보를 RestaurantAttachedFile에 매핑
-//                      if (uploadedFile != null) {
-//                          RestaurantAttachedFile attachedFile = new RestaurantAttachedFile();
-//                          attachedFile.setRestaurant(existingRestaurant);
-//                          attachedFile.setOriginal_filename(uploadedFile.getOriginal_filename());
-//                          attachedFile.setSaved_filename(uploadedFile.getSaved_filename());
-//                          attachedFile.setFile_size(uploadedFile.getFile_size());
-//                          attachedFiles.add(attachedFile);
-//                      }
-//                  } catch (IOException e) {
-//                      e.printStackTrace();
-//                      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);  // 파일 저장 실패 시
-//                  }
-//              }
-//          }
-//      }
-//      
-//      // 레스토랑 정보 업데이트
-//      restaurantService.updateRestaurant(existingRestaurant, attachedFiles); 
-//
-//      return ResponseEntity.ok(existingRestaurant);
-//    }
+
+
+
+    @PostMapping("/{id}/update")
+    public ResponseEntity<Restaurant> updateRestaurant(@AuthenticationPrincipal BeeMember loginMember,
+                                                       @PathVariable Long id,
+                                                       @RequestParam("name") String name,
+                                                       @RequestParam("true-address") String address,
+                                                       @RequestParam("phone_number") String phoneNumber,
+                                                       @RequestParam("description") String description,
+                                                       @RequestParam("categories") String categories,
+                                                       @RequestParam("mainCategory") String mainCategory,
+                                                       @RequestParam("latitude") Double latitude,
+                                                       @RequestParam("longitude") Double longitude,
+                                                       @RequestParam("menu_name[]") List<String> menuNames,
+                                                       @RequestParam("price_range[]") List<String> priceRanges,
+                                                       @RequestParam(name = "delete_file_ids", required = false) List<Long> deleteFileIds,
+                                                       @RequestPart(name = "file", required = false) MultipartFile[] files) {
+
+        // 로그인 여부 확인
+        if (loginMember == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        // 기존 레스토랑 정보 가져오기
+        Restaurant restaurant = restaurantService.findRestaurant(id);
+
+
+
+        // 레스토랑 정보 업데이트
+        restaurant.setCategories(categories);
+        restaurant.setName(name);
+        restaurant.setAddress(address);
+        restaurant.setPhone_number(phoneNumber);
+        restaurant.setDescription(description);
+        restaurant.setMainCategory(mainCategory);
+        restaurant.setLatitude(latitude);
+        restaurant.setLongitude(longitude);
+
+        // 메뉴 업데이트 로직
+        // 기존 메뉴 삭제 후 새로 추가하거나, 기존 메뉴를 업데이트하는 방식 중 선택
+        // 여기서는 간단히 기존 메뉴를 모두 삭제하고 새로 추가하는 방식 사용
+
+        // 기존 메뉴 삭제
+//        restaurantService.deleteMenusByRestaurantId(id);
+        System.out.println("확인용");
+        System.out.println(menuNames);
+        // 새로운 메뉴 추가
+        restaurant.getMenuList().clear(); // 기존 메뉴 삭제
+        System.out.println(menuNames);
+        // 새로운 메뉴 추가
+        for (int i = 0; i < menuNames.size(); i++) {
+            Menu menu = new Menu();
+            menu.setName(menuNames.get(i));
+            menu.setPrice(priceRanges.get(i));
+            menu.setRestaurant(restaurant); // 양방향 관계 설정
+            restaurant.getMenuList().add(menu);
+        }
+        // 업로드한 파일 정보를 저장할 리스트
+        List<RestaurantAttachedFile> attachedFiles = new ArrayList<>();
+
+        // 파일 업로드 처리 (Google Cloud Storage)
+        if (files != null && files.length > 0) {
+            for (MultipartFile file : files) {
+                if (!file.isEmpty()) {
+                    try {
+                        // GCS에 파일 저장
+                        AttachedFile uploadedFile = fileService.saveFile(file);
+
+                        // 업로드된 파일 정보를 RestaurantAttachedFile에 매핑
+                        if (uploadedFile != null) {
+                            RestaurantAttachedFile attachedFile = new RestaurantAttachedFile();
+                            attachedFile.setRestaurant(restaurant);
+                            attachedFile.setOriginal_filename(uploadedFile.getOriginal_filename());
+                            attachedFile.setSaved_filename(uploadedFile.getSaved_filename());
+                            attachedFile.setFile_size(uploadedFile.getFile_size());
+                            attachedFiles.add(attachedFile);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);  // 파일 저장 실패 시
+                    }
+                }
+            }
+        }
+
+        // 레스토랑과 첨부 파일 정보를 데이터베이스에 저장
+        restaurantService.updateRestaurant(restaurant, attachedFiles);
+
+        return new ResponseEntity<>(restaurant, HttpStatus.OK);
+    }
+
+
+
+
 
 }

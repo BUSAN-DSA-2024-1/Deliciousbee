@@ -3,6 +3,7 @@ package com.example.deliciousBee.controller.review;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -189,26 +191,6 @@ public class ReviewController {
 		}
 	}
 
-//	// 이미지 출력을 위한 매서드
-//	@GetMapping("/display")
-//	public ResponseEntity<Resource> display(@RequestParam("filename") String filename) {
-//
-//		String folder = "";
-//		Resource resource = new FileSystemResource(uploadPath + folder + filename);
-//		if (!resource.exists()) {
-//			return new ResponseEntity<Resource>(HttpStatus.NOT_FOUND);
-//		}
-//		HttpHeaders header = new HttpHeaders();
-//		Path filePath = null;
-//		try {
-//			filePath = Paths.get(uploadPath + folder + filename);
-//			header.add("Content-type", Files.probeContentType(filePath));
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//		return new ResponseEntity<Resource>(resource, header, HttpStatus.OK);
-//	}
-
 	// 리뷰 좋아요 처리
 	@PostMapping("/{reviewId}/like")
 	@ResponseBody
@@ -269,19 +251,31 @@ public class ReviewController {
 		if (review == null) {
 			return ResponseEntity.notFound().build();
 		}
-		return ResponseEntity.ok(review); 
+		return ResponseEntity.ok(review);
 	}
 
 	// 리뷰 수정
-	@PostMapping("/update")
-	public String postUpdateReview(@Validated @ModelAttribute ReviewUpdateForm reviewUpdateForm, BindingResult result,
-			@RequestParam(name = "file", required = false) MultipartFile[] file) {
+	@PostMapping("/update/{reviewId}")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> postUpdateReview(
+			@Validated @ModelAttribute ReviewUpdateForm reviewUpdateForm, BindingResult result) {
+		if (result.hasErrors()) {
+		    for (FieldError error : result.getFieldErrors()) {
+		        log.error("Error field: {}, Error message: {}", error.getField(), error.getDefaultMessage());
+		    }
+		    return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Validation failed"));
+		}
 		Review updateReview = ReviewConverter.reviewUpdateFormToReview(reviewUpdateForm);
-		reviewService.updateReview(updateReview, reviewUpdateForm.isFileRemoved(), file);
-		return "redirect:/restaurant/rtread/";
+		log.info("*****************************updateReview:{}", updateReview);
+		
+		
+//		reviewService.updateReview(updateReview, reviewUpdateForm.isFileRemoved(), file);
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("success", true);
+		return ResponseEntity.ok(response);
 	}
 
-	// 수정시 첨부파일 삭제
 	// 수정시 첨부파일 삭제
 	@PostMapping("/update/remove/{attachedFileId}")
 	@ResponseBody

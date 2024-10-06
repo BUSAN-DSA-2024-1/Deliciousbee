@@ -18,7 +18,9 @@ import com.example.deliciousBee.model.report.RestaurantReport;
 import com.example.deliciousBee.model.report.RestaurantReportDTO;
 import com.example.deliciousBee.model.report.RestaurantReportRequest;
 import com.example.deliciousBee.model.review.Review;
+import com.example.deliciousBee.repository.MessageRepository;
 import com.example.deliciousBee.repository.ReportRepository;
+import com.example.deliciousBee.service.message.MessageService;
 import com.example.deliciousBee.service.report.ReportService;
 import com.example.deliciousBee.service.report.RestaurantReportService;
 import com.example.deliciousBee.service.restaurant.RestaurantService;
@@ -43,7 +45,7 @@ public class ReportController {
 	private final ReportService reportService;
 	private final ReviewService reviewService;
 	private final RestaurantReportService restaurantReportService;
-
+	private final MessageService messageService;
 
 	@PostMapping("/restaurant/rtread/report/submit/{reviewId}")
 	@ResponseBody
@@ -69,6 +71,9 @@ public class ReportController {
 			response.put("message", "서버 오류가 발생했습니다.");
 			log.error("Report submission error", e);
 		}
+
+		messageService.ReviewReportMessage(loginMember.getMember_id());
+
 		return ResponseEntity.ok(response);
 	}
 
@@ -127,6 +132,8 @@ public class ReportController {
 			response.put("message", "리뷰 삭제에 실패했습니다.");
 			log.error("Review deletion error", e);
 		}
+
+
 		return ResponseEntity.ok(response);
 	}
 
@@ -144,6 +151,7 @@ public class ReportController {
 			response.put("message", "서버 오류가 발생했습니다.");
 			log.error("Restaurant approval error", e);
 		}
+
 		return ResponseEntity.ok(response);
 	}
 
@@ -192,6 +200,7 @@ public class ReportController {
 
 
 
+	//레스토랑 신고
 	@PostMapping("/restaurants/{restaurantId}/reports")
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> createRestaurantReport(
@@ -207,6 +216,9 @@ public class ReportController {
 		);
 
 		RestaurantReportDTO reportDTO = new RestaurantReportDTO(report);
+
+
+		messageService.RestaurantReportMessage(loginMember.getMember_id());
 
 		Map<String, Object> response = new HashMap<>();
 		response.put("success", true);
@@ -250,23 +262,20 @@ public class ReportController {
 		return ResponseEntity.ok(response);
 	}
 
-	/**
-	 * 레스토랑 신고 상태 업데이트 (관리자용)
-	 */
-	@PatchMapping("/admin/restaurant-reports/{reportId}/status")
+
+
+
+	@DeleteMapping("/admin/restaurant-reports-confirm/{reportId}")
 	@ResponseBody
-	public ResponseEntity<Map<String, Object>> updateRestaurantReportStatus(
-			@PathVariable Long reportId,
-			@RequestParam RestaurantReport.ReportStatus status) {
-		RestaurantReport updatedReport = restaurantReportService.updateReportStatus(reportId, status);
-		RestaurantReportDTO reportDTO = new RestaurantReportDTO(updatedReport);
+	public ResponseEntity<Map<String, Object>> confirmRestaurantReport(@PathVariable Long reportId) {
+		restaurantReportService.deleteReport(reportId);
 
 		Map<String, Object> response = new HashMap<>();
-		response.put("report", reportDTO);
 		response.put("success", true);
-		response.put("message", "신고 상태가 성공적으로 업데이트되었습니다.");
+		response.put("message", "레스토랑 신고가 성공적으로 처리되었습니다.");
 		return ResponseEntity.ok(response);
 	}
+
 
 	/**
 	 * 레스토랑 신고 삭제 (관리자용)
@@ -281,6 +290,8 @@ public class ReportController {
 		response.put("message", "레스토랑 신고가 성공적으로 삭제되었습니다.");
 		return ResponseEntity.ok(response);
 	}
+
+
 }
 
 

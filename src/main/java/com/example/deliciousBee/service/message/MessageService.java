@@ -41,6 +41,86 @@ public class MessageService {
         return messageRepository.save(message);
     }
 
+    @Transactional
+    public Message ReviewReportMessage(String receiverId) {
+
+
+        String content ="리뷰 신고가 접수되었습니다.";
+
+        BeeMember sender = beeMemberRepository.findByMemberid("admin")
+                .orElseThrow(() -> new RuntimeException("발신자 없음: " + "admin"));
+        BeeMember receiver = beeMemberRepository.findByMemberid(receiverId)
+                .orElseThrow(() -> new RuntimeException("수신자 없음: " + receiverId));
+
+        Message message = Message.builder()
+                .sender(sender)
+                .receiver(receiver)
+                .content(content)
+                .build();
+
+        return messageRepository.save(message);
+    }
+
+    @Transactional
+    public Message ReviewReportSubmitMessage(String receiverId) {
+
+
+        String content ="리뷰 신고가 검토후 정상적으로 처리되었습니다.";
+
+        BeeMember sender = beeMemberRepository.findByMemberid("admin")
+                .orElseThrow(() -> new RuntimeException("발신자 없음: " + "admin"));
+        BeeMember receiver = beeMemberRepository.findByMemberid(receiverId)
+                .orElseThrow(() -> new RuntimeException("수신자 없음: " + receiverId));
+
+        Message message = Message.builder()
+                .sender(sender)
+                .receiver(receiver)
+                .content(content)
+                .build();
+
+        return messageRepository.save(message);
+    }
+
+    @Transactional
+    public Message RestaurantReportSubmitMessage(String receiverId) {
+
+
+        String content ="레스토랑 등록이 검토후 정상적으로 처리되었습니다.";
+
+        BeeMember sender = beeMemberRepository.findByMemberid("admin")
+                .orElseThrow(() -> new RuntimeException("발신자 없음: " + "admin"));
+        BeeMember receiver = beeMemberRepository.findByMemberid(receiverId)
+                .orElseThrow(() -> new RuntimeException("수신자 없음: " + receiverId));
+
+        Message message = Message.builder()
+                .sender(sender)
+                .receiver(receiver)
+                .content(content)
+                .build();
+
+        return messageRepository.save(message);
+    }
+    @Transactional
+    public Message RestaurantReportMessage(String receiverId) {
+
+
+        String content ="레스토랑 등록이 정상적으로 요청되었습니다.";
+
+        BeeMember sender = beeMemberRepository.findByMemberid("1234")
+                .orElseThrow(() -> new RuntimeException("발신자 없음: " + "1234"));
+        BeeMember receiver = beeMemberRepository.findByMemberid(receiverId)
+                .orElseThrow(() -> new RuntimeException("수신자 없음: " + receiverId));
+
+        Message message = Message.builder()
+                .sender(sender)
+                .receiver(receiver)
+                .content(content)
+                .build();
+
+        return messageRepository.save(message);
+    }
+
+
     // 받은 메시지 조회
     @Transactional(readOnly = true)
     public List<Message> getReceivedMessages(String receiverId) {

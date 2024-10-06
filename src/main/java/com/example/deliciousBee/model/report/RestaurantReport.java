@@ -54,7 +54,7 @@ public class RestaurantReport {
     // 신고 생성 시 날짜 자동 설정
     @PrePersist
     protected void onCreate() {
-        this.reportDate = LocalDateTime.now();
+        this.reportDate = LocalDateTime.now().withNano(0); // 나노초 제거
         if (this.status == null) {
             this.status = ReportStatus.PENDING;
         }
