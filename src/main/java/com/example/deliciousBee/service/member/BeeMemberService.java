@@ -65,7 +65,13 @@ public class BeeMemberService implements UserDetailsService {
 		Optional<BeeMember> member = beeMemberRepository.findById(string);
 		return member.orElse(null); // 찾았는데 없으면 null 찾았는데 있으면 그 id값 리턴
 	}
+	public BeeMember findMemberByNickname(String nickname) {
+		Optional<BeeMember> member = beeMemberRepository.findByNickname(nickname);
+		return member.orElse(null);
+	}
 
+	
+	
 	public BeeMember findMemberByEmail(String string) {
 		Optional<BeeMember> member = beeMemberRepository.findByEmail(string);
 		return member.orElse(null); // 찾았는데 없으면 null 찾았는데 있으면 그 id값 리턴
@@ -217,4 +223,9 @@ public class BeeMemberService implements UserDetailsService {
 		return beeMember;
 	}
 
+	public boolean isNicknameExists(String nickname) {
+		return beeMemberRepository.existsByNickname(nickname);
+	}
+
+	
 }

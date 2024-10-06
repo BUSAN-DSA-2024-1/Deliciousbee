@@ -33,9 +33,12 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
 	List<Review> findByBeeMemberOrderByCreateDateDesc(BeeMember beeMember);
 
-	// 방문 날짜 순
 	List<Review> findByBeeMemberOrderByVisitDateDesc(BeeMember beeMember);
 
+	Page<Review> findByBeeMemberOrderByCreateDateDesc(BeeMember beeMember, Pageable pageable);
+	Page<Review> findByBeeMemberOrderByVisitDateDesc(BeeMember beeMember, Pageable pageable);
+
+	
 	List<Review> findByBeeMember(BeeMember beeMember);
 
 }
