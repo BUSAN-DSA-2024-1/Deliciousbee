@@ -9,6 +9,7 @@
     <style>
 
         /* 공통 모달 컨테이너 스타일 */
+        /* 기존 모달 컨테이너 스타일 유지 */
         .modal-container {
             width: 350px;
             background-color: #fff;
@@ -21,8 +22,8 @@
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%); /* 화면 중앙에 위치 */
-            z-index: 1000; /* 다른 요소보다 위에 표시 */
+            transform: translate(-50%, -50%);
+            z-index: 1000;
         }
 
         /* 공통 타이틀 스타일 */
@@ -262,6 +263,87 @@
         .review-modal-container, .restaurant-report-modal-container {
             display: none; /* 초기에는 숨김 */
         }
+        /* 이미지 갤러리 스타일 */
+        /* 이미지 갤러리 모달 스타일 */
+        .image-gallery-modal-container {
+            display: none; /* 초기에는 숨김 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8); /* 반투명 배경 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001; /* 다른 모달보다 위에 표시 */
+        }
+
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 10px;
+            justify-items: center;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 10px;
+        }
+
+        .gallery-container img {
+            max-width: 100%;
+            max-height: 80vh; /* 화면 높이의 80%로 제한 */
+            object-fit: contain;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: transform 0.2s;
+        }
+
+        .gallery-container img:hover {
+            transform: scale(1.05);
+        }
+
+        /* 전체 화면 이미지 모달 스타일 */
+        .full-image-modal-container {
+            display: none; /* 초기에는 숨김 */
+            position: fixed;
+            z-index: 1100; /* 갤러리 모달보다 위에 표시 */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.9); /* 반투명 배경 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .full-image-modal-container .full-image {
+            display: block;
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 5px;
+        }
+
+        .close-full-image {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-full-image:hover,
+        .close-full-image:focus {
+            color: #bbb;
+        }
+
+
     </style>
 </head>
 <body>
@@ -312,16 +394,34 @@
             <p><strong>레스토랑명:</strong> <span id="restaurantName"></span></p>
             <p><strong>신고자:</strong> <span id="reporterName"></span></p>
             <p><strong>신고 날짜:</strong> <span id="reportDate"></span></p>
-            <p><strong>신고 상태:</strong> <span id="reportStatus"></span></p>
         </div>
         <div class="modal-actions">
-            <button class="form-btn approve-btn" onclick="updateReportStatus(currentRestaurantReportId, 'RESOLVED')">승인</button>
-            <button class="form-btn delete-btn" onclick="updateReportStatus(currentRestaurantReportId, 'REJECTED')">거부</button>
+            <button class="form-btn approve-btn" onclick="updateReportStatus(currentRestaurantReportId)">승인</button>
+            <button class="form-btn delete-btn" onclick="deleteRestaurantReport(currentRestaurantReportId)">거부</button>
             <button class="form-btn close-btn" onclick="closeRestaurantReportModal()">닫기</button>
         </div>
     </div>
 </div>
 
+<!-- 이미지 갤러리 모달 -->
+<!-- 이미지 갤러리 모달 수정 -->
+<div id="imageGalleryModal" class="image-gallery-modal-container" style="display: none">
+    <div class="image-gallery-inner-form">
+        <p class="modal-title">리뷰 사진 갤러리</p>
+        <div class="gallery-container">
+            <!-- 모든 이미지가 여기에 로드됩니다 -->
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="form-btn close-btn" onclick="closeImageGalleryModal()">닫기</button>
+        </div>
+    </div>
+</div>
+
+<!-- 전체 화면 이미지 모달 수정 -->
+<div id="fullImageModal" class="full-image-modal-container" style="display: none">
+    <span class="close-full-image" onclick="closeFullImageModal()">&times;</span>
+    <img class="full-image" id="fullImage" src="" alt="전체 이미지">
+</div>
 
 <script>
     let currentRestaurantReportId = null; // 현재 관리 중인 레스토랑 신고 ID
@@ -470,7 +570,7 @@
                                     <td>${report.reviewId}</td>
                                     <td>${report.reason}</td>
                                     <td>${report.reportDate}</td>
-                                    <td><button onclick="openReviewModal(${report.id}, ${report.reviewId})" data-report-id="${report.id}">관리</button></td>
+                                    <td><button onclick="openReviewModal(${report.id}, ${report.reviewId})" data-report-id="${report.id}" class="btn btn-success">관리</button></td>
                                 </tr>
                             `;
                             });
@@ -527,7 +627,7 @@
                                         <td>${report.restaurantId}</td>
                                         <td><a href="/restaurant/${report.restaurantId}/edit" class="btn btn-link">${report.restaurantName}</a></td>
                                         <td>${report.reportDate}</td>
-                                        <td><button onclick="handleReport(${report.id}, ${report.restaurantId})" class="btn btn-warning">관리</button></td>
+                                        <td><button onclick="handleReport(${report.id}, ${report.restaurantId})" class="btn btn-success">관리</button></td>
                                     </tr>
                                 `;
                                 } else {
@@ -620,52 +720,20 @@
                 const photoContainer = document.querySelector("#reviewModal .modal-image-container");
                 photoContainer.innerHTML = ""; // 기존 사진 삭제
 
-                // 초기 표시할 사진 개수
-                const initialDisplayCount = Math.min(photos.length, 4);
-
-                // 사진 출력 함수
-                function displayPhotos(startIndex, endIndex) {
-                    for (let i = startIndex; i < endIndex; i++) {
-                        const photoUrl = photos[i];
-                        if (photoUrl) {
-                            const img = document.createElement("img");
-                            img.src = `/review/display?filename=${photoUrl}`;
-                            img.alt = "리뷰 사진";
-                            img.classList.add("modal-image");
-                            photoContainer.appendChild(img);
-                        }
-                    }
-                }
-
-                // 더보기 버튼 생성
-                const moreButton = document.createElement("button");
-                moreButton.textContent = "더보기";
-                moreButton.classList.add("more-button");
-                moreButton.style.marginTop = "10px";
-
-                // 더보기 버튼 클릭 이벤트 처리
-                let currentStartIndex = initialDisplayCount;
-
-                moreButton.addEventListener("click", () => {
-                    const nextEndIndex = Math.min(currentStartIndex + initialDisplayCount, photos.length);
-
-                    if (currentStartIndex < photos.length) {
-                        displayPhotos(currentStartIndex, nextEndIndex);
-                        currentStartIndex += initialDisplayCount;
-                    }
-
-                    if (currentStartIndex >= photos.length) {
-                        moreButton.disabled = true;
-                        moreButton.textContent = "더 이상 사진이 없습니다.";
-                    }
-                });
-
-                // 초기 사진 출력
-                displayPhotos(0, initialDisplayCount);
-
-                // 더보기 버튼을 DOM에 추가 (필요한 경우)
-                if (photos.length > initialDisplayCount) {
-                    photoContainer.appendChild(moreButton);
+                if (photos.length > 0) {
+                    // 첫 번째 이미지만 표시
+                    const firstPhotoUrl = photos[0];
+                    const img = document.createElement("img");
+                    img.src = `/review/display?filename=${firstPhotoUrl}`;
+                    img.alt = "리뷰 사진";
+                    img.classList.add("modal-image");
+                    img.style.cursor = "pointer";
+                    img.onclick = function() {
+                        openImageGalleryModal(photos);
+                    };
+                    photoContainer.appendChild(img);
+                } else {
+                    photoContainer.innerHTML = "<p>첨부된 사진이 없습니다.</p>";
                 }
 
                 // 승인 및 삭제 버튼에 이벤트 리스너 추가
@@ -684,6 +752,46 @@
                 console.error("리뷰 정보를 가져오는 중 오류 발생:", error);
             });
     }
+    // 이미지 갤러리 모달 열기
+    function openImageGalleryModal(photos) {
+        const galleryModal = document.getElementById("imageGalleryModal");
+        const galleryContainer = galleryModal.querySelector(".gallery-container");
+        galleryContainer.innerHTML = ""; // 기존 이미지 삭제
+
+        photos.forEach(photoUrl => {
+            const img = document.createElement("img");
+            img.src = `/review/display?filename=${photoUrl}`;
+            img.alt = "리뷰 사진";
+            img.classList.add("gallery-image");
+            img.onclick = function() {
+                openFullImage(img.src);
+            };
+            galleryContainer.appendChild(img);
+        });
+
+        galleryModal.style.display = "flex";
+    }
+
+    // 이미지 갤러리 모달 닫기
+    function closeImageGalleryModal() {
+        const galleryModal = document.getElementById("imageGalleryModal");
+        galleryModal.style.display = "none";
+    }
+
+    // 전체 화면 이미지 모달 열기
+    function openFullImage(src) {
+        const fullImageModal = document.getElementById("fullImageModal");
+        const fullImage = document.getElementById("fullImage");
+        fullImage.src = src;
+        fullImageModal.style.display = "flex";
+    }
+
+    // 전체 화면 이미지 모달 닫기
+    function closeFullImageModal() {
+        const fullImageModal = document.getElementById("fullImageModal");
+        fullImageModal.style.display = "none";
+    }
+
 
     function approveReport(reportId) {
         if (confirm("리포트를 승인(삭제)하시겠습니까?")) {
@@ -775,7 +883,6 @@
                         document.getElementById("restaurantName").innerText = report.restaurantName || "알 수 없음";
                         document.getElementById("reporterName").innerText = report.reporterId ? report.reporterId : "익명";
                         document.getElementById("reportDate").innerText = report.reportDate ? new Date(report.reportDate).toLocaleString() : "알 수 없음";
-                        document.getElementById("reportStatus").innerText = report.status || "알 수 없음";
                     } else {
                         alert("해당 레스토랑 신고를 찾을 수 없습니다.");
                         closeRestaurantReportModal();
@@ -791,10 +898,10 @@
             });
     }
 
-    function updateReportStatus(reportId, newStatus) {
-        if (confirm(`신고 상태를 ${newStatus}으로 변경하시겠습니까?`)) {
-            fetch(`/admin/restaurant-reports/${reportId}/status?status=${newStatus}`, {
-                method: 'PATCH',
+    function updateReportStatus(reportId) {
+        if (confirm(`신고를 처리하시겠습니까?`)) {
+            fetch(`/admin/restaurant-reports-confirm/${reportId}`, {
+                method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -837,6 +944,7 @@
                     if (data.success) {
                         alert("레스토랑 신고가 성공적으로 삭제되었습니다.");
                         loadContent('reportedRestaurants');
+                        closeRestaurantReportModal();
                     } else {
                         alert("레스토랑 신고 삭제에 실패했습니다. 다시 시도해주세요.");
                         console.error('삭제 실패:', data.message);
