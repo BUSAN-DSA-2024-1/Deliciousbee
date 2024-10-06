@@ -165,7 +165,7 @@ input:hover {
 .card {
     top: 0;
     padding: 0; /* 상단 여백 제거 */
-    height: 330px;
+    height: 350px;
     display: flex;
     flex-direction: row; /* 가로 방향 정렬 유지 */
     overflow-x: hidden; /* 수평 스크롤 숨김 */

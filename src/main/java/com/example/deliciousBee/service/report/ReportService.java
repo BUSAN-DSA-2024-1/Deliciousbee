@@ -5,7 +5,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.example.deliciousBee.dto.report.ReportDto;
+import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.repository.FileRepository;
+import com.example.deliciousBee.service.member.MailService;
+import com.example.deliciousBee.service.message.MessageService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +28,8 @@ public class ReportService {
 	private final ReportRepository reportRepository;
 	private final ReviewRepository reviewRepository;
 	private final FileRepository fileRepository;
+	private final MailService mailService;
+	private final MessageService messageService;
 
 	public Optional<Report> getReportById(Long reportId) {
 		return reportRepository.findById(reportId);
@@ -83,6 +88,9 @@ public class ReportService {
 		reportRepository.delete(report);
 	}
 
+
+
+
 	// 리뷰 삭제 시 연관된 모든 리포트도 함께 삭제
 	@Transactional
 	public void deleteReview(Long reviewId) throws Exception {
@@ -91,6 +99,9 @@ public class ReportService {
 		// 해당 리뷰와 연관된 모든 리포트 조회
 		List<Report> reports = reportRepository.findByReviewId(reviewId);
 		reportRepository.deleteAll(reports);
+
+		String sender = reports.get(0).getBeeMember().getNickname();
+		messageService.RestaurantReportSubmitMessage(sender);
 
 		try {
 			if (reportRepository.existsById(reviewId)) {
