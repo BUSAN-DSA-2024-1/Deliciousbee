@@ -13,7 +13,7 @@ public interface BeeMemberRepository extends JpaRepository<BeeMember, String> {
     @Query("SELECT b FROM BeeMember b WHERE b.member_id = :member_id")
     Optional<BeeMember> findByMemberid(@Param("member_id") String member_id);
     boolean existsByEmail(String email);
-    boolean existsByNickname(String nickname);  // 닉네임 중복 체크 메서드 추가
-
+    Optional<BeeMember> findByNickname(@Param("nickname")String nickname);
+	boolean existsByNickname(String nickname);
 
 }

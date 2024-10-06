@@ -6,6 +6,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="/css/index.css">
 <link rel="stylesheet" href="/css/updateMyPage.css">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
 <title>마이페이지 수정하기</title>
 </head>
 <body>
@@ -19,7 +22,7 @@
 	<form action="/myPage/updateMyPage" onsubmit="return formCheck()" method="POST" enctype="multipart/form-data">
 		<div class="main-image">
 			<!-- 메인 이미지 -->
-			<img th:if="${myPage.mainImage == null}" src="/myPageImage/no-main-image.png" alt="기본 이미지"
+			  <img th:if="${myPage.mainImage == null}" src="/myPageImage/no-main-image.png" alt="기본 이미지"
                 class="default-main-image" id="mainImagePreview">
             <img th:unless="${myPage.mainImage == null}"
                 th:src="@{'/loginMember/display?filename=' + ${loginMember.profileImage.saved_filename}}"
@@ -50,7 +53,7 @@
 			<div class="owner-profile">
 				<div class="nickname-header">
 					<h4 class="nickname"
-						th:text="${myPage.beeMember.nickname} + ' 님의 마이페이지' "></h4>
+						th:text="${myPage.beeMember.nickname} + ' 님의 마이페이지(수정 페이지)' "></h4>
 					<div class="save-button">
 						<button type="submit" class="save-btn">
 							<img src="/myPageImage/save-icon.png" alt="저장하기 아이콘">
@@ -203,8 +206,9 @@
 									th:id="'moreButton' + ${review.id}" class="more-button"
 									th:attr="onclick=|toggleReview(this, '${review.id}')|">더보기</a>
 							</div>
-							<div class="review-create-date"
-								th:text="'리뷰 작성 날짜 : '+ ${review.createDate}"></div>
+						</div>
+						<div class="review-create-date"
+								th:text="'리뷰 작성 날짜 : '+ ${review.createDate}">
 						</div>
 					</div>
 				</div>
@@ -273,29 +277,6 @@
 	 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-		// 로그인 모달 제어
-		document
-				.getElementById('loginButton')
-				.addEventListener(
-						'click',
-						function(event) {
-							event.preventDefault();
-							document.getElementById('loginModal').style.display = 'block';
-						});
-
-		// 닫기 버튼 클릭 시 모달 닫기
-		function closeModal() {
-			document.getElementById('loginModal').style.display = 'none';
-		}
-
-		// 모달 외부 영역 클릭 시 모달 닫기
-		window.onclick = function(event) {
-			let modal = document.getElementById('loginModal');
-			if (event.target == modal) {
-				modal.style.display = 'none';
-			}
-		}
-		
 		//팔로워**************
 		async function toggleFollow(button) {
     const followingId = button.dataset.followingId;
@@ -413,7 +394,7 @@ function showLargeImageModal(imageUrl) {
 }
  
 //이미지 미리보기
-const mainImageInput = document.getElementById('mainImageInput');
+ const mainImageInput = document.getElementById('mainImageInput');
            const mainImagePreview = document.getElementById('mainImagePreview');
 
            mainImageInput.addEventListener('change', function(e) {
