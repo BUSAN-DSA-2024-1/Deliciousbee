@@ -145,7 +145,7 @@ public class RestaurantRestController {
                 }
             }
         }
-        messageService.ReportMessage(loginMember.getMember_id(),"레스토랑 등록을 완료했습니다 승인까지 기다려주세요");
+        messageService.ReportMessage(loginMember.getNickname(),"레스토랑 등록을 완료했습니다 승인까지 기다려주세요");
 
         // 레스토랑과 첨부 파일 정보를 데이터베이스에 저장
         restaurantService.saveRestaurant(restaurant, attachedFiles);
