@@ -75,10 +75,9 @@ public class ReviewService {
 		} else {
 			// 평균 평점 계산
 			double averageRating = reviews.stream().mapToDouble(Review::getRating).average().orElse(0.0);
-
 			// 리뷰 수 계산
 			long reviewCount = reviews.size();
-
+			
 			restaurant.setAverage_rating(averageRating);
 			restaurant.setReview_count(reviewCount);
 		}

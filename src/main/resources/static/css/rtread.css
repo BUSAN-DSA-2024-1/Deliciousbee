@@ -7,6 +7,10 @@ a {
     padding: 0;
 }
 
+.navbar {
+	height: 50px;
+}
+
 .card-body {
     border-top: 1px solid rgba(0, 0, 0, .1);
 }
@@ -57,18 +61,16 @@ a {
     gap: 15px;
 }
 
-.image-wrapper {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    /* 줄 바꿈 허용 */
-}
-
 .card-img-top2 {
     height: 300px;
-    /* 비율 유지 */
-    object-fit: cover;
-    /* 이미지 비율 유지 */
+    width: 100%; /* 너비를 100%로 설정 */
+    object-fit: fill; /* 이미지 비율을 무시하고 영역을 채움 */
+}
+
+.imagination {
+    height: 300px;
+    width: 100%; /* 너비를 100%로 설정 */
+    object-fit: fill; /* 이미지 비율을 무시하고 영역을 채움 */
 }
 
 
@@ -105,11 +107,9 @@ a {
 }
 
 .gallery-item {
-    /* width: 100px; (필요 없음) */
-    display: flex;
-    max-height: 300px;
-    /* 최대 높이 설정 */
-    justify-content: center;
+    height: 300px;
+    width: 100%; /* 너비를 100%로 설정 */
+    object-fit: fill; /* 이미지 비율을 무시하고 영역을 채움 */
 }
 
 .gallery-item img {
@@ -123,19 +123,60 @@ a {
 
 }
 
+.image-wrapper .hidden-image {
+  display: none;
+}
+
+.image-wrapper .show-more-main {
+    /* 버튼 스타일 */
+    width: 30px;
+    height: 30px;
+    color: white;
+    background-color: gray;
+  	opacity: 0.4;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 30px; /* 텍스트 세로 중앙 정렬 */
+    text-align: center;
+      position: absolute;
+  top: 10px; /* 상단 여백 */
+  right: 10px; /* 오른쪽 여백 */
+    
+}
+
+.show-more-main {
+	z-index: 500;
+}
+
 .hidden-image {
     display: none;
 }
 
-.modal-image {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    width: 50%;
-    /* 이미지 너비 조정 */
+.modal.fade2 .modal-dialog {
+  width: 90%; /* 창 너비 (화면의 90%) */
+  max-width: 1200px; /* 최대 너비 */
+  height: auto; /* 높이 자동 조정 */
+  margin: 10vh auto; /* 상하 여백 10vh, 가운데 정렬 */
+  transform: none; /* 초기 위치 변경 */
+  transition: opacity .3s ease-out, transform .3s ease-out; /* 부드러운 전환 */
+  opacity: 0;
 }
 
-/* 모달 스타일 (필요에 따라 추가) */
+.modal.show .modal-dialog {
+    opacity: 1;
+    transform: scale(1);
+
+}
+.modal.fade2 .modal-content {
+  height: auto; /* 높이 자동 조정 */
+  border: 1px solid #ddd; /* 테두리 추가 */
+  border-radius: 5px;  /* 둥근 모서리 */
+  background-color: #fff; /* 흰색 배경 */
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* 그림자 */
+  overflow-y: auto; /* 필요시 스크롤바 추가 */
+}
+
 .modal-content {
     max-width: 900px;
     /* 최대 너비 설정 */
@@ -143,8 +184,52 @@ a {
     /* 가운데 정렬 */
 }
 
-.modal-body {
+
+.modal-footer2 .btn-secondary {
+    background-color: #fff;
+    color: #000;
+    border: none;
+    border-radius: 5px;
+}
+
+.modal-footer2 {
     display: flex;
+    justify-content: center;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    background-color: transparent;
+    border-top: none;
+}
+
+
+/* 모달 body 스타일 변경 */
+.modal-body2 {
+    display: grid; /* Grid 레이아웃 사용 */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* 반응형 그리드 */
+    gap: 10px; /* 이미지 간격 */
+    justify-content: center; /* 가운데 정렬 */
+    align-content: center; /* 수직 가운데 정렬 */
+    height: 90%; /* 높이 조정 */
+    padding: 20px;
+}
+
+
+/* 이미지 스타일 */
+.modal-image {
+    display: block; /* 모든 이미지 표시 */
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* 그림자 효과 */
+    border-radius: 5px;
+    overflow: hidden; /* 이미지 잘림 방지 */
+}
+
+.modal-image img {
+ 	width: 100%;  /* 이미지 너비 100% */
+ 	height: 100%; /* 이미지 높이 100% */
+  	object-fit: cover; /* 이미지 비율 유지하며 채우기 */
     flex-wrap: wrap;
     /* 여러 줄로 배치 */
     justify-content: center;
@@ -153,13 +238,8 @@ a {
     /* 이미지 간 간격 */
 }
 
-.modal-image img {
-    width: 200px;
-    /* 이미지 크기 조정 */
-    height: 200px;
-    /* 이미지 크기 조정 */
-    object-fit: cover;
-}
+
+
 
 .cardking {
     height: 150px;
@@ -491,8 +571,6 @@ a {
     border-bottom: 1px solid #e0e0e0;
 }
 
-/* 메뉴 버튼 클릭 시 드롭다운 메뉴 표시 */
-
 .menu-container.open .dropdown-menu {
     display: block;
 }
@@ -554,7 +632,7 @@ a {
 }
 
 .nav-review-paging ul {
-    display: flex;
-    justify-content: center;
-    /* flexbox를 사용한 정렬 */
-}
+	display: flex;
+	justify-content: center; /* flexbox를 사용한 정렬 */
+  }
+  

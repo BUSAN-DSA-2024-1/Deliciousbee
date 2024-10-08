@@ -14,45 +14,18 @@
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="/css/rtread.css">
+      <link rel="stylesheet" href="/css/nav.css">
 </head>
 
 <body>
+<!-- 네비게이션 바 삽입 -->
+<th:block th:replace="~{fragments/navbar-login :: navbar}"></th:block>
+<!-- 로그인 모달 삽입 -->
+<th:block th:replace="~{fragments/navbar-login :: loginModal}"></th:block>
+
   <input type="hidden" id="restaurant-latitude" th:value="${restaurant.latitude}">
   <input type="hidden" id="restaurant-longitude" th:value="${restaurant.longitude}">
 
-  <!-- Navigation -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-      <div class="navbar-brand-group">
-        <a class="navbar-brand" href="/">Delicious Bee</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-      </div>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a href="#" th:onclick="|location.href='@{/restaurant/rtwrite}'|" class="nav-link">맛집등록</a>
-          </li>
-          <li class="nav-item"><a class="nav-link" href="#!">커뮤니티</a></li>
-          <li class="nav-item" sec:authorize="!isAuthenticated()">
-            <a class="nav-link" id="loginButton" href="#">로그인</a>
-          </li>
-          <li class="nav-item tooltip-container" sec:authorize="isAuthenticated()">
-            <a href="/member/myPage" class="nav-link text">내 정보</a>
-            <div class="tooltip-content">
-              <div class="infos">
-                <a href="#" class="info" th:href="@{/logout}">
-                  <p>로그아웃</p>
-                </a>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
 
   <br><br>
 
@@ -71,6 +44,7 @@
               </a>
             </div>
           </div>
+          
           <div class="card-body">
             <div class="report-position">
               <div class="small text-muted" th:text="${restaurant.create_at}">January 1, 2023</div>
@@ -84,7 +58,17 @@
             <button class="show-more" style="display: none;" onclick="showMoreImages(this)">더보기</button>
           </div>
         </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card mb-4 sidebar-card">
+          <div class="card-header">Map Contents</div>
+          <div class="card-body" id="map">여기에는 해당 지도를 넣어주시면됩니다</div>
+        </div>
+      </div>
+</div>
 
+        <div class="col-lg-8"> 
         <hr>
         <h3>Restaurant Info</h3>
         <a class="card-text no-style-link" th:href="@{${restaurant.homepage_url}}" th:text="'웹사이트 방문'"
@@ -538,6 +522,7 @@
                       th:onclick="deleteReview(this)">삭제</button>
                   </div> -->
                 </div>
+                  </div> 
                 <!-- Category list-->
                 <div class="button-container">
                   <div th:each="reviewKeyword : ${review.keywords}">
@@ -563,12 +548,6 @@
         </nav>
       </div>
 
-      <div class="col-lg-4">
-        <div class="card mb-4 sidebar-card">
-          <div class="card-header">Map Contents</div>
-          <div class="card-body" id="map">여기에는 해당 지도를 넣어주시면됩니다</div>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -589,6 +568,7 @@
         <button type="button" class="form-btn submit-btn">신고 제출</button>
         <button type="button" class="form-btn" onclick="closeRestaurantReportModal()">닫기</button>
       </div>
+     
     </form>
   </div>
 
@@ -990,11 +970,11 @@
               `;
                 }
 
-                modalHTML = `
-              <div class="modal fade" id="imageModal-${review.id}" tabindex="-1" aria-labelledby="imageModalLabel-${review.id}" aria-hidden="true">
+            modalHTML = `
+              <div class="modal fade2" id="imageModal-${review.id}" tabindex="-1" aria-labelledby="imageModalLabel-${review.id}" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-xl">
                   <div class="modal-content">
-                    <div class="modal-body">
+                    <div class="modal-body2">
                       ${modalHTML}
                     </div>
                     <div class="modal-footer">
@@ -1311,8 +1291,69 @@
           console.error('오류 발생:', error);
         });
     });
+    
+    // 가게 사진 여러개일때 모달
+$(document).ready(function() {
+  const imageWrapper = $('.image-wrapper');
+  const images = imageWrapper.find('img');
+  const imageCount = images.length;
+
+  if (imageCount > 1) {
+    let modalImagesHTML = "";  // 모달 내부 이미지 HTML 저장 변수
+
+    images.each(function() {
+      const imgSrc = $(this).attr('src');
+      modalImagesHTML += `
+        <div class="modal-image">
+          <img src="${imgSrc}" alt="Restaurant Image">
+        </div>
+      `;
+    });
 
 
+    const modalHTML = `
+      <div class="modal fade2" id="restaurantImageModal" tabindex="-1" aria-labelledby="restaurantImageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+          <div class="modal-content">
+            <div class="modal-body2">
+              ${modalImagesHTML}
+            </div>
+            <div class="modal-footer2">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    $('body').append(modalHTML);
+
+    const showMoreButton = $('<button type="button" class="show-more-main" data-bs-toggle="modal" data-bs-target="#restaurantImageModal">+</button>');
+    imageWrapper.append(showMoreButton);
+
+
+     if (imageCount > 1) {
+      images.each(function(index) {
+        if (index > 0) { 
+          $(this).parent('.image-gallery').addClass('hidden-image');
+        }
+      });
+    }
+
+  }
+
+
+    	    // 기존 show-more 클릭 이벤트 핸들러 유지
+    	    $(document).on('click', '.show-more-main', function () {
+    	        const modalId = $(this).attr('data-bs-target');
+    	        $(modalId).modal('show');
+    	    });
+
+
+    	});
+    
+    
+    
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=initMap"
     async defer></script>

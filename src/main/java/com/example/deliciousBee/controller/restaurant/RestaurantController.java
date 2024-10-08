@@ -2,13 +2,13 @@ package com.example.deliciousBee.controller.restaurant;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.example.deliciousBee.model.file.RestaurantAttachedFile;
 import com.example.deliciousBee.model.member.Role;
 import com.example.deliciousBee.security.jwt.JwtTokenProvider;
 import com.example.deliciousBee.service.member.BeeMemberService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,6 +50,7 @@ import com.google.cloud.storage.StorageOptions;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Slf4j
 @Controller
@@ -128,38 +129,59 @@ public class RestaurantController {
 		model.addAttribute("restaurantForm", new Restaurant());
 		return "restaurant/rtwrite";
 	}
-//	@PostMapping("restaurants")
-//	public String write(@Validated @ModelAttribute("restaurantForm") Restaurant restaurantform
-//			,BindingResult result
-//			,@AuthenticationPrincipal BeeMember loginMember
-//			,@RequestPart(name="file", required=false) MultipartFile[] files) {
-//
-//		if(result.hasErrors()) {
-//			return "redirect:/";
-//		}
-//
-//		BeeMember findMember = beeMemberService.findMemberById(loginMember.getMember_id());
-//
-//		restaurantform.setMember(findMember);
-//
-//		List<RestaurantAttachedFile> attachedFiles = new ArrayList<>();
-//		if (files != null && files.length > 0) {
-//			System.out.println("gd");
-//			for (MultipartFile file : files) {
-//				if (!file.isEmpty()) {
-//					log.info("file 들왓니>?..{}", file);
-//					RestaurantAttachedFile attachedFile = fileService.saveFile(file);
-//					attachedFile.setRestaurant(restaurantform);
-//					log.info("writefomr 들왓니>?..{}", restaurantform);
-//					attachedFiles.add(attachedFile);
-//					log.info("attachedFile 들왓니>?..{}", attachedFile);
-//				}
-//				System.out.println("gd");
-//			}
-//		}
-//		restaurantService.saveRestaurant(restaurantform, attachedFiles);
-//		return "redirect:/";
-//	}
+
+	// RestaurantController.java
+
+	@GetMapping("/{id}/edit")
+	public String editRestaurantForm(@AuthenticationPrincipal BeeMember loginMember,
+									 @PathVariable Long id,
+									 Model model) throws JsonProcessingException {
+		if (loginMember == null) {
+			return "redirect:/member/login";
+		}
+
+		// 맛집 정보를 데이터베이스에서 가져옴
+		Restaurant restaurant = restaurantService.findRestaurant(id);
+
+
+
+		// 선택된 카테고리 JSON 직렬화
+
+
+		System.out.println("레스토랑 확인용");
+		System.out.println(restaurant.getAddress());
+		System.out.println(restaurant.getMenuList());
+
+		// 카테고리 Enum 정의
+		Map<String, List<String>> categoryEnum = new HashMap<>();
+		categoryEnum.put("한식", Arrays.asList("백반", "죽", "국수", "찌개", "탕", "전골", "족발", "보쌈", "한정식", "분식"));
+		categoryEnum.put("일식", Arrays.asList("초밥", "회", "돈가스", "일본식카레", "일본식면요리"));
+		categoryEnum.put("중식", Arrays.asList("중식"));
+		categoryEnum.put("양식", Arrays.asList("파스타", "스테이크"));
+		categoryEnum.put("아시안", Arrays.asList("아시안"));
+		categoryEnum.put("패스트푸드", Arrays.asList("피자", "햄버거", "핫도그", "샌드위치"));
+		categoryEnum.put("디저트", Arrays.asList("카페", "디저트"));
+
+		// categories를 콤마로 분리하여 리스트로 변환
+		List<String> selectedCategories = restaurant.getCategories() != null && !restaurant.getCategories().isEmpty()
+				? Arrays.asList(restaurant.getCategories().split(","))
+				: new ArrayList<>();
+
+		// selectedCategories를 JSON 문자열로 변환
+		ObjectMapper objectMapper = new ObjectMapper();
+		String selectedCategoriesJson = objectMapper.writeValueAsString(selectedCategories);
+
+
+
+		// 모델에 맛집 정보와 카테고리 Enum 및 선택된 카테고리 목록 추가
+		model.addAttribute("restaurant", restaurant);
+		model.addAttribute("categoryEnum", categoryEnum);
+		model.addAttribute("selectedCategories", selectedCategories);
+		model.addAttribute("selectedCategoriesJson", selectedCategoriesJson);
+		return "restaurant/rtedit"; // 수정 폼 뷰 이름
+	}
+
+
 
 	// 검색
 	@GetMapping("/search")
@@ -209,18 +231,45 @@ public class RestaurantController {
 
 		// 리뷰 정보 가져오기
 		String memberId = loginMember.getMember_id();
-		Sort sort = Sort.by(Sort.Direction.DESC, sortBy); 
+		Sort sort = Sort.by(Sort.Direction.DESC, sortBy);
 		Pageable pageable = PageRequest.of(page, 5, sort);
 		Page<Review> reviewsByRestaurant = reviewService.sortReview(restaurant_id, memberId, pageable, sortBy);
-		model.addAttribute("reviewsByRestaurant", reviewsByRestaurant.getContent()); 
-		model.addAttribute("currentPage", page); 
-		model.addAttribute("totalPages", reviewsByRestaurant.getTotalPages()); 
+		model.addAttribute("reviewsByRestaurant", reviewsByRestaurant.getContent());
+		model.addAttribute("currentPage", page);
+		model.addAttribute("totalPages", reviewsByRestaurant.getTotalPages());
 
 		// 카테고리 가져오기
 		Map<KeywordCategory, List<KeyWord>> keywordsByCategory = reviewKeyWordService.getKeywordsByCategory();
 		model.addAttribute("keywordsByCategory", keywordsByCategory);
 		return "restaurant/rtread";
 	}
+
+
+	// **수정 폼을 보여주는 GET 메서드**
+	@GetMapping("/rtedit/{restaurant_id}")
+	public String editForm(@AuthenticationPrincipal BeeMember loginMember,
+						   @PathVariable("restaurant_id") Long restaurant_id, Model model) {
+
+		if (loginMember == null) {
+			return "redirect:/member/login";
+		}
+
+		// 레스토랑 정보 가져오기
+		Restaurant restaurant = restaurantService.findRestaurant(restaurant_id);
+		if (restaurant == null) {
+			return "redirect:/shop/index";
+		}
+
+
+
+		model.addAttribute("restaurant", restaurant);
+		return "restaurant/rtedit"; // 수정 폼 뷰 이름
+	}
+
+
+
+
+
 
 		@GetMapping("rtdelete")
 		public String remove(@AuthenticationPrincipal BeeMember loginMember,

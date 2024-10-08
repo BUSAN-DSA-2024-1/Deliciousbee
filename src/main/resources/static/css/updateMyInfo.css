@@ -66,7 +66,7 @@ body {
 }
 .password-change {
     display: inline-block; /* 블록 요소로 변환하여 패딩과 배경색 적용 */
-    padding: 10px 20px; /* 내부 여백 조정 */
+    padding: 6px 14px; /* 내부 여백 조정 */
     background-color: #ff4757; /* 배경색 설정 (예: 빨간색) */
     color: white; /* 텍스트 색상 설정 */
     font-weight: bold; /* 텍스트를 굵게 */
@@ -75,6 +75,7 @@ body {
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 약간의 그림자 추가 */
     transition: background-color 0.3s ease; /* 배경색 전환 효과 */
     margin-bottom: 10px;
+    font-size: 12px;
 }
 
 .password-change:hover {
@@ -101,7 +102,7 @@ body {
     padding: 5px 10px;  /* 버튼 패딩 조정 */
     border: none;        /* 기본 테두리 제거 */
     border-radius: 4px; /* 둥근 모서리 */
-    background-color: #ff4757; /* 배경색 (빨간색) */
+    background-color: grey; /* 배경색 (빨간색) */
     color: white;       /* 텍스트 색상 (흰색) */
     cursor: pointer;    /* 커서 모양 변경 */
     font-size: 13px;    /* 폰트 크기 조정 */
@@ -157,4 +158,40 @@ body {
     background-color: #0056b3;
 }
 
+h4 {
+	 margin: 0 0 5px;
+    color: #555;
+    font-weight: normal;
+}
 
+.nickname-container {
+    display: flex;
+    align-items: center; /* 수직 정렬 */
+    margin-bottom: 10px; /* 아래쪽 여백 추가 */
+    
+}
+
+.nickname-input {
+    flex: 1;
+    margin-right: 10px;
+    padding: 10px; /* 입력 필드 패딩 */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    max-width: 100px;
+}
+
+.nickname-check-button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.nickname-check-result {
+	margin-left: 10px;
+    margin-top: 5px;
+    font-size: 15px; /* 폰트 크기 조정 */
+}

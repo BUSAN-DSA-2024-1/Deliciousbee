@@ -1,4 +1,5 @@
 /* Navbar Styles */
+
 .navbar {
         background-color: #343A40;
         color: white;
@@ -33,10 +34,11 @@
     }
     .nav-item {
         margin-left: 20px;
+        color: white;
     }
     .nav-link {
         text-decoration: none;
-        color: inherit;
+        color: white !important;
     }
     .nav-link:hover {
         color: #FF6347;
@@ -115,11 +117,12 @@
 /* Tooltip Container for User Menu */
 .tooltip-container {
     position: relative;
-    display: inline-block;
-    font-family: "Arial", sans-serif;
+    display: flex;
+    font-family: "Arial", sans-serif !important;
     overflow: visible;
     color: white;
     margin-left: 20px;
+    align-items: center;
 }
 
 .tooltip-container .button-content {
@@ -128,6 +131,7 @@
     padding: 0;
     border-radius: 0;
     box-shadow: none;
+    height: 23px;
 }
 
 .tooltip-container .text {
@@ -136,6 +140,11 @@
     background-color: #343A40 !important;
     margin-right: 0;
     text-shadow: none;
+}
+
+.tooltip-container {
+	display: flex;
+	align-items: center;
 }
 
 /* Tooltip Styles */
@@ -254,7 +263,7 @@
 .form-btn {
     padding: 10px 15px;
     font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif !important;
     border-radius: 20px;
     border: 0 !important;
     outline: 0 !important;
@@ -319,7 +328,7 @@
     font-size: 10px;
     color: #747474;
     font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif !important;
     text-align: center;
     margin-top: 5%;
 }

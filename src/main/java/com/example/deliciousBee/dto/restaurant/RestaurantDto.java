@@ -23,6 +23,7 @@ public class RestaurantDto {
     private String mainCategory;
     private String description;
     private double average_rating;
+    private long review_count;
     private List<String> imageUrls; // 이미지 URL 리스트
     private Double usedRadius; // 실제 사용된 반경
 
@@ -38,6 +39,7 @@ public class RestaurantDto {
         this.mainCategory = restaurant.getMainCategory();
         this.description = restaurant.getDescription();
         this.average_rating = restaurant.getAverage_rating() != null ? restaurant.getAverage_rating() : 0.0;
+        this.review_count = restaurant.getReview_count() != null ? restaurant.getReview_count() : 0;
 
         // attachedFile 리스트에서 이미지 URL만 추출하여 리스트로 저장
         this.imageUrls = restaurant.getAttachedFile().stream()

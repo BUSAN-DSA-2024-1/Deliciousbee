@@ -191,7 +191,7 @@ body {
      perspective: 1000px;
 }
 .owner-stats span::before {  /* 예시: span 앞에 하트 아이콘 추가 */
-    content: '\f004'; /* Font Awesome 하트 아이콘 */
+    content: '\f007'; /* Font Awesome 하트 아이콘 */
     font-family: "Font Awesome 5 Free";
     font-weight: 900;
     margin-right: 5px;
@@ -741,7 +741,7 @@ body {
 	overflow-y: auto; /* 스크롤바 설정 */
 	gap: 15px;
 	justify-content: space-between;
-	margin-bottom: 200px;
+	margin-bottom: 50px;
 	margin-top: 20px;
 }
 
@@ -900,7 +900,6 @@ a {
 
 .review-comment {
 	padding-right: 10px;
-	margin-bottom: 15px;
 	margin-left: 20px;
 	margin-right: 0px;
 	border-top: 1px solid #61686c;
@@ -912,26 +911,7 @@ a {
 	max-height: 140px;
 }
 
-.recommendItems {
-	margin-left: 10px;
-	margin-top: 13px;
-	font-weight: bold; /* 추천 메뉴 텍스트 굵게 */
-	color: orange; /* 추천 메뉴 텍스트 오렌지색 */
-}
 
-.review-comment {
-	padding-right: 10px;
-	margin-bottom: 15px;
-	margin-left: 20px;
-	margin-right: 0px;
-	border-top: 1px solid #61686c;
-	border-bottom: 1px solid #61686c;
-	border-radius: 20px;
-	font-size: 15px;
-	width: 570px;
-	height: 140px;
-	max-height: 140px;
-}
 
 .recommendItems {
     margin-left: 10px;
@@ -1004,19 +984,10 @@ a {
 }
 
 .review-create-date {
-	text-align: right;
-	text-align: right;
-	font-size: 12px; /* 방문 날짜보다 작은 글씨 크기 */
-	color: #888; /* 옅은 회색으로 눈에 덜 띄게 */
-	margin-top: 5px; /* 위쪽 여백 추가 (선택 사항) */
-}
-
-.review-create-date {
-	text-align: right;
-	text-align: right;
-	font-size: 12px; /* 방문 날짜보다 작은 글씨 크기 */
-	color: #888; /* 옅은 회색으로 눈에 덜 띄게 */
-	margin-top: 5px; /* 위쪽 여백 추가 (선택 사항) */
+	text-align:right;
+    font-size: 12px;
+    color: #888;
+    margin-top: 8px;
 }
 
 .main-content {
@@ -1113,7 +1084,7 @@ a {
 
 /* Navbar Styles */
 .navbar {
-	background-color: #61686c;
+	background-color: #343a40;
 	color: white;
 	padding: 15px;
 	display: flex;
