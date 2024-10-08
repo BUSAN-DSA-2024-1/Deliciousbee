@@ -118,19 +118,6 @@ public class MemberController {
 		return null; // 토큰 없음
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 	// **************회원가입 페이지 이동*************
 	@GetMapping("join")
 	public String joinForm(Model model) {
