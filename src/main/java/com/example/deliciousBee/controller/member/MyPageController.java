@@ -13,10 +13,7 @@ import org.springframework.data.domain.Sort;
 import com.example.deliciousBee.model.member.Role;
 import jakarta.servlet.http.Cookie;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestHeader;
-import com.example.deliciousBee.model.member.Role;
-import jakarta.servlet.http.Cookie;
-import org.springframework.util.StringUtils;
+
 import com.example.deliciousBee.security.jwt.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -251,10 +248,15 @@ public class MyPageController {
 		if (loginMember == null) {
 			return "redirect:/member/login";
 		}
-		MyPage myPage = loginMember.getMyPage(); // MyPage 객체를 가져옵니다.
+
+		MyPage myPage = null; // MyPage 객체를 가져옵니다.
+		myPage = myPageRepository.findMyPageWithVisitsByMemberId(loginMember.getMember_id());
+
+		System.out.println("확인용");
+		System.out.println(myPage.getMainImage().getSaved_filename());
 		model.addAttribute("myPage", myPage); // myPage를 모델에 추가합니다.
 		model.addAttribute("loginMember", loginMember);
-		
+
 		Pageable pageable = PageRequest.of(page, 6, Sort.by(sort).descending());
 
 	    Page<Review> reviews;
@@ -270,7 +272,7 @@ public class MyPageController {
 	}
 
 	// **********************마이페이지에서 수정하기*********************
-	@PostMapping("updateMyPage")
+	@PostMapping("/member/updateMyPage")
     public String updateMyPage(@AuthenticationPrincipal BeeMember loginMember,
                                @RequestParam(name = "introduce") String introduce,
                                @RequestParam(name = "isFileRemoved", required = false, defaultValue = "false") boolean isFileRemoved,
@@ -322,48 +324,7 @@ public class MyPageController {
 
 	}
 	
-	
-	@ModelAttribute("auth") // "auth"라는 이름으로 모델에 추가
-	public Map<String, Object> authenticationDetails(HttpServletRequest request) {
-	    String token = extractJwtFromRequest(request); // 요청에서 JWT 추출 (아래 설명 참조)
-
-	    Map<String, Object> auth = new HashMap<>();
-	    auth.put("isAuthenticated", false); // 기본값 false
-	    auth.put("isAdmin", false); // 기본값 false
-	    auth.put("username", ""); // 빈 문자열로 초기화
 
 
-	    if (token != null && jwtTokenProvider.validateToken(token)) {
-	       String memberId = jwtTokenProvider.getMemberIdFromJWT(token);
-	       BeeMember beeMember = beeMemberService.findMemberById(memberId);
-
-	       if (beeMember != null) {
-	          auth.put("isAuthenticated", true);
-	          auth.put("isAdmin", beeMember.getRole() == Role.ADMIN); // Enum 직접 비교
-	          auth.put("username", beeMember.getUsername());
-	       }
-	    }
-	    return auth;
-	}
-
-	// 요청에서 JWT 추출 (Authorization 헤더 또는 쿠키)
-	private String extractJwtFromRequest(HttpServletRequest request) {
-	    String bearerToken = request.getHeader("Authorization");
-	    if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-	       return bearerToken.substring(7);
-	    }
-
-	    // Authorization 헤더에 없으면 쿠키에서 확인
-	    Cookie[] cookies = request.getCookies();
-	    if (cookies != null) {
-	       for (Cookie cookie : cookies) {
-	          if ("Authorization".equals(cookie.getName())) {
-	             return cookie.getValue();
-	          }
-	       }
-	    }
-
-	    return null; // 토큰 없음
-	}
 
 }

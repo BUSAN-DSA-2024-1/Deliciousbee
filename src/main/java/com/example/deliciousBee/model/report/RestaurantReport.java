@@ -3,10 +3,7 @@ package com.example.deliciousBee.model.report;
 import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.member.BeeMember;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 // RestaurantReport.java
@@ -15,9 +12,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 
 @NoArgsConstructor
-@Getter
-@Setter
-@ToString
+@Data
 @Entity
 @Table(name = "restaurant_reports")
 public class RestaurantReport {

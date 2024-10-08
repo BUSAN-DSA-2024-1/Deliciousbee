@@ -218,6 +218,11 @@ public class BeeMemberService implements UserDetailsService {
 		});
 	}
 
+	public BeeMember findMemberByNickname(String nickname) {
+		Optional<BeeMember> member = beeMemberRepository.findByNickname(nickname);
+		return member.orElse(null);
+	}
+
 //	@Override
 //	public UserDetails loadUserByUsername(String member_id) throws UsernameNotFoundException {
 //		Optional<BeeMember> beeMember = beeMemberRepository.findByMemberid(member_id);
@@ -236,7 +241,9 @@ public class BeeMemberService implements UserDetailsService {
 		return beeMember;
 	}
 
-
+	public boolean isNicknameExists(String nickname) {
+		return beeMemberRepository.existsByNickname(nickname);
+	}
 
 	/**
 	 * 유일한 8자리 랜덤 닉네임을 생성합니다.

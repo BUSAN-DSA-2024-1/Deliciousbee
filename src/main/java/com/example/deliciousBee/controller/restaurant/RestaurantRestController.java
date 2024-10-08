@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.deliciousBee.service.message.MessageService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +41,7 @@ public class RestaurantRestController {
     private final BeeMemberService beeMemberService;
     private final FileService fileService;
     private final RestaurantFileService restaurantFileService;
+    private final MessageService messageService;
 
 
     @GetMapping("search")
@@ -49,7 +51,7 @@ public class RestaurantRestController {
             @RequestParam(value = "sortBy", required = false, defaultValue = "default") String sortBy,
             @RequestParam(value = "latitude", required = false) Double userLatitude,
             @RequestParam(value = "longitude", required = false) Double userLongitude,
-            @RequestParam(value = "radius", required = false, defaultValue = "500") Double radius,
+            @RequestParam(value = "radius", required = false, defaultValue = "1500") Double radius,
             @RequestParam(value = "page", defaultValue = "0") int page,
             PagedResourcesAssembler<RestaurantDto> assembler) {
 
@@ -143,6 +145,7 @@ public class RestaurantRestController {
                 }
             }
         }
+        messageService.ReportMessage(loginMember.getMember_id(),"레스토랑 등록을 완료했습니다 승인까지 기다려주세요");
 
         // 레스토랑과 첨부 파일 정보를 데이터베이스에 저장
         restaurantService.saveRestaurant(restaurant, attachedFiles);

@@ -12,12 +12,10 @@
 <title>마이페이지</title>
 </head>
 <body>
-	<!-- 네비게이션 바 삽입 -->
-	<th:block th:replace="~{fragments/navbar-login :: navbar}"></th:block>
-	<!-- 로그인 모달 삽입 -->
-	<th:block th:replace="~{fragments/navbar-login :: loginModal}"></th:block>
-
-
+<!--	&lt;!&ndash; 네비게이션 바 삽입 &ndash;&gt;-->
+<!--	<th:block th:replace="~{fragments/navbar-login :: navbar}"></th:block>-->
+<!--	&lt;!&ndash; 로그인 모달 삽입 &ndash;&gt;-->
+<!--	<th:block th:replace="~{fragments/navbar-login :: loginModal}"></th:block>-->
 
 
 
@@ -28,7 +26,7 @@
 			src="/myPageImage/no-main-image.png" alt="기본 이미지"
 			class="default-main-image"> <img
 			th:unless="${myPage.mainImage == null}"
-			th:src="@{'/loginMember/display?filename=' + ${loginMember.Image.saved_filename}}"
+			th:src="@{'/member/display?filename=' + ${myPage.mainImage.saved_filename}}"
 			alt="메인 이미지">
 		<!-- 프로필 이미지 -->
 		<div class="profile-image">
@@ -243,8 +241,8 @@
 							<div class="recommendItems">
 								<span>추천 메뉴: </span> <span
 									th:each="reviewMenu, iterStat : ${review.reviewMenuList}"
-									th:text="${reviewMenu?.menu?.name 
-                ?: reviewMenu?.customMenuName 
+									th:text="${reviewMenu?.menu?.name
+                ?: reviewMenu?.customMenuName
                 ?: ''} + ${!iterStat.last ? ', ' : ''}"></span>
 							</div>
 							<div class="review_content"
@@ -398,10 +396,10 @@
             img.src = isFollowing ? '/myPageImage/follow.png' : '/myPageImage/unfollow.png';
             button.classList.toggle('follow-button', !isFollowing);
             button.classList.toggle('nofollow', isFollowing);
-            
+
             // 툴팁 내용 변경
-            const tooltip = button.querySelector('.tooltiptext'); 
-            if (tooltip) { 
+            const tooltip = button.querySelector('.tooltiptext');
+            if (tooltip) {
                 tooltip.textContent = isFollowing ? '팔로우' : '언팔로우';
             }
 
@@ -419,8 +417,8 @@
 	        alert("로그인이 필요한 서비스입니다.");
 	        return true; // 로그인 페이지로 이동
 	    }
-		
-		
+
+
 		// 팔로워 목록 모달 열기 함수
 		function showFollowersModal() {
 		    document.getElementById('followersModal').style.display = 'block';
@@ -508,7 +506,7 @@ function scrollToTop() {
     if (reviewId) {
       const reviewElement = document.getElementById('review-' + reviewId);
       if (reviewElement) {
-        reviewElement.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+        reviewElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }
   }
@@ -522,7 +520,7 @@ function sortReviews() {
     var currentPage = params.get('page') || "0";
 
     params.set('sort', sort);
-    params.set('page', currentPage); 
+    params.set('page', currentPage);
     url.search = params.toString();
 
     fetch(url.toString())
@@ -530,10 +528,10 @@ function sortReviews() {
         .then(html => {
             var parser = new DOMParser();
             var doc = parser.parseFromString(html, 'text/html');
-            
+
             var newReviewList = doc.getElementById('reviewListContainer');
             document.getElementById('reviewListContainer').innerHTML = newReviewList.innerHTML;
-            
+
             var newPagination = doc.querySelector('.pagination-container');
             var currentPagination = document.querySelector('.pagination-container');
             if (newPagination && currentPagination) {
@@ -585,8 +583,8 @@ function sortReviews() {
    }
    window.addEventListener('click', handleLargeImageModalOutsideClick);
  }
- 
- 
+
+
  //랜덤 리뷰
  $(document).ready(function() {
     let currentReviewIndex = 0;
