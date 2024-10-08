@@ -328,8 +328,13 @@
     .sort-label {
         font-weight: bold;
         color: #343A40;
-        margin-right: 10px;
+        margin-right: 10px; 
     }
+.distance-button {
+    display: flex;
+    gap: 10px; /* 버튼들 사이의 간격을 조정 */
+    justify-content: flex-start; /* 왼쪽 정렬 (필요에 따라 center로 변경 가능) */
+}
     .btn-sort {
         font-size: 0.9rem;
         padding: 5px 10px;
@@ -826,13 +831,14 @@
                         <button class="btn-custom btn-sort" id="sort-rating">평점순</button>
                     </div>
                 </div>
-                 <div>
+                 <div class="distance-button">
                     <button class="btn btn-custom btn-sort" id="distance500">500m</button>
                     <button class="btn btn-custom btn-sort" id="distance1500">1.5km</button>
                     <button class="btn btn-custom btn-sort" id="distance3000">3km</button>
                     <button class="btn btn-custom btn-sort" id="distance5000">5km</button>
                     <button class="btn btn-custom btn-sort" id="distance10000">10km</button>
                 </div>  
+                <br>
                     <div id="map"></div>
                 <div id="restaurantList"></div>
                 <div id="pagination"></div>
