@@ -3,10 +3,12 @@ package com.example.deliciousBee.controller.review;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -70,7 +73,6 @@ public class ReviewController {
 	private final RestaurantService restaurantService;
 	private final MenuService menuService;
 	private final ReviewKeyWordService reviewKeyWordService;
-	private final ObjectMapper objectMapper;
 
 	@PostMapping("write/{restaurant_id}")
 	public String postWriteReview(@Validated @ModelAttribute("writeForm") ReviewWriteForm reviewWriteForm,
@@ -255,20 +257,55 @@ public class ReviewController {
 	// 리뷰 수정
 	@PostMapping("/update/{reviewId}")
 	@ResponseBody
-	public ResponseEntity<Map<String, Object>> postUpdateReview(
-			@Validated @ModelAttribute ReviewUpdateForm reviewUpdateForm, BindingResult result) {
-		if (result.hasErrors()) {
-		    for (FieldError error : result.getFieldErrors()) {
-		        log.error("Error field: {}, Error message: {}", error.getField(), error.getDefaultMessage());
-		    }
-		    return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Validation failed"));
-		}
-		Review updateReview = ReviewConverter.reviewUpdateFormToReview(reviewUpdateForm);
-		log.info("*****************************updateReview:{}", updateReview);
-		
-		
-//		reviewService.updateReview(updateReview, reviewUpdateForm.isFileRemoved(), file);
+	public ResponseEntity<Map<String, Object>> postUpdateReview(@ModelAttribute ReviewUpdateForm reviewUpdateForm,
+			@RequestPart(name = "updateReviewAttachedFile", required = false) MultipartFile[] updateReviewAttachedFile) {
 
+		Review findReview = ReviewConverter.reviewUpdateFormToReview(reviewUpdateForm);
+		
+		// 첨부파일 처리
+		List<AttachedFile> attachedFiles = new ArrayList<>();
+		if (updateReviewAttachedFile != null && updateReviewAttachedFile.length > 0) {
+			for (MultipartFile file : updateReviewAttachedFile) {
+				if (!file.isEmpty()) {
+					try {
+						AttachedFile attachedFile = fileService.saveFile(file);
+						attachedFile.setReview(findReview);
+						attachedFiles.add(attachedFile);
+					} catch (IOException e) {
+						e.printStackTrace();
+						return null;
+					}
+				}
+			}
+		}
+
+		// 메뉴 수정 처리
+		List<ReviewMenu> reviewMenus = new ArrayList<>();
+		List<Long> updateReviewMenuListIds = reviewUpdateForm.getReviewMenuListIds();
+		if (updateReviewMenuListIds != null) {
+			reviewMenus.addAll(updateReviewMenuListIds.stream().map(menuId -> {
+				Menu menu = menuService.findMenuById(menuId);
+				ReviewMenu reviewMenu = new ReviewMenu();
+				reviewMenu.setReview(findReview);
+				reviewMenu.setMenu(menu);
+				return reviewMenu;
+			}).collect(Collectors.toList()));
+		}
+		log.info("**************************************reviewMenus:{}", reviewMenus);
+		log.info("**************************************FrontRindReview:{}", findReview);
+		findReview.setReviewMenuList(reviewMenus);
+		log.info("**************************************BackFindReview:{}", findReview);
+				
+		// 커스텀 키워드 처리
+		if (reviewUpdateForm.getCustomKeywordName() != null && !reviewUpdateForm.getCustomKeywordName().isEmpty()) {
+			ReviewKeyWord reviewKeyWord = new ReviewKeyWord(findReview, null, reviewUpdateForm.getCustomKeywordName());
+			reviewKeyWordService.save(reviewKeyWord);
+			List<ReviewKeyWord> existingKeywords = findReview.getKeywords();
+			existingKeywords.add(reviewKeyWord);
+			findReview.setKeywords(existingKeywords);
+		}
+
+		reviewService.updateReview(findReview, attachedFiles);
 		Map<String, Object> response = new HashMap<>();
 		response.put("success", true);
 		return ResponseEntity.ok(response);
@@ -294,6 +331,7 @@ public class ReviewController {
 			String memberId = loginMember.getMember_id();
 			PageRequest pageble = PageRequest.of(page - 1, 5);
 			Page<Review> reviews = reviewService.sortReview(restaurant_id, memberId, pageble, sortBy);
+			
 			Map<String, Object> response = new HashMap<>();
 			response.put("reviews", reviews.getContent());
 			response.put("currentPage", reviews.getNumber() + 1);
