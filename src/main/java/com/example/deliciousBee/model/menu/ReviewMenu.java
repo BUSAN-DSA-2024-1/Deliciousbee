@@ -13,28 +13,29 @@ import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = { "menu", "review" })
 public class ReviewMenu {
-	
+
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "review_id")
-    @JsonBackReference
-    private Review review;
+	@ManyToOne
+	@JoinColumn(name = "review_id")
+	@JsonBackReference
+	private Review review;
 
-    @ManyToOne
-    @JoinColumn(name = "menu_id")
-    private Menu menu;
+	@ManyToOne
+	@JoinColumn(name = "menu_id")
+	private Menu menu;
 
-    @Column(name = "custom_menu_name")
-    private String customMenuName;
-
+	@Column(name = "custom_menu_name")
+	private String customMenuName;
 
 }

@@ -2,6 +2,7 @@ package com.example.deliciousBee.security.jwt;
 
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.dto.member.OAuthAttributes;
+import com.example.deliciousBee.model.mypage.MyPage;
 import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.member.SocialLoginService;
 import jakarta.servlet.ServletException;
@@ -19,14 +20,14 @@ public class JwtOAuth2AuthenticationSuccessHandler implements AuthenticationSucc
 
     private final JwtTokenProvider tokenProvider;
     private final BeeMemberService beeMemberService;
-    private final SocialLoginService socialLoginService;  // SocialLoginService 추가
+    private final SocialLoginService socialLoginService;
 
     public JwtOAuth2AuthenticationSuccessHandler(JwtTokenProvider tokenProvider,
                                                  BeeMemberService beeMemberService,
                                                  SocialLoginService socialLoginService) {
         this.tokenProvider = tokenProvider;
         this.beeMemberService = beeMemberService;
-        this.socialLoginService = socialLoginService;  // SocialLoginService 초기화
+        this.socialLoginService = socialLoginService;
     }
 
     @Override
@@ -36,10 +37,10 @@ public class JwtOAuth2AuthenticationSuccessHandler implements AuthenticationSucc
         if (authentication.getPrincipal() instanceof DefaultOAuth2User) {
 
             DefaultOAuth2User oAuth2User = (DefaultOAuth2User) authentication.getPrincipal();
-            String email = oAuth2User.getAttribute("email"); // 이메일 속성에서 가져옴
-            String name = oAuth2User.getAttribute("name");   // 이름 속성에서 가져옴
-            String picture = oAuth2User.getAttribute("picture"); // 프로필 사진 속성에서 가져옴
-            String provider = ((OAuth2AuthenticationToken) authentication).getAuthorizedClientRegistrationId(); // 로그인 제공자 정보 (Google, Line 등)
+            String email = oAuth2User.getAttribute("email");  // 이메일 가져오기
+            String name = oAuth2User.getAttribute("name");    // 이름 가져오기
+            String picture = oAuth2User.getAttribute("picture");  // 프로필 사진 가져오기
+            String provider = ((OAuth2AuthenticationToken) authentication).getAuthorizedClientRegistrationId();  // 제공자 정보 (Google 등)
 
             // OAuthAttributes 생성
             OAuthAttributes oAuthAttributes = OAuthAttributes.builder()
@@ -55,21 +56,29 @@ public class JwtOAuth2AuthenticationSuccessHandler implements AuthenticationSucc
             // BeeMember 찾기 또는 생성
             BeeMember beeMember = beeMemberService.findOrCreateBeeMember(oAuthAttributes);
 
+
+            if(beeMember.getMyPage() == null) {
+                MyPage myPage = new MyPage();
+                myPage.setBeeMember(beeMember);
+                beeMember.setMyPage(myPage); // BeeMember에 MyPage 설정
+                beeMemberService.saveMember(beeMember, null);
+            }
+
             // JWT 토큰 생성
             String token = tokenProvider.generateToken(beeMember);
 
-            // 쿠키에 JWT 설정
+            // JWT 쿠키 설정
             Cookie jwtCookie = new Cookie("Authorization", token);
             jwtCookie.setHttpOnly(true);
-            jwtCookie.setSecure(true); // HTTPS에서만 사용
+            jwtCookie.setSecure(true);  // HTTPS에서만 사용
             jwtCookie.setPath("/");
-            jwtCookie.setMaxAge(86400); // 1일 동안 유효
+            jwtCookie.setMaxAge(86400);  // 쿠키 유효기간 1일
             response.addCookie(jwtCookie);
 
-            // 리다이렉트
+            // 리다이렉트 처리
             response.sendRedirect("/");
         } else {
-            throw new IllegalStateException("Unexpected principal type: " + authentication.getPrincipal().getClass().getName());
+            throw new IllegalStateException("예상치 못한 principal 타입: " + authentication.getPrincipal().getClass().getName());
         }
     }
 }

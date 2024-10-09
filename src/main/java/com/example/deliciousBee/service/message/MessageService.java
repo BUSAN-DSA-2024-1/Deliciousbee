@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
-
 @Service
 public class MessageService {
 
@@ -23,14 +22,11 @@ public class MessageService {
 
     // 메시지 전송
     @Transactional
-    public Message sendMessage(String senderId, String receiverId, String content) {
-
-
-
-        BeeMember sender = beeMemberRepository.findByMemberid(senderId)
-                .orElseThrow(() -> new RuntimeException("발신자 없음: " + senderId));
-        BeeMember receiver = beeMemberRepository.findByMemberid(receiverId)
-                .orElseThrow(() -> new RuntimeException("수신자 없음: " + receiverId));
+    public Message sendMessage(String senderNickname, String receiverNickname, String content) {
+        BeeMember sender = beeMemberRepository.findByNickname(senderNickname)
+                .orElseThrow(() -> new RuntimeException("발신자 없음: " + senderNickname));
+        BeeMember receiver = beeMemberRepository.findByNickname(receiverNickname)
+                .orElseThrow(() -> new RuntimeException("수신자 없음: " + receiverNickname));
 
         Message message = Message.builder()
                 .sender(sender)
@@ -42,15 +38,11 @@ public class MessageService {
     }
 
     @Transactional
-    public Message ReviewReportMessage(String receiverId) {
-
-
-        String content ="리뷰 신고가 접수되었습니다.";
-
-        BeeMember sender = beeMemberRepository.findByMemberid("admin")
-                .orElseThrow(() -> new RuntimeException("발신자 없음: " + "admin"));
-        BeeMember receiver = beeMemberRepository.findByMemberid(receiverId)
-                .orElseThrow(() -> new RuntimeException("수신자 없음: " + receiverId));
+    public Message ReportMessage(String receiverNickname, String content) {
+        BeeMember sender = beeMemberRepository.findByNickname("admin")
+                .orElseThrow(() -> new RuntimeException("발신자 없음: admin"));
+        BeeMember receiver = beeMemberRepository.findByNickname(receiverNickname)
+                .orElseThrow(() -> new RuntimeException("수신자 없음: " + receiverNickname));
 
         Message message = Message.builder()
                 .sender(sender)
@@ -62,15 +54,13 @@ public class MessageService {
     }
 
     @Transactional
-    public Message ReviewReportSubmitMessage(String receiverId) {
+    public Message ReviewReportSubmitMessage(String receiverNickname) {
+        String content = "리뷰 신고가 검토 후 정상적으로 처리되었습니다.";
 
-
-        String content ="리뷰 신고가 검토후 정상적으로 처리되었습니다.";
-
-        BeeMember sender = beeMemberRepository.findByMemberid("admin")
-                .orElseThrow(() -> new RuntimeException("발신자 없음: " + "admin"));
-        BeeMember receiver = beeMemberRepository.findByMemberid(receiverId)
-                .orElseThrow(() -> new RuntimeException("수신자 없음: " + receiverId));
+        BeeMember sender = beeMemberRepository.findByNickname("admin")
+                .orElseThrow(() -> new RuntimeException("발신자 없음: admin"));
+        BeeMember receiver = beeMemberRepository.findByNickname(receiverNickname)
+                .orElseThrow(() -> new RuntimeException("수신자 없음: " + receiverNickname));
 
         Message message = Message.builder()
                 .sender(sender)
@@ -82,15 +72,13 @@ public class MessageService {
     }
 
     @Transactional
-    public Message RestaurantReportSubmitMessage(String receiverId) {
+    public Message RestaurantReportSubmitMessage(String receiverNickname) {
+        String content = "레스토랑 등록이 검토 후 정상적으로 처리되었습니다.";
 
-
-        String content ="레스토랑 등록이 검토후 정상적으로 처리되었습니다.";
-
-        BeeMember sender = beeMemberRepository.findByMemberid("admin")
-                .orElseThrow(() -> new RuntimeException("발신자 없음: " + "admin"));
-        BeeMember receiver = beeMemberRepository.findByMemberid(receiverId)
-                .orElseThrow(() -> new RuntimeException("수신자 없음: " + receiverId));
+        BeeMember sender = beeMemberRepository.findByNickname("admin")
+                .orElseThrow(() -> new RuntimeException("발신자 없음: admin"));
+        BeeMember receiver = beeMemberRepository.findByNickname(receiverNickname)
+                .orElseThrow(() -> new RuntimeException("수신자 없음: " + receiverNickname));
 
         Message message = Message.builder()
                 .sender(sender)
@@ -100,16 +88,15 @@ public class MessageService {
 
         return messageRepository.save(message);
     }
+
     @Transactional
-    public Message RestaurantReportMessage(String receiverId) {
+    public Message RestaurantReportMessage(String receiverNickname) {
+        String content = "레스토랑 등록이 정상적으로 요청되었습니다.";
 
-
-        String content ="레스토랑 등록이 정상적으로 요청되었습니다.";
-
-        BeeMember sender = beeMemberRepository.findByMemberid("1234")
-                .orElseThrow(() -> new RuntimeException("발신자 없음: " + "1234"));
-        BeeMember receiver = beeMemberRepository.findByMemberid(receiverId)
-                .orElseThrow(() -> new RuntimeException("수신자 없음: " + receiverId));
+        BeeMember sender = beeMemberRepository.findByNickname("admin")
+                .orElseThrow(() -> new RuntimeException("발신자 없음: admin"));
+        BeeMember receiver = beeMemberRepository.findByNickname(receiverNickname)
+                .orElseThrow(() -> new RuntimeException("수신자 없음: " + receiverNickname));
 
         Message message = Message.builder()
                 .sender(sender)
@@ -119,35 +106,30 @@ public class MessageService {
 
         return messageRepository.save(message);
     }
-
 
     // 받은 메시지 조회
     @Transactional(readOnly = true)
-    public List<Message> getReceivedMessages(String receiverId) {
-
-
-        Optional<BeeMember> recoco = beeMemberRepository.findByMemberid(receiverId);
-        System.out.println(recoco);
-        BeeMember receiver = beeMemberRepository.findByMemberid(receiverId)
-                .orElseThrow(() -> new RuntimeException("유저 없음: " + receiverId));
+    public List<Message> getReceivedMessages(String receiverNickname) {
+        BeeMember receiver = beeMemberRepository.findByNickname(receiverNickname)
+                .orElseThrow(() -> new RuntimeException("유저 없음: " + receiverNickname));
         return messageRepository.findByReceiverOrderByTimestampDesc(receiver);
     }
 
     // 보낸 메시지 조회
     @Transactional(readOnly = true)
-    public List<Message> getSentMessages(String senderId) {
-        BeeMember sender = beeMemberRepository.findByMemberid(senderId)
-                .orElseThrow(() -> new RuntimeException("유저 없음: " + senderId));
+    public List<Message> getSentMessages(String senderNickname) {
+        BeeMember sender = beeMemberRepository.findByNickname(senderNickname)
+                .orElseThrow(() -> new RuntimeException("유저 없음: " + senderNickname));
         return messageRepository.findBySenderOrderByTimestampDesc(sender);
     }
 
     // 두 유저 간의 대화 조회
     @Transactional(readOnly = true)
-    public List<Message> getConversation(String userId1, String userId2) {
-        BeeMember user1 = beeMemberRepository.findByMemberid(userId1)
-                .orElseThrow(() -> new RuntimeException("유저 없음: " + userId1));
-        BeeMember user2 = beeMemberRepository.findByMemberid(userId2)
-                .orElseThrow(() -> new RuntimeException("유저 없음: " + userId2));
+    public List<Message> getConversation(String nickname1, String nickname2) {
+        BeeMember user1 = beeMemberRepository.findByNickname(nickname1)
+                .orElseThrow(() -> new RuntimeException("유저 없음: " + nickname1));
+        BeeMember user2 = beeMemberRepository.findByNickname(nickname2)
+                .orElseThrow(() -> new RuntimeException("유저 없음: " + nickname2));
         return messageRepository.findConversationBetweenUsers(user1, user2);
     }
 }
