@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<div class="ranking">
+		<h2>리뷰왕👑</h2>
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>#</th>
+					<th style="text-align: left;">닉네임</th>
+					<th style="text-align: light; white-space: nowrap;">리뷰 수</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="myPage, status : ${reviewCount}"
+					th:if="${status.index} < 4">
+					<td class="center" th:if="${status.index} == 0">🥇</td>
+					<td class="center" th:if="${status.index} == 1">🥈</td>
+					<td class="center" th:if="${status.index} == 2">🥉</td>
+					<td class="center" th:unless="${status.index} < 3"
+						th:text="${status.index + 1} + ." style="padding-left: 8px;"></td>
+					<td class="center"><a
+						th:href="@{/member/myPage(id=${myPage.id})}" class="nickname-link">
+							<span th:text="${myPage.beeMember.nickname}"></span>
+					</a> 님</td>
+					<td class="center" style="text-align: center;"
+						th:text="${myPage.beeMember.review.size()}"></td>
+				</tr>
+			</tbody>
+		</table>
+
+
+		<div class="random-review" id="randomReviewSlider">
+			<h3>오늘의 레스토랑</h3>
+			<div id="randomRestaurantContainer" class="restaurant-random-container">
+					 <div id="currentRandomRestaurant">  <!-- id 변경: currentRandomRestaurant -->
+            <!-- 랜덤 레스토랑 리뷰가 여기에 표시됩니다. -->
+       		 </div>
+					 <button id="nextRestaurantButton">다음</button>  
+				</div>
+		</div>
+	</div>
+</body>
+
+//랜덤 레스토랑
+ $(document).ready(function() {
+     let currentRestaurantIndex = 0;
+     let randomRestaurants = [];
+     let intervalId; // 자동 슬라이드를 위한 interval ID 저장
+
+     function loadRandomRestaurants() {
+         $.ajax({
+             url: '/member/randomRestaurants', // 랜덤 레스토랑 URL로 변경
+             type: 'GET',
+             success: function(data) {
+                 randomRestaurants = JSON.parse(data);
+                 if (randomRestaurants.length > 0) { // 레스토랑이 있는 경우에만 슬라이드 시작
+                     showRandomRestaurant(currentRestaurantIndex);
+                     startAutoSlide();
+                 }
+             },
+             error: function(error) {
+                 console.error('랜덤 레스토랑 가져오기 실패:', error);
+             }
+         });
+     }
+
+     loadRandomRestaurants(); // 페이지 로드 시 레스토랑 로드
+
+     function showRandomRestaurant(index) {
+         if (randomRestaurants.length === 0) {
+             $('#currentRtReview').html("<p>오늘의 레스토랑이 없습니다.</p>"); // 레스토랑 없을 때 메시지 표시
+             return;
+         }
+
+         const restaurant = randomRestaurants[index];
+         let restaurantHtml = `
+             <a href="/restaurant/rtread/${restaurant.restaurantId}?reviewId=${restaurant.restaurantId}" class="random-restaurant-link">
+                 <div class="random-restaurant-image">
+                     <img src="${restaurant.imageUrl}" alt="Random Restaurant Image">
+                 </div>
+                 <div class="random-restaurant-content">
+                     <span>${restaurant.restaurantName}</span>
+                 </div>
+             </a>
+         `;
+
+         // 부드럽고 천천히 슬라이드 애니메이션 효과 적용
+         $('#currentRtReview').slideUp(800, function() {
+             $(this).html(restaurantHtml).slideDown(800); // 천천히 부드럽게 내려오도록 설정
+         });
+     }
+
+     $("#nextRtButton").click(function() {
+         clearInterval(intervalId); // 수동 클릭 시 자동 슬라이드 멈춤
+         currentRestaurantIndex = (currentRestaurantIndex + 1) % randomRestaurants.length;
+         showRandomRestaurant(currentRestaurantIndex);
+         startAutoSlide(); // 다시 자동 슬라이드 시작
+     });
+
+     function startAutoSlide() {
+         intervalId = setInterval(function() {
+             currentRestaurantIndex = (currentRestaurantIndex + 1) % randomRestaurants.length;
+             showRandomRestaurant(currentRestaurantIndex);
+         }, 7000); // 7초마다 슬라이드
+     }
+ });
+ 
+</html>

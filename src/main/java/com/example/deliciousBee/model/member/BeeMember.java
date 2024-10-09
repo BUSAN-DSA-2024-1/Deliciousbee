@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import com.example.deliciousBee.model.file.MemberAttachedFile;
+import com.example.deliciousBee.model.like.RtLike;
 import com.example.deliciousBee.model.mypage.MyPage;
 import com.example.deliciousBee.model.review.Review;
 import jakarta.persistence.*;
@@ -61,6 +62,8 @@ public class BeeMember implements UserDetails, OAuth2User {
 	// ************리뷰*************
 	@OneToMany(mappedBy = "beeMember", fetch = FetchType.EAGER)
 	private List<Review> review;
+	
+	
 	@OneToOne(mappedBy = "beeMember", cascade = CascadeType.ALL)
 	@JsonIgnore
 	private SocialLogin socialLogin;
@@ -115,20 +118,7 @@ public class BeeMember implements UserDetails, OAuth2User {
 		this.attributes = attributes;
 	}
 	
-	 // 좋아요한 레스토랑 목록
-    @OneToMany(mappedBy = "beeMember", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<LikeRt> likeRtList;
-
-    // 연관관계 메서드 추가
-    public void addLikeRt(LikeRt likeRt) {
-        likeRtList.add(likeRt);
-        likeRt.setBeeMember(this);
-    }
-
-    public void removeLikeRt(LikeRt likeRt) {
-        likeRtList.remove(likeRt);
-        likeRt.setBeeMember(null);
-    }
+  
 
 	@Override
 	public String toString() {

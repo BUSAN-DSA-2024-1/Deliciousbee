@@ -45,6 +45,12 @@ public class Restaurant {
     @Enumerated(EnumType.STRING)
     private PurposeType purpose;
     
+    //레스토랑 좋아요(황)
+    @Column(name = "like_count", nullable = false)
+	private Integer likeCount = 0;
+	
+    
+    
 	@ManyToOne
 	@JoinColumn(name = "member_id")
 	private BeeMember member;
