@@ -14,6 +14,9 @@ import com.example.deliciousBee.model.member.Role;
 import jakarta.servlet.http.Cookie;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestHeader;
+import com.example.deliciousBee.model.member.Role;
+import jakarta.servlet.http.Cookie;
+import org.springframework.util.StringUtils;
 import com.example.deliciousBee.security.jwt.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,16 +37,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.example.deliciousBee.model.board.Restaurant;
+import com.example.deliciousBee.model.like.RtLike;
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.mypage.MyPage;
 import com.example.deliciousBee.model.mypage.MyPageVisit;
 import com.example.deliciousBee.model.review.Review;
+import com.example.deliciousBee.repository.LikeRtRepository;
 import com.example.deliciousBee.repository.MyPageFileRepository;
 import com.example.deliciousBee.repository.MyPageRepository;
+import com.example.deliciousBee.repository.RestaurantRepository;
 import com.example.deliciousBee.repository.ReviewRepository;
 import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.member.FollowService;
 import com.example.deliciousBee.service.member.MyPageService;
+import com.example.deliciousBee.service.restaurant.RestaurantService;
 import com.example.deliciousBee.service.review.ReviewService;
 import com.example.deliciousBee.util.MemberFileService;
 import com.example.deliciousBee.util.MyPageFileService;
@@ -76,6 +85,9 @@ public class MyPageController {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final MyPageFileRepository myPageFileRepository;
 	private final MyPageFileService myPageFileService;
+	private final LikeRtRepository likeRtRepository;
+	private final RestaurantService restaurantService;
+	private final RestaurantRepository restaurantRepository;
 
 	@Autowired
 	private MemberFileService memberFileService; // fileStore 주입 받음.
@@ -196,11 +208,19 @@ public class MyPageController {
 	            .orElse(0.0); // 평균 값 계산
 
 	    model.addAttribute("averageRating", averageRating); 
-		
+	    
+	    List<RtLike> likedRts = likeRtRepository.findByBeeMember(myPage.getBeeMember()); // myPage.getBeeMember() 사용
+	    List<Restaurant> likedRestaurants = likedRts.stream()
+	            .map(RtLike::getRestaurant)
+	            .collect(Collectors.toList());
 
+	    model.addAttribute("likedRestaurants", likedRestaurants);
+		
+	    List<Restaurant> mostLikedRestaurants = restaurantRepository.findAll(PageRequest.of(0, 4, Sort.by("likeCount").descending())).getContent();
+	    model.addAttribute("mostLikedRestaurants", mostLikedRestaurants);
 	    
 	}
-
+	//랜덤 리뷰
 	@GetMapping("randomReviews")
     @ResponseBody
     public String getRandomReviews() throws JsonProcessingException { // 예외 처리 추가
@@ -239,6 +259,44 @@ public class MyPageController {
         return objectMapper.writeValueAsString(randomReviews);
     }
 	
+	//랜덤 레스토랑
+	@GetMapping("randomRestaurants")
+    @ResponseBody
+    public String getRandomRestaurants() throws JsonProcessingException { // 예외 처리 추가
+        List<Restaurant> allRestaurants = restaurantService.findAllRestaurants();
+        List<Map<String, String>> randomRestaurants = new ArrayList<>(); // JSON에 맞게 변경
+
+        if (!allRestaurants.isEmpty()) {
+            // 이미지를 가진 리뷰만 필터링
+            List<Restaurant> restaurantsWithImages = allRestaurants.stream()
+                .filter(restaurant -> restaurant.getAttachedFile() != null && !restaurant.getAttachedFile().isEmpty())
+                .collect(Collectors.toList());
+
+            // 리뷰 목록을 무작위로 섞음
+            Collections.shuffle(restaurantsWithImages);
+
+            // 최대 100개의 리뷰를 선택
+            List<Restaurant> selectedRestaurants = restaurantsWithImages.subList(0, Math.min(restaurantsWithImages.size(), 100));
+
+            // 선택된 리뷰의 데이터를 맵에 저장
+            for (Restaurant restaurant : selectedRestaurants) {
+                Map<String, String> restaurantData = new HashMap<>();
+                
+                // 이미지 URL 설정 (이미 isEmpty() 체크를 했으므로 null 체크 필요 없음)
+                restaurantData.put("imageUrl", "/restaurant/display?filename=" + restaurant.getAttachedFile().get(0).getSaved_filename());
+
+                restaurantData.put("restaurantName", restaurant.getName());
+                restaurantData.put("restaurantId", String.valueOf(restaurant.getId()));
+                restaurantData.put("reviewId", String.valueOf(restaurant.getId()));
+                restaurantData.put("likeCount", String.valueOf(restaurant.getLikeCount()));
+                randomRestaurants.add(restaurantData);
+            }
+        }
+
+
+        return objectMapper.writeValueAsString(randomRestaurants);
+    }
+
 	// **********************마이페이지 수정하기 페이지 이동****************************
 	@GetMapping("updateMyPage")
 	public String goUpdateMyPage(@AuthenticationPrincipal BeeMember loginMember,
@@ -320,47 +378,4 @@ public class MyPageController {
 	}
 	
 	
-	@ModelAttribute("auth") // "auth"라는 이름으로 모델에 추가
-	public Map<String, Object> authenticationDetails(HttpServletRequest request) {
-	    String token = extractJwtFromRequest(request); // 요청에서 JWT 추출 (아래 설명 참조)
-
-	    Map<String, Object> auth = new HashMap<>();
-	    auth.put("isAuthenticated", false); // 기본값 false
-	    auth.put("isAdmin", false); // 기본값 false
-	    auth.put("username", ""); // 빈 문자열로 초기화
-
-
-	    if (token != null && jwtTokenProvider.validateToken(token)) {
-	       String memberId = jwtTokenProvider.getMemberIdFromJWT(token);
-	       BeeMember beeMember = beeMemberService.findMemberById(memberId);
-
-	       if (beeMember != null) {
-	          auth.put("isAuthenticated", true);
-	          auth.put("isAdmin", beeMember.getRole() == Role.ADMIN); // Enum 직접 비교
-	          auth.put("username", beeMember.getUsername());
-	       }
-	    }
-	    return auth;
-	}
-
-	// 요청에서 JWT 추출 (Authorization 헤더 또는 쿠키)
-	private String extractJwtFromRequest(HttpServletRequest request) {
-	    String bearerToken = request.getHeader("Authorization");
-	    if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-	       return bearerToken.substring(7);
-	    }
-
-	    // Authorization 헤더에 없으면 쿠키에서 확인
-	    Cookie[] cookies = request.getCookies();
-	    if (cookies != null) {
-	       for (Cookie cookie : cookies) {
-	          if ("Authorization".equals(cookie.getName())) {
-	             return cookie.getValue();
-	          }
-	       }
-	    }
-
-	    return null; // 토큰 없음
-	}
-
 }
