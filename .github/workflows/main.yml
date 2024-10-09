@@ -13,6 +13,15 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+
+    - name: Grant execute permission for Gradle Wrapper
+      run: chmod +x gradlew
+    
+
+    - name: Build with Gradle
+      run: ./gradlew build
+
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
 
