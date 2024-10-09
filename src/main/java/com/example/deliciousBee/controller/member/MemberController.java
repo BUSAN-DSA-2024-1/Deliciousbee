@@ -5,11 +5,15 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.example.deliciousBee.model.board.Restaurant;
+import com.example.deliciousBee.model.like.RtLike;
 import com.example.deliciousBee.model.member.*;
 import com.example.deliciousBee.model.mypage.MyPage;
+import com.example.deliciousBee.repository.LikeRtRepository;
 import com.example.deliciousBee.repository.MyPageVisitRepository;
+import com.example.deliciousBee.repository.RestaurantRepository;
 import com.example.deliciousBee.security.jwt.JwtTokenProvider;
 import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.member.FollowService;
@@ -65,7 +69,8 @@ public class MemberController {
 	private final MyPageService myPageService;
 	private final MyPageVisitRepository myPageVisitRepository;
 	private final JwtTokenProvider jwtTokenProvider;
-
+	private final LikeRtRepository likeRtRepository;
+	private final RestaurantRepository restaurantRepository;
 
 
 	@Autowired
@@ -468,6 +473,20 @@ public class MemberController {
 	    }
 	}
 	
+	//레스토랑 좋아요 리스트
+	@GetMapping("/likedRestaurants")
+	public String likedRestaurants(@AuthenticationPrincipal BeeMember loginMember, Model model) {
+	    if (loginMember == null) {
+	        return "redirect:/member/login"; // 또는 다른 적절한 처리
+	    }
 
+	    List<RtLike> likedRts = likeRtRepository.findByBeeMember(loginMember);
+	    List<Restaurant> likedRestaurants = likedRts.stream()
+	            .map(RtLike::getRestaurant) // LikeRt에서 Restaurant 객체 추출
+	            .collect(Collectors.toList());
 
+	    model.addAttribute("likedRestaurants", likedRestaurants);
+	    return "member/likedRestaurants"; // 좋아요한 레스토랑 목록을 표시할 뷰 이름
+	}
+	
 }

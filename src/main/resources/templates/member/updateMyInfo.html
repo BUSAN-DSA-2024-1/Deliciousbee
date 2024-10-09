@@ -153,6 +153,12 @@
 	    function checkNickname() {
 	        const nickname = $("input[name='nickname']").val().trim();
 	        
+	        // 1. 공백 검사
+	        if (nickname.includes(" ")) {
+	            $("#nicknameCheckResult").text("공백을 포함할 수 없습니다.").css("color", "red");
+	            isNicknameChecked = false;
+	            return; // 공백이 있으면 함수 종료
+	        }
 	        if (!isNicknameValid){
 	        	return;
 	        }

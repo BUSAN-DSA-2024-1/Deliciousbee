@@ -227,5 +227,13 @@ public class BeeMemberService implements UserDetailsService {
 		return beeMemberRepository.existsByNickname(nickname);
 	}
 
+	 public BeeMember getMemberById(String memberId) {
+	        return beeMemberRepository.findById(memberId)
+	                .orElseThrow(() -> new IllegalArgumentException("Member with ID " + memberId + " not found"));
+	    }
+
+	
+	//레스토랑 좋아요
+	
 	
 }
