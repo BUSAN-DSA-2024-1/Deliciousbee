@@ -75,9 +75,10 @@ public class ReviewService {
 		} else {
 			// 평균 평점 계산
 			double averageRating = reviews.stream().mapToDouble(Review::getRating).average().orElse(0.0);
+
 			// 리뷰 수 계산
 			long reviewCount = reviews.size();
-			
+
 			restaurant.setAverage_rating(averageRating);
 			restaurant.setReview_count(reviewCount);
 		}
@@ -164,28 +165,17 @@ public class ReviewService {
 	public void updateReview(Review updateReview, List<AttachedFile> attachedFiles) {
 
 		Review findReview = findReview(updateReview.getId());
-		if (findReview != null) {
-			findReview.setReviewContents(updateReview.getReviewContents());
-			findReview.setRating(updateReview.getRating());
-			findReview.setTasteRating(updateReview.getTasteRating());
-			findReview.setPriceRating(updateReview.getPriceRating());
-			findReview.setKindRating(updateReview.getKindRating());
-			
-			if (updateReview.getReviewMenuList() == null) {
-				updateReview.setReviewMenuList(new ArrayList<>());
-			}
-
-			reviewMenuRepository.deleteAll(findReview.getReviewMenuList());
-			findReview.setReviewMenuList(updateReview.getReviewMenuList());
-			
-		}
-
-		reviewRepository.save(findReview);
+		updateReview.setCreateDate(findReview.getCreateDate());
+		updateReview.setLikeCount(findReview.getLikeCount());
+		updateReview.setUserName(findReview.getUserName());
+		updateReview.setRestaurant(findReview.getRestaurant());
+		updateReview.setBeeMember(findReview.getBeeMember());
+		reviewRepository.save(updateReview);
 
 		// 첨부파일 처리
 		if (attachedFiles != null) {
 			for (AttachedFile attachedFile : attachedFiles) {
-				attachedFile.setReview(findReview);
+				attachedFile.setReview(updateReview);
 				fileRepository.saveAll(attachedFiles);
 			}
 		}

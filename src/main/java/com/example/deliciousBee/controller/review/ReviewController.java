@@ -74,8 +74,8 @@ public class ReviewController {
 	private final MenuService menuService;
 	private final ReviewKeyWordService reviewKeyWordService;
 
-	 private List<Review> cachedReviewsWithImages = null; 
-	
+	private List<Review> cachedReviewsWithImages = null;
+
 	@PostMapping("write/{restaurant_id}")
 	public String postWriteReview(@Validated @ModelAttribute("writeForm") ReviewWriteForm reviewWriteForm,
 			BindingResult result, @RequestParam(name = "file", required = false) MultipartFile[] files,
@@ -262,8 +262,9 @@ public class ReviewController {
 	public ResponseEntity<Map<String, Object>> postUpdateReview(@ModelAttribute ReviewUpdateForm reviewUpdateForm,
 			@RequestPart(name = "updateReviewAttachedFile", required = false) MultipartFile[] updateReviewAttachedFile) {
 
+		log.info("****************************** reviewUpdateForm:{}", reviewUpdateForm);
 		Review findReview = ReviewConverter.reviewUpdateFormToReview(reviewUpdateForm);
-		
+
 		// 첨부파일 처리
 		List<AttachedFile> attachedFiles = new ArrayList<>();
 		if (updateReviewAttachedFile != null && updateReviewAttachedFile.length > 0) {
@@ -293,11 +294,29 @@ public class ReviewController {
 				return reviewMenu;
 			}).collect(Collectors.toList()));
 		}
-		log.info("**************************************reviewMenus:{}", reviewMenus);
-		log.info("**************************************FrontRindReview:{}", findReview);
+
+		// 커스텀 메뉴 처리
+		if (reviewUpdateForm.getCustomMenuName() != null && !reviewUpdateForm.getCustomMenuName().isEmpty()) {
+			ReviewMenu reviewMenu = new ReviewMenu();
+			reviewMenu.setReview(findReview);
+			reviewMenu.setCustomMenuName(reviewUpdateForm.getCustomMenuName());
+			reviewMenus.add(reviewMenu);
+		}
 		findReview.setReviewMenuList(reviewMenus);
-		log.info("**************************************BackFindReview:{}", findReview);
-				
+		
+		// 키워드 처리
+//		if (selectedKeywords != null) {
+//			selectedKeywords.forEach(keywordId -> {
+//				KeyWord keyword = reviewKeyWordService.findById(keywordId);
+//				ReviewKeyWord reviewKeyWord = new ReviewKeyWord(review, keyword, null);
+//				reviewKeyWordService.save(reviewKeyWord);
+//
+//				List<ReviewKeyWord> existingkeywords = review.getKeywords();
+//				existingkeywords.add(reviewKeyWord);
+//				review.setKeywords(existingkeywords);
+//			});
+//		}
+		
 		// 커스텀 키워드 처리
 		if (reviewUpdateForm.getCustomKeywordName() != null && !reviewUpdateForm.getCustomKeywordName().isEmpty()) {
 			ReviewKeyWord reviewKeyWord = new ReviewKeyWord(findReview, null, reviewUpdateForm.getCustomKeywordName());
@@ -333,7 +352,6 @@ public class ReviewController {
 			String memberId = loginMember.getMember_id();
 			PageRequest pageble = PageRequest.of(page - 1, 5);
 			Page<Review> reviews = reviewService.sortReview(restaurant_id, memberId, pageble, sortBy);
-			
 			Map<String, Object> response = new HashMap<>();
 			response.put("reviews", reviews.getContent());
 			response.put("currentPage", reviews.getNumber() + 1);

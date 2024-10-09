@@ -833,6 +833,12 @@
       });
       formData.append('reviewMenuListIds', selectedMenus);
 
+      //  커스텀 메뉴 전달
+      const customMenuName = $('#updateReviewCustomMenuName').val();
+      if (customMenuName) {
+        formData.append('customMenuName', customMenuName);
+      }
+
       // 커스텀 키워드 저장
       const customKeywordName = $('#updateReviewCustomKeywordName').val();
       if (customKeywordName) {

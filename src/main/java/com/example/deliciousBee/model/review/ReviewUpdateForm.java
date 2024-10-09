@@ -23,6 +23,7 @@ public class ReviewUpdateForm {
 	private LocalDate visitDate;
 	
 	private List<Long> reviewMenuListIds;
+	private List<Long> reviewKeywordsIds;
 	
 	// 커스텀관련
 	private String customMenuName;
