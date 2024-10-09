@@ -38,8 +38,8 @@ public class BeeMember implements UserDetails, OAuth2User {
 	private String password;
 	@Enumerated(EnumType.STRING)
 	private NationalType national;
-	@Column(length = 50, nullable = false)
-	private String nickname;
+	@Column(length = 50, nullable = false ,unique = true)
+	private String nickname;  // 닉네임을 유일하게 설정
 	@Column(length = 10)
 	@Enumerated(EnumType.STRING)
 	private GenderType gender;
@@ -114,7 +114,21 @@ public class BeeMember implements UserDetails, OAuth2User {
 	public void setAttributes(Map<String, Object> attributes) {
 		this.attributes = attributes;
 	}
+	
+	 // 좋아요한 레스토랑 목록
+    @OneToMany(mappedBy = "beeMember", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LikeRt> likeRtList;
 
+    // 연관관계 메서드 추가
+    public void addLikeRt(LikeRt likeRt) {
+        likeRtList.add(likeRt);
+        likeRt.setBeeMember(this);
+    }
+
+    public void removeLikeRt(LikeRt likeRt) {
+        likeRtList.remove(likeRt);
+        likeRt.setBeeMember(null);
+    }
 
 	@Override
 	public String toString() {

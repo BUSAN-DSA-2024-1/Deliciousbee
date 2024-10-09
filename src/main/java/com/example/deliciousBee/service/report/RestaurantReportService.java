@@ -6,7 +6,6 @@ import com.example.deliciousBee.model.report.RestaurantReport;
 import com.example.deliciousBee.repository.BeeMemberRepository;
 import com.example.deliciousBee.repository.RestaurantReportRepository;
 import com.example.deliciousBee.repository.RestaurantRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,15 +24,12 @@ public class RestaurantReportService {
 
     // 신고 생성
     @Transactional
-    public RestaurantReport createReport(Long restaurantId, Long reporterId, String reportContent) {
+    public RestaurantReport createReport(Long restaurantId, BeeMember reporterId, String reportContent) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Restaurant not found with id " + restaurantId));
 
-        BeeMember reporter = null;
-        if (reporterId != null) {
-            reporter = beeMemberRepository.findById(String.valueOf(reporterId))
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reporter not found with id " + reporterId));
-        }
+        BeeMember reporter = reporterId;
+
 
         RestaurantReport report = new RestaurantReport(restaurant, reporter, reportContent);
         return restaurantReportRepository.save(report);

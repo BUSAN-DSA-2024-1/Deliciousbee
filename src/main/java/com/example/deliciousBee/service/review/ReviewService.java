@@ -1,5 +1,7 @@
 package com.example.deliciousBee.service.review;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -20,12 +22,14 @@ import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.file.AttachedFile;
 import com.example.deliciousBee.model.like.ReviewLike;
 import com.example.deliciousBee.model.member.BeeMember;
+import com.example.deliciousBee.model.menu.ReviewMenu;
 import com.example.deliciousBee.model.review.Review;
 import com.example.deliciousBee.model.review.ReviewConverter;
 import com.example.deliciousBee.repository.FileRepository;
 import com.example.deliciousBee.repository.ReportRepository;
 import com.example.deliciousBee.repository.RestaurantRepository;
 import com.example.deliciousBee.repository.ReviewLikeRepository;
+import com.example.deliciousBee.repository.ReviewMenuRepository;
 import com.example.deliciousBee.repository.ReviewRepository;
 import com.example.deliciousBee.util.FileService;
 
@@ -46,6 +50,7 @@ public class ReviewService {
 	private final ReportRepository reportRepository;
 	private final ReviewLikeRepository likeRepository;
 	private final RestaurantRepository restaurantRepository;
+	private final ReviewMenuRepository reviewMenuRepository;
 
 	public void saveReview(Review review, List<AttachedFile> attachedFiles) {
 		if (attachedFiles != null) {
@@ -156,29 +161,34 @@ public class ReviewService {
 
 	// 리뷰 업데이트
 	@Transactional
-	public void updateReview(Review updateReview, boolean fileRemoved, MultipartFile[] files) {
-		
+	public void updateReview(Review updateReview, List<AttachedFile> attachedFiles) {
+
 		Review findReview = findReview(updateReview.getId());
-		findReview.setReviewContents(updateReview.getReviewContents());
-		findReview.setRating(updateReview.getRating());
-		findReview.setTasteRating(updateReview.getTasteRating());
-		findReview.setPriceRating(updateReview.getPriceRating());
-		findReview.setKindRating(updateReview.getKindRating());
-		findReview.setVisitDate(updateReview.getVisitDate());
+		if (findReview != null) {
+			findReview.setReviewContents(updateReview.getReviewContents());
+			findReview.setRating(updateReview.getRating());
+			findReview.setTasteRating(updateReview.getTasteRating());
+			findReview.setPriceRating(updateReview.getPriceRating());
+			findReview.setKindRating(updateReview.getKindRating());
+			
+			if (updateReview.getReviewMenuList() == null) {
+				updateReview.setReviewMenuList(new ArrayList<>());
+			}
 
-		// 기존 파일 가져오기
-		List<AttachedFile> attachedFiles = findFilesByReviewId(findReview.getId());
-
-		if (attachedFiles != null && fileRemoved) {
-			removeFiles(attachedFiles);
-			attachedFiles = null;
-		}
-
-		if (attachedFiles != null && !attachedFiles.isEmpty()) {
-			saveReview(findReview, attachedFiles);
+			reviewMenuRepository.deleteAll(findReview.getReviewMenuList());
+			findReview.setReviewMenuList(updateReview.getReviewMenuList());
+			
 		}
 
 		reviewRepository.save(findReview);
+
+		// 첨부파일 처리
+		if (attachedFiles != null) {
+			for (AttachedFile attachedFile : attachedFiles) {
+				attachedFile.setReview(findReview);
+				fileRepository.saveAll(attachedFiles);
+			}
+		}
 
 	}
 

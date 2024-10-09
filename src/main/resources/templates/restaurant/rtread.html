@@ -359,7 +359,8 @@
                   <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="updateReviewCustomKeywordCheckbox"
                       name="updateReviewCustomKeywordCheckbox">
-                    <label class="form-check-label-review-keyword" for="updateReviewCustomKeywordCheckbox">존재하지 않은 키워드를
+                    <label class="form-check-label-review-keyword" for="updateReviewCustomKeywordCheckbox">수정하고싶은 커스텀
+                      키워드를
                       작성해주세요</label>
                   </div>
                   <input type="text" class="form-control" id="updateReviewCustomKeywordInput"
@@ -725,7 +726,7 @@
       const reviewId = $('#reportModal').data('review-id');
       const reason = $('#reportReason').val();
       const token = localStorage.getItem('token');
-      
+
       $.ajax({
         url: '/restaurant/rtread/report/submit/' + reviewId,
         type: 'POST',
@@ -759,6 +760,7 @@
         url: '/review/get/' + reviewId,
         type: 'GET',
         success: function (data) {
+          console.log(data);
           $('#updateReviewContents').val(data.reviewContents || data.review_contents);
           $('#updateReviewRating').val(data.rating || data.review_rating);
           $('#updateReviewTasteRating').val(data.tasteRating || data.taste_rating);
@@ -766,6 +768,7 @@
           $('#updateReviewkKindRating').val(data.kindRating || data.kind_rating);
           $('#updateReviewVistDate').val(data.visitDate || data.visit_date);
 
+          // 첨부파일 표기
           if (data.attachedFile && data.attachedFile.length > 0) {
             let fileNamesHTML = '';
             for (let i = 0; i < data.attachedFile.length; i++) {
@@ -780,6 +783,15 @@
             $('#updateReviewAttachedFileName').text('');
           }
 
+          //매뉴 표기 
+          console.log(data.reviewMenuList);
+          $('input[name="updateReviewMenuList"]').each(function () {
+            const menuId = $(this).val();
+            const selectedMenu = data.reviewMenuList.find(item => item.menu.id === parseInt(menuId));
+            $(this).prop('checked', !!selectedMenu);
+          });
+
+
           $('#updateReviewModal').modal('show');
         },
         error: function (xhr) {
@@ -788,40 +800,6 @@
         }
       })
     }
-
-    //  수정 커스텀 메뉴, 키워드 활성화 처리
-    $(document).ready(function () {
-      $('#updateReviewCustomMenuCheckbox').change(function () {
-        const customInput = $('#updateReviewCustomMenuInput');
-        if ($(this).is(':checked')) {
-          customInput.prop('disabled', false);
-        } else {
-          customInput.prop('disabled', true);
-          customInput.val('');
-          $('#updateReviewCustomMenuName').val('');
-        }
-      });
-
-      $('#updateReviewCustomMenuInput').on('input', function () {
-        $('#updateReviewCustomMenuName').val($(this).val());
-      });
-
-      $('#updateReviewCustomKeywordCheckbox').change(function () {
-        const customInput = $('#updateReviewCustomKeywordInput');
-        if ($(this).is(':checked')) {
-          customInput.prop('disabled', false);
-        } else {
-          customInput.prop('disabled', true);
-          customInput.val('');
-          $('#updateReviewCustomMenuName').val('');
-        }
-      });
-
-      $('#updateReviewCustomKeywordInput').on('input', function () {
-        $('#updateReviewCustomKeywordName').val($(this).val());
-      });
-
-    });
 
     // 수정 데이터 서버 전달
     function submitUpdate() {
@@ -842,9 +820,23 @@
       formData.append('kindRating', kindRating);
       formData.append('visitDate', visitDate);
 
+      // 첨부파일 저장
       const attachedFile = document.getElementById('updateReviewAttachedFile').files;
       for (let i = 0; i < attachedFile.length; i++) {
-        formData.append('attachedFile', attachedFile[i]);
+        formData.append('updateReviewAttachedFile', attachedFile[i]);
+      }
+
+      // 메뉴 저장
+      const selectedMenus = [];
+      $('input[name="updateReviewMenuList"]:checked').each(function () {
+        selectedMenus.push(parseInt($(this).val())); // 문자열을 숫자로 변환
+      });
+      formData.append('reviewMenuListIds', selectedMenus);
+
+      // 커스텀 키워드 저장
+      const customKeywordName = $('#updateReviewCustomKeywordName').val();
+      if (customKeywordName) {
+        formData.append('customKeywordName', customKeywordName);
       }
 
 
@@ -887,6 +879,45 @@
         }
       });
     });
+
+    //  수정 커스텀 메뉴, 키워드 활성화 처리
+    $(document).ready(function () {
+      $('#updateReviewCustomMenuCheckbox').change(function () {
+        const customInput = $('#updateReviewCustomMenuInput');
+        if ($(this).is(':checked')) {
+          customInput.prop('disabled', false);
+        } else {
+          customInput.prop('disabled', true);
+          customInput.val('');
+          $('#updateReviewCustomMenuName').val('');
+        }
+      });
+
+      $('#updateReviewCustomMenuInput').on('input', function () {
+        $('#updateReviewCustomMenuName').val($(this).val());
+      });
+
+      $('#updateReviewCustomKeywordCheckbox').change(function () {
+        const customInput = $('#updateReviewCustomKeywordInput');
+        if ($(this).is(':checked')) {
+          customInput.prop('disabled', false);
+        } else {
+          customInput.prop('disabled', true);
+          customInput.val('');
+          $('#updateReviewCustomMenuName').val('');
+        }
+      });
+
+      $('#updateReviewCustomKeywordInput').on('input', function () {
+        $('#updateReviewCustomKeywordName').val($(this).val());
+      });
+
+    });
+
+
+
+
+
 
 
 
@@ -1020,7 +1051,7 @@
                      </button>
                      <ul class="dropdown-menu">
                        <li class="dropmenu-mother"><button type="button" data-toggle="modal" data-target="#reportModal" data-review-id="${review.id}" onclick="showReportReasons(this)">신고</button></li>
-                       <li sec:authorize="isAuthenticated() and #authentication.principal.member_id == #vars.review.beeMember.member_id"><a href="/review/update/${review.id}">수정</a></li>
+                       <li sec:authorize="isAuthenticated() and #authentication.principal.member_id == #vars.review.beeMember.member_id"><button type="button" class="btn btn-outline-secondary mr-2" data-toggle="modal" data-target="#updateReviewModal" data-review-id="${review.id}" onclick="showUpdateReview(this)">수정</button></li>
                        <li class="dropmenu-mother"><input type="hidden" class="review-id" value="${review.id}"><button type="button" data-review-id="${review.id}" data-bs-toggle="button" onclick="deleteReview(this)">삭제</button></li>
                      </ul>
                    </div>

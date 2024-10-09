@@ -180,76 +180,50 @@ public class RestaurantService {
         return restaurantRepository.searchByNameOrMenuName(keyword, pageable);
     }
 
-    public Page<RestaurantDto> searchRestaurants(String keyword, Pageable pageable, String sortBy,
-                                                 Double userLatitude, Double userLongitude,
-                                                 Double radius) {
-        Page<Restaurant> restaurants = null;
-        double[] radiusValues = {500, 1500, 3000, 5000, 10000};
-        int radiusIndex = 0;
 
-        // radius 파라미터를 기준으로 초기 radiusIndex 설정
-        if (radius != null) {
-            for (int i = 0; i < radiusValues.length; i++) {
-                if (radius <= radiusValues[i]) {
-                    radiusIndex = i;
-                    break;
-                }
-                // 만약 radius가 배열의 모든 값보다 크면 마지막 인덱스를 사용
-                if (i == radiusValues.length - 1) {
-                    radiusIndex = i;
-                }
-            }
-        }
+public Page<RestaurantDto> searchRestaurants(String keyword, Pageable pageable, String sortBy,
+                                             Double userLatitude, Double userLongitude,
+                                             Double radius) {
+    Page<Restaurant> restaurants = null;
 
-        while (restaurants == null || restaurants.getContent().isEmpty()) {
-            double currentRadius = radiusValues[radiusIndex];
-
-            if (keyword == null || keyword.isEmpty()) {
-                if ("distance".equals(sortBy) && userLatitude != null && userLongitude != null) {
-                    restaurants = restaurantRepository.findAllWithinRadius(userLatitude, userLongitude, currentRadius, pageable);
-                } else if ("rating".equals(sortBy)) {
-                    restaurants = restaurantRepository.findAllSortedByRating(pageable);
-                } else {
-                    restaurants = restaurantRepository.findAll(pageable);
-                }
-            } else {
-                if ("distance".equals(sortBy) && userLatitude != null && userLongitude != null) {
-                    restaurants = restaurantRepository.searchByNameOrMenuNameWithinRadiusAsc(keyword, userLatitude, userLongitude, currentRadius, pageable);
-                } else if ("rating".equals(sortBy)) {
-                    restaurants = restaurantRepository.searchByNameOrMenuNameSortedByRating(keyword, pageable);
-                } else {
-                    restaurants = restaurantRepository.searchByNameOrMenuNameWithinRadius(keyword, userLatitude, userLongitude, currentRadius, pageable);
-                }
-            }
-
-            System.out.println("Empty: " + restaurants.getContent().isEmpty());
-            System.out.println("Radius Index: " + radiusIndex);
-            System.out.println("Current Radius: " + currentRadius);
-
-            if (restaurants != null && restaurants.getContent().isEmpty()) {
-                radiusIndex++;
-                if (radiusIndex >= radiusValues.length) break;
-            }
-        }
-
-        if (restaurants == null || restaurants.getContent().isEmpty()) {
-            log.info("검색 결과가 없습니다.");
-            return Page.empty(pageable);
-        }
-
-        // radius 값 업데이트 (프론트엔드에 반환할 radius 값 설정)
-        radius = radiusValues[Math.min(radiusIndex, radiusValues.length - 1)];
-
-        return restaurants.map(restaurant -> {
-            RestaurantDto dto = new RestaurantDto(restaurant);
-            if (userLatitude != null && userLongitude != null) {
-                double distance = calculateDistance(userLatitude, userLongitude, restaurant.getLatitude(), restaurant.getLongitude());
-                dto.setDistance(distance);
-            }
-            return dto;
-        });
+    // radius가 null이면 기본값 설정
+    if (radius == null) {
+        radius = 1500.0; // 기본 반경 값
     }
 
+    if (keyword == null || keyword.isEmpty()) {
+        if ("distance".equals(sortBy) && userLatitude != null && userLongitude != null) {
+            restaurants = restaurantRepository.findAllWithinRadius(userLatitude, userLongitude, radius, pageable);
+        } else if ("rating".equals(sortBy)) {
+            restaurants = restaurantRepository.findAllSortedByRating(pageable);
+        } else {
+            restaurants = restaurantRepository.findAll(pageable);
+        }
+    } else {
+        if ("distance".equals(sortBy) && userLatitude != null && userLongitude != null) {
+            restaurants = restaurantRepository.searchByNameOrMenuNameWithinRadiusAsc(keyword, userLatitude, userLongitude, radius, pageable);
+        } else if ("rating".equals(sortBy)) {
+            restaurants = restaurantRepository.searchByNameOrMenuNameSortedByRating(keyword, pageable);
+        } else {
+            restaurants = restaurantRepository.searchByNameOrMenuNameWithinRadius(keyword, userLatitude, userLongitude, radius, pageable);
+        }
+    }
+
+    // 결과가 없을 경우 빈 페이지 반환
+    if (restaurants == null || restaurants.getContent().isEmpty()) {
+        log.info("검색 결과가 없습니다.");
+        return Page.empty(pageable);
+    }
+
+    return restaurants.map(restaurant -> {
+        RestaurantDto dto = new RestaurantDto(restaurant);
+        if (userLatitude != null && userLongitude != null) {
+            double distance = calculateDistance(userLatitude, userLongitude, restaurant.getLatitude(), restaurant.getLongitude());
+            dto.setDistance(distance);
+        }
+        return dto;
+    });
+}
 
 
     private Double calculateDistance(double lat1, double lon1, double lat2, double lon2) {

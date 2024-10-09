@@ -42,10 +42,10 @@ public class MessageService {
     }
 
     @Transactional
-    public Message ReviewReportMessage(String receiverId) {
+    public Message ReportMessage(String receiverId, String content) {
 
 
-        String content ="리뷰 신고가 접수되었습니다.";
+
 
         BeeMember sender = beeMemberRepository.findByMemberid("admin")
                 .orElseThrow(() -> new RuntimeException("발신자 없음: " + "admin"));
@@ -106,8 +106,8 @@ public class MessageService {
 
         String content ="레스토랑 등록이 정상적으로 요청되었습니다.";
 
-        BeeMember sender = beeMemberRepository.findByMemberid("1234")
-                .orElseThrow(() -> new RuntimeException("발신자 없음: " + "1234"));
+        BeeMember sender = beeMemberRepository.findByMemberid("admin")
+                .orElseThrow(() -> new RuntimeException("발신자 없음: " + "admin"));
         BeeMember receiver = beeMemberRepository.findByMemberid(receiverId)
                 .orElseThrow(() -> new RuntimeException("수신자 없음: " + receiverId));
 

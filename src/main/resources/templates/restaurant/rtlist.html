@@ -886,8 +886,8 @@
     let infoWindows = [];
     let restaurantCount = 0; // 정렬 순서 번호
     let currentRestaurantId = null;
-    let radius = 500; // 기본값 500m 설정
-    let selectedButton = $('#distance500'); // 기본 선택 버튼 설정
+    let radius = 1500; // 기본값 500m 설정
+    let selectedButton = $('#distance1500'); // 기본 선택 버튼 설정
     let initialLoad = true; // 초기 로드 여부
 
 
@@ -1037,7 +1037,7 @@
                 radius: radius
             },
             success: function(data) {
-                if (data && data._embedded && Array.isArray(data._embedded.restaurantDtoList)) {
+                if (data && data._embedded && Array.isArray(data._embedded.restaurantDtoList) && data._embedded.restaurantDtoList.length > 0) {
                     renderRestaurants(data, append);
 
                     if (!append) {
@@ -1066,6 +1066,7 @@
             }
         });
     }
+
 
     // renderRestaurants 함수 수정
     function renderRestaurants(data, append = false) {

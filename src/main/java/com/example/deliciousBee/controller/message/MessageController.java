@@ -4,6 +4,9 @@ import com.example.deliciousBee.dto.message.Message;
 import com.example.deliciousBee.dto.message.MessageRequest;
 import com.example.deliciousBee.dto.message.MessageResponse;
 import com.example.deliciousBee.service.message.MessageService;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@Slf4j
 @RequestMapping("/api/messages")
 public class MessageController {
 
@@ -35,7 +39,8 @@ public class MessageController {
 
     // 받은 메시지 조회
     @GetMapping("/received/{receiverId}")
-    public ResponseEntity<List<MessageResponse>> getReceivedMessages(@PathVariable String receiverId) {
+    public ResponseEntity<List<MessageResponse>> getReceivedMessages(@PathVariable("receiverId") String receiverId) {
+    	log.info("********************* 여기까지 들어오니?");
         List<Message> messages = messageService.getReceivedMessages(receiverId);
         List<MessageResponse> response = messages.stream()
                 .map(MessageResponse::new)
@@ -45,7 +50,7 @@ public class MessageController {
 
     // 보낸 메시지 조회
     @GetMapping("/sent/{senderId}")
-    public ResponseEntity<List<MessageResponse>> getSentMessages(@PathVariable String senderId) {
+    public ResponseEntity<List<MessageResponse>> getSentMessages(@PathVariable("senderId") String senderId) {
         List<Message> messages = messageService.getSentMessages(senderId);
         List<MessageResponse> response = messages.stream()
                 .map(MessageResponse::new)
