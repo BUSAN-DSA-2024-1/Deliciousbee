@@ -87,15 +87,20 @@
                     <li class="img-content" th:each="restaurant : ${restaurantlist}"
                         th:onclick="|window.location.href='@{/restaurant/rtread/{restaurantId}(restaurantId=${restaurant.id})}'|">
                         <div class="content-wrapper">
-                            <div class="image-wrapper" th:each="file : ${restaurant.attachedFile}">
-                                <img th:if="${#lists.size(restaurant.attachedFile) > 0}"
-                                    th:src="@{'/restaurant/display?filename='+${file.saved_filename}}" alt="레스토랑 이미지" />
-                                <p th:if="${#lists.size(restaurant.attachedFile) == 0}">이미지가 없습니다</p>
-                            </div>
+                            <div th:if="${#lists.size(restaurant.attachedFile) > 0}">
+    							<div class="image-wrapper" th:each="file : ${restaurant.attachedFile}">
+      								  <img th:src="@{'/restaurant/display?filename='+${file.saved_filename}}" alt="레스토랑 이미지" />
+    							</div>
+							</div>
+							<div th:if="${#lists.size(restaurant.attachedFile) == 0}">
+    							<img th:src="@{/image/nothing.png}" alt="이미지 없음" />
+							</div>
                             <div class="intro-content">
                                 <p class="heading" th:text="${restaurant.name}"></p>
                                 <p th:text="${restaurant.description}"></p>
-                                <p th:text="|별점: ${restaurant.average_rating}|"></p>
+                                <p th:if="${restaurant.average_rating != null}" th:text="|별점: ${restaurant.average_rating}|"></p>
+								<p th:if="${restaurant.average_rating == null}" th:text="'리뷰 없음'"></p>
+
                             </div>
                         </div>
                         <h2 class="star-rating" th:text="${restaurant.name}"></h2>
@@ -126,7 +131,7 @@
         document.querySelector('.slide-left').addEventListener('click', function () {
             event.preventDefault();
             document.querySelector('.card').scrollBy({
-                left: -472, // 왼쪽으로 300px 스크롤
+                left: -412, // 왼쪽으로 300px 스크롤
                 behavior: 'smooth'
             });
             console.log('왼쪽으로 스크롤 중'); // 스크롤 로그 추가
@@ -135,7 +140,7 @@
         document.querySelector('.slide-right').addEventListener('click', function () {
             event.preventDefault();
             document.querySelector('.card').scrollBy({
-                left: 472, // 오른쪽으로 300px 스크롤
+                left: 412, // 오른쪽으로 300px 스크롤
                 behavior: 'smooth'
             });
             console.log('오른쪽으로 스크롤 중'); // 스크롤 로그 추가
