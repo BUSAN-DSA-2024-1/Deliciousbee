@@ -91,4 +91,65 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 
     @Query("SELECT DISTINCT r FROM Restaurant r WHERE (r.name LIKE %:keyword% OR r.menu_name LIKE %:keyword%) AND r.verificationStatus = 'APPROVED' ORDER BY r.average_rating DESC")
     Page<Restaurant> searchByNameOrMenuNameSortedByRating(@Param("keyword") String keyword, Pageable pageable);
+    
+ // 1. 카테고리로 전체 레스토랑 조회
+    @Query("SELECT DISTINCT r FROM Restaurant r WHERE r.verificationStatus = 'APPROVED' " +
+           "AND (:categories IS NULL OR r.mainCategory IN :categories)")
+    Page<Restaurant> findAllByCategory(@Param("categories") List<String> categories, Pageable pageable);
+
+    // 2. 카테고리로 평점순 정렬
+    @Query("SELECT DISTINCT r FROM Restaurant r WHERE r.verificationStatus = 'APPROVED' " +
+           "AND (:categories IS NULL OR r.mainCategory IN :categories) " +
+           "ORDER BY r.average_rating DESC")
+    Page<Restaurant> findAllSortedByRatingAndCategory(@Param("categories") List<String> categories, Pageable pageable);
+
+    // 3. 키워드와 카테고리로 검색
+    @Query("SELECT DISTINCT r FROM Restaurant r WHERE (r.name LIKE %:keyword% OR r.menu_name LIKE %:keyword%) " +
+           "AND r.verificationStatus = 'APPROVED' " +
+           "AND (:categories IS NULL OR r.mainCategory IN :categories)")
+    Page<Restaurant> searchByNameOrMenuNameWithCategories(@Param("keyword") String keyword,
+                                                          @Param("categories") List<String> categories,
+                                                          Pageable pageable);
+
+    // 4. 키워드와 카테고리로 평점순 검색
+    @Query("SELECT DISTINCT r FROM Restaurant r WHERE (r.name LIKE %:keyword% OR r.menu_name LIKE %:keyword%) " +
+           "AND r.verificationStatus = 'APPROVED' " +
+           "AND (:categories IS NULL OR r.mainCategory IN :categories) " +
+           "ORDER BY r.average_rating DESC")
+    Page<Restaurant> searchByNameOrMenuNameSortedByRatingAndCategory(@Param("keyword") String keyword,
+                                                                     @Param("categories") List<String> categories,
+                                                                     Pageable pageable);
+
+    // 5. 키워드, 카테고리, 위치로 거리순 검색
+    @Query("SELECT DISTINCT r FROM Restaurant r WHERE (r.name LIKE %:keyword% OR r.menu_name LIKE %:keyword%) " +
+           "AND r.verificationStatus = 'APPROVED' " +
+           "AND (:categories IS NULL OR r.mainCategory IN :categories) " +
+           "AND 6371000 * acos(cos(radians(:userLatitude)) * cos(radians(r.latitude)) * " +
+           "cos(radians(r.longitude) - radians(:userLongitude)) + sin(radians(:userLatitude)) * " +
+           "sin(radians(r.latitude))) < :radius " +
+           "ORDER BY 6371000 * acos(cos(radians(:userLatitude)) * cos(radians(r.latitude)) * " +
+           "cos(radians(r.longitude) - radians(:userLongitude)) + sin(radians(:userLatitude)) * " +
+           "sin(radians(r.latitude))) ASC")
+    Page<Restaurant> searchByNameOrMenuNameWithinRadiusAndCategory(@Param("keyword") String keyword,
+                                                                   @Param("userLatitude") Double userLatitude,
+                                                                   @Param("userLongitude") Double userLongitude,
+                                                                   @Param("radius") Double radius,
+                                                                   @Param("categories") List<String> categories,
+                                                                   Pageable pageable);
+
+    // 6. 카테고리와 위치로 거리순 조회
+    @Query("SELECT DISTINCT r FROM Restaurant r WHERE r.verificationStatus = 'APPROVED' " +
+           "AND (:categories IS NULL OR r.mainCategory IN :categories) " +
+           "AND 6371000 * acos(cos(radians(:userLatitude)) * cos(radians(r.latitude)) * " +
+           "cos(radians(r.longitude) - radians(:userLongitude)) + sin(radians(:userLatitude)) * " +
+           "sin(radians(r.latitude))) < :radius " +
+           "ORDER BY 6371000 * acos(cos(radians(:userLatitude)) * cos(radians(r.latitude)) * " +
+           "cos(radians(r.longitude) - radians(:userLongitude)) + sin(radians(:userLatitude)) * " +
+           "sin(radians(r.latitude))) ASC")
+    Page<Restaurant> findAllWithinRadiusAndCategory(@Param("userLatitude") Double userLatitude,
+                                                    @Param("userLongitude") Double userLongitude,
+                                                    @Param("radius") Double radius,
+                                                    @Param("categories") List<String> categories,
+                                                    Pageable pageable);
+
 }
