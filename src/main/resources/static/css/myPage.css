@@ -8,7 +8,7 @@ body {
 }
 
 .main {
-	background-color: #FFF5EE;
+	background-color: #fff9c4;
 }
 
 .home-image {
@@ -39,7 +39,7 @@ body {
 	margin-left: 200px;
 	margin-right: 200px;
 	height: 350px;
-	position: relative; /* main-info를 기준으로 자식 요소 positioning */
+	position: relative; 
 }
 
 .default-main-image, .main-image-img {
@@ -150,21 +150,21 @@ body {
 	perspective: 1000px;
 }
 
-.owner-stats span::before { /* 예시: span 앞에 하트 아이콘 추가 */
-	content: '\f007'; /* Font Awesome 하트 아이콘 */
+.owner-stats span::before { 
+	content: '\f007'; 
 	font-family: "Font Awesome 5 Free";
 	font-weight: 900;
 	margin-right: 5px;
 }
 
 .owner-stats span {
-	background-color: rgba(255, 255, 255, 0.9); /* 밝은 배경 */
-	border-radius: 12px; /* 더 둥근 모서리 */
-	padding: 10px 15px; /* 패딩 증가 */
+	background-color: rgba(255, 255, 255, 0.9); 
+	border-radius: 12px; 
+	padding: 10px 15px; 
 	margin-bottom: 5px;
 	font-size: 16px;
-	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* 은은한 그림자 */
-	transform-style: preserve-3d; /* 3D 변형 유지 */
+	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); 
+	transform-style: preserve-3d; 
 	transition: transform 0.5s ease, box-shadow 0.3s ease;
 	border-radius: 20px; /* 값을 조정하여 둥글기를 조절 */
 	padding: 10px 15px; /* 패딩 추가 */
@@ -252,7 +252,7 @@ body {
 .select-list {
 	display: flex;
 	flex-direction: row;
-	background-color: #FFF5EE;
+	background-color: #fff9c4;
 	margin-top: 20px;
 	height: 70px;
 }
@@ -269,7 +269,7 @@ body {
 }
 
 .nav-item button {
-	background-color: #ffd1dc; /* 핑크 색상 */
+	background-color: #fff176; /* 핑크 색상 */
 	border: none;
 	border-radius: 50px; /* 둥근 버튼 */
 	padding: 10px 20px;
@@ -284,12 +284,18 @@ body {
 
 /* 버튼 호버 시 애니메이션 효과 */
 .nav-item button:hover {
-	background-color: #ff8fa3; /* 조금 더 진한 핑크 */
+	background-color:#ffeb3b; /* 조금 더 진한 핑크 */
 	transform: translateY(-5px); /* 살짝 위로 이동 */
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* 그림자 확대 */
 }
 
 /* 클릭된 탭(active)의 스타일 */
+.myPageNav button[data-tab="myReview"].active,  /* 마이리뷰 버튼 활성화 */
+.myPageNav button[data-tab="myRestaurant"].active { /* 자주가는 식당 버튼 활성화 */
+    background-color: #ffeb3b;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
 .nav-item.active button {
 	background-color: #ff6699; /* 클릭된 탭에 조금 더 진한 핑크 색상 */
 	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* 조금 더 큰 그림자 */
@@ -297,7 +303,7 @@ body {
 
 /* 버튼 내부에 귀여운 애니메이션 요소 추가 */
 .nav-item button::after {
-	content: '💖'; /* 하트 이모지 */
+	content: '🍯'; /* 하트 이모지 */
 	position: absolute;
 	top: -10px;
 	right: -10px;
@@ -313,48 +319,63 @@ body {
 
 /* 페이징 */
 .pagination-container {
-	text-align: center; /* 중앙 정렬 */
-	margin: 20px 0; /* 상하 여백 추가 */
+    text-align: center; /* 중앙 정렬 */
+    margin: 20px 0; /* 상하 여백 추가 */
 }
 
 .pagination {
-	list-style-type: none; /* 기본 목록 스타일 제거 */
-	padding: 0; /* 패딩 제거 */
-	display: inline-flex; /* 인라인 플렉스 박스 사용 */
-	gap: 10px; /* 버튼 사이의 간격 */
+    list-style-type: none; /* 기본 목록 스타일 제거 */
+    padding: 0; /* 패딩 제거 */
+    display: inline-flex; /* 인라인 플렉스 박스 사용 */
+    gap: 10px; /* 버튼 사이의 간격 */
 }
 
 .pagination li {
-	display: inline; /* 인라인 디스플레이 설정 */
+    display: inline; /* 인라인 디스플레이 설정 */
 }
 
 .page-link {
-	padding: 10px 15px; /* 버튼 패딩 */
-	border: 1px solid #007bff; /* 버튼 테두리 */
-	border-radius: 5px; /* 모서리 둥글게 */
-	color: #007bff; /* 링크 색상 */
-	text-decoration: none; /* 밑줄 제거 */
-	background-color: #f8f9fa; /* 기본 배경 색상 */
-	transition: background-color 0.3s, color 0.3s; /* 부드러운 전환 효과 */
-	font-weight: 500; /* 글자 두께 조정 */
+     padding: 10px 15px; /* 버튼 패딩 */
+    border: 1px solid #ffbf00; /* 버튼 테두리 (꿀벌 노란색) */
+    border-radius: 50%; /* 동그란 모양 */
+    color: black; /* 링크 색상 (꿀벌 검정) */
+    text-decoration: none; /* 밑줄 제거 */
+    background-color: #fffacd; /* 연한 벌꿀색 배경 */
+    transition: background-color 0.3s, color 0.3s; /* 부드러운 전환 효과 */
+    font-weight: 600; /* 글자 두께 조정 */
+    position: relative; /* 상대 위치 설정 */
+    z-index: 0; /* 기본 z-index 설정 */
 }
 
 .page-link:hover {
-	background-color: #007bff; /* hover 시 배경 색상 변경 */
-	color: white; /* hover 시 텍스트 색상 변경 */
+    background-color: #ffbf00; /* hover 시 배경 색상 변경 (더 진한 노란색) */
+    color: white; /* hover 시 텍스트 색상 변경 */
 }
 
+
+
 .pagination .active .page-link {
-	background-color: #007bff; /* 활성 페이지의 배경 색상 */
-	color: white; /* 활성 페이지의 텍스트 색상 */
-	border: 1px solid #007bff; /* 활성 페이지의 테두리 색상 */
+    background-color: #ffdf00; /* 활성 페이지의 배경 색상 */
+    color: white; /* 활성 페이지의 텍스트 색상 */
+    border: 1px solid #ffbf00; /* 활성 페이지의 테두리 색상 */
+    position: relative;
+    background-image: url('/myPageImage/bee-3.png'); /* 배경 이미지로 꿀벌 추가 */
+    background-repeat: no-repeat;
+    background-position: 100% 5px; /* 숫자 오른쪽 위로 위치 조정 */
+    background-size: 35px 35px; /* 이미지 크기 조정하여 튀어나오게 설정 */
+    z-index: 1; /* z-index로 숫자보다 위로 오게 설정 */
+    
+}  
+
+.pagination .active .page-link span {
+    position: relative;
+    z-index: 2; /* 페이지 숫자 z-index를 2로 설정하여 이미지 위로 올라오지 않도록 */
 }
 
 /* 페이지 번호 밑줄 제거 */
 .pagination a {
-	text-decoration: none; /* 링크의 밑줄 제거 */
+    text-decoration: none; /* 링크의 밑줄 제거 */
 }
-
 .myPageMain {
 	margin-left: 200px;
 	margin-right: 200px;
@@ -405,7 +426,7 @@ body {
 
 /* 닉네임 링크 스타일 */
 .nickname-link {
-	color: #007bff; /* 링크 색상 변경 */
+	color: #D6A52D; /* 링크 색상 변경 */
 	text-decoration: none;
 }
 
@@ -450,7 +471,7 @@ body {
 .random-review-content {
 	flex: 2; /* Allow content to take more space */
 	padding-left: 15px; /* Spacing between image and text */
-	color: #007bff;
+	color: #D6A52D;
 	text-align: center;
 }
 
@@ -462,7 +483,7 @@ body {
 	display: block; /* Center the button */
 	margin: 20px auto; /* Center with auto margins */
 	padding: 10px 20px; /* Button padding */
-	background-color: #007bff; /* Button color */
+	background-color: #FFC300; /* Button color */
 	color: white; /* Text color */
 	border: none; /* No border */
 	border-radius: 5px; /* Rounded corners for the button */
@@ -1213,6 +1234,10 @@ a {
 	box-shadow: 0 2px 5px rgba(0, 0, 0, 1); /* 그림자 효과 */
 	cursor: pointer; /* 커서를 포인터로 변경 */
 	z-index: 100; /* 다른 요소 위에 표시 */
+	 background-image: url('/myPageImage/bee-4.png');
+	  background-size: 30px 30px;
+    background-repeat: no-repeat;
+    background-position: center bottom;
 }
 
 #scrollToTopButton:hover {
@@ -1515,20 +1540,27 @@ a {
 /********************************* 레스토랑 탭 *************************************/
 .rt {
 	display: flex;
-	flex-direction: row;
-	margin-top: 25px;
+    justify-content: space-between;
+    margin-top: 25px;
+    background-color: #fff9c4;
 }
 
 
 .ranking-rt{
-	margin-right: 200px;
-	padding: 5px;
-	border: 3px solid #ddd;
-	border-radius: 8px;
-	background-color: white;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-	height: 650px;
-	width: 283px;
+	flex: 0 0 241px; /* 폭을 283px로 고정 */
+    position: sticky;
+    top: 20px; /* Adjust as needed */
+    align-self: flex-start;
+    padding: 5px;
+    border: 1px solid white;
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    height: 650px;
+    margin-left: 25px;
+    margin-right: 200px; /* 오른쪽 여백 200px 추가 */
+
+/* 	width: 283px; */
 }
 .top-liked-restaurants {
 	width: 90%; /* 너비 줄이기 */
@@ -1582,15 +1614,17 @@ a {
 }
 
 .restaurant-name-link {
-	text-decoration: none;
-	color: #007bff; /* 파란색 링크 */
-	font-weight: bold;
-	transition: color 0.3s ease;
+
+  text-decoration: none;
+  color:#E1B94B; 
+  font-weight: bold;
+  transition: color 0.3s ease;
 }
 
 .restaurant-name-link:hover {
-	color: #800080; /* 보라색 */
-	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  color: #A76D35; 
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+
 }
 
 
@@ -1651,9 +1685,11 @@ a {
 }
 .random-restaurant-content {
 	padding-left: 15px; /* Spacing between image and text */
-	color: #007bff;
+	color: #B66A24;
 	text-align: center;
 	margin-left: 40px;
+	font-size: 15px;
+	
 
 }
 .restaurant-info-wrapper {
@@ -1666,41 +1702,55 @@ a {
 }
 
 #nextRestaurantButton {
-	display: block; /* Center the button */
-	margin: 20px auto; /* Center with auto margins */
-	padding: 10px 20px; /* Button padding */
-	background-color: #007bff; /* Button color */
-	color: white; /* Text color */
-	border: none; /* No border */
-	border-radius: 5px; /* Rounded corners for the button */
-	cursor: pointer; /* Pointer cursor on hover */
-	transition: background-color 0.3s; /* Smooth background change */
+	display: block; 
+	margin: 20px auto;
+	padding: 10px 20px; 
+	background-color: #B66A24; 
+	color: white; 
+	border: none; 
+	border-radius: 5px; 
+	cursor: pointer; 
+	transition: background-color 0.3s; 
 }
 .myRestaurantContent {
-	background-color: #FFF5EE;
+	background-color: #fff9c4;
 }
 
 .restaurant-list {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 20px;
-	margin-left: 200px;
-	margin-bottom: 40px;
+	 flex: 8; 
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-left: 200px;
+    margin-bottom: 40px;
 }
 
 .restaurant-item {
-	flex: 1 1 calc(50% - 20px);
-	box-sizing: border-box;
-	padding: 15px; /* 아이템 내부 패딩 */
-	border-radius: 8px; /* 둥근 테두리 */
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
-	background-color: white; /* 배경색 흰색 */
-	transition: transform 0.3s ease; /* 호버 효과 */
-	max-height: 400px;
-	width: 152px;
-	max-width: 410px;
+	flex-basis: calc(50% - 10px);
+    max-width: calc(50% - 10px);
+    box-sizing: border-box;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    transition: transform 0.3s ease;
+    height: 400px;
+}
+/* 아이템이 홀수 개일 때 마지막 아이템 스타일 */
+.restaurant-item:last-child:nth-child(odd) {
+    margin-right: calc(50% + 10px); /* 마지막 홀수 아이템에 오른쪽 여백 추가 */
 }
 
+@media (max-width: 1500px) {
+    .restaurant-item {
+        flex-basis: 100%;
+        max-width: 100%;
+    }
+    
+    .ranking-rt {
+        margin-right: 20px; /* 작은 화면에서는 오른쪽 여백 줄임 */
+    }
+}
 .restaurant-item:hover {
 	transform: scale(1.05);
 }
@@ -1715,7 +1765,7 @@ a {
 
 .restaurant-info {
 	text-align: center; /* 텍스트 가운데 정렬 */
-	background-color: #fff8e1; /* 연한 꿀색 배경 */
+	background-color: #FFF5E1; /* 연한 꿀색 배경 */
 	border-radius: 10px; /* 둥근 모서리 */
 	padding: 15px; /* 내부 여백 추가 */
 	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 효과 */
@@ -1749,28 +1799,82 @@ a {
 	vertical-align: middle; /* 수직 정렬 */
 }
 
-/* "아직 등록된 레스토랑이 없습니다" 메시지 스타일 */
-.myRestaurantContent>p {
-	font-style: italic;
-	color: #999;
+.myRestaurantContent > p {
+    font-style: italic;
+    color: #4d4d00; /* 어두운 올리브색 텍스트 */
+    text-align: center;
+    margin-top: 20px;
+    font-size: 20px;
+    margin-left: 200px; /* 왼쪽 마진 */
+    margin-right: 200px; /* 오른쪽 마진 */
+    background-color: #fff9cc; /* 밝은 노란색 배경색 */
+    border: 1px solid #fdd835; /* 더 진한 노란색 테두리 */
+    border-radius: 10px; /* 모서리 둥글게 */
+    padding: 20px; /* 내부 여백 추가 */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 추가 */
+}
+
+.myRestaurantContent > p:hover {
+    transform: scale(1.05); /* 마우스 오버 시 크기 확대 */
+    transition: transform 0.2s ease-in-out; /* 애니메이션 효과 */
+    background-color: #ffeeba; /* 마우스 오버 시 연한 노란색으로 변경 */
+    border-color: #ffb300; /* 마우스 오버 시 테두리 색상 변경 */
+}
+.rtrt2 {
+	display: flex;
+	flex-direction: row;
+	gap: 10px;
+}
+
+.ranking-rt2{
+	flex: 5;
+    top: 20px;
+    align-self: flex-start;
+    padding: 15px;  /* 패딩 추가 */
+    border-radius: 8px;
+    background-color: white; /* 배경색 흰색으로 변경 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-left: 200px; /* 왼쪽 여백 추가 */
+    margin-bottom: 50px; /* 아래쪽 여백 추가 */
+    overflow: hidden; /* 넘치는 내용 숨김 */
+}
+
+.ranking2 {
+	flex: 5;
+    top: 20px;
+    align-self: flex-start;
+    padding: 15px;  /* 패딩 추가 */
+    border-radius: 8px;
+    background-color: white; /* 배경색 흰색으로 변경 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-right: 200px;
+    margin-bottom: 50px; /* 아래쪽 여백 추가 */
+    overflow: hidden; /* 넘치는 내용 숨김 */
+}
+
+.ranking h2 {
+	color: #8B4513; /* 제목 색상 변경 */
 	text-align: center;
-	margin-top: 20px;
-	font-size: 20px;
-	margin-left: 200px; /* 왼쪽 마진 */
-	margin-right: 200px; /* 오른쪽 마진 */
-	background-color: #ffe6e6; /* 연한 핑크 배경색 */
-	border: 1px solid #ff9999; /* 연한 핑크 테두리 */
-	border-radius: 10px; /* 모서리 둥글게 */
-	padding: 20px; /* 내부 여백 추가 */
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 추가 */
+	margin-bottom: 15px;
 }
 
-/* "아직 등록된 레스토랑이 없습니다" 메시지 애니메이션 효과 */
-.myRestaurantContent>p:hover {
-	transform: scale(1.05); /* 마우스 오버 시 크기 확대 */
-	transition: transform 0.2s ease-in-out; /* 애니메이션 효과 */
+.ranking2 table {
+	width: 100%;
+	border-collapse: collapse; /* 테두리 간격 없애기 */
 }
 
+.ranking2 th {
+	background-color: #61686c; /* 헤더 배경색 변경 */
+	color: white;
+	padding: 10px;
+	text-align: center; /* 헤더 텍스트 가운데 정렬 */
+}
+
+.ranking2 td {
+	padding: 8px;
+	text-align: center;
+	border-bottom: 1px solid #ddd; /* 셀 아래쪽 경계선 추가 */
+}
 .menu-modal {
 	display: none; /* 맨 처음에는 숨김 상태로 */
 	text-align:
@@ -1814,3 +1918,5 @@ a {
 	color: #6c757d;
 	cursor: not-allowed;
 }
+
+
