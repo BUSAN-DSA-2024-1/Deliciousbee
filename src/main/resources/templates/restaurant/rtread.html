@@ -105,6 +105,127 @@
         </div>
       </div>
 
+      <!-- Review Write Modal -->
+      <div class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="reviewModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="reviewModalLabel">리뷰 작성</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form th:action="@{/review/write/{restaurant_id}(restaurant_id=${restaurant_id})}" method="POST"
+                th:object="${writeForm}" enctype="multipart/form-data">
+                <div class="form-group">
+                  <label for="reviewContents">리뷰 내용</label>
+                  <textarea class="form-control" id="reviewContents" name="reviewContents" rows="4" required></textarea>
+                </div>
+
+                <!-- Rating Form -->
+                <hr class="Review-Write-hr">
+                <div class="form-group">
+                  <label for="rating">전체 평점</label>
+                  <input type="number" class="form-control" id="rating" name="rating" min="1" max="5" step="1" required>
+                </div>
+                <div class="form-group">
+                  <label for="tasteRating">음식 평점</label>
+                  <input type="range" class="form-control-range" id="tasteRating" name="tasteRating" min="1" max="3"
+                    step="1" onclick="detailRating(this)">
+                  <div class="detail-Rating-labels">
+                    <span>나쁨</span>
+                    <span>보퉁</span>
+                    <span>좋음</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="priceRating">가격 평점</label>
+                  <input type="range" class="form-control-range" id="priceRating" name="priceRating" min="1" max="3"
+                    step="1" onclick="detailRating(this)">
+                  <div class="detail-Rating-labels">
+                    <span>나쁨</span>
+                    <span>보퉁</span>
+                    <span>좋음</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="kindRating">친절 평점</label>
+                  <input type="range" class="form-control-range" id="kindRating" name="kindRating" min="1" max="3"
+                    step="1" onclick="detailRating(this)">
+                  <div class="detail-Rating-labels">
+                    <span>나쁨</span>
+                    <span>보퉁</span>
+                    <span>좋음</span>
+                  </div>
+                </div>
+
+                <!-- Menu Form -->
+                <hr class="Review-Write-hr">
+                <div class="form-group">
+                  <label for="recommendItems">추천 메뉴</label>
+                  <div th:each="menu : ${restaurant.menuList}">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" th:value="${menu.id}" name="reviewMenuList">
+                      <label class="form-check-label" th:text="${menu.name}">Menu Name</label>
+                      <span th:text="'    ' +${menu.price} + '원'"></span>
+                    </div>
+                  </div>
+
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="customMenuCheckbox" name="customMenuCheckbox">
+                    <label class="form-check-label" for="customMenuCheckbox">기타</label>
+                  </div>
+                  <input type="text" class="form-control" id="customMenuInput" name="customMenuInput" disabled>
+                  <input type="hidden" id="customMenuName" name="customMenuName">
+                </div>
+
+                <!-- KeyWord Form -->
+                <hr class="Review-Write-hr">
+                <div class="form-group">
+                  <label for="keywords">키워드 등록</label>
+                  <div th:each="category : ${T(com.example.deliciousBee.model.keyWord.KeywordCategory).values()}">
+                    <label for="keywords" th:text="${category.name().replace('_', ' ')}"></label>
+                    <select class="form-control" multiple name="keywords">
+                      <option th:each="keyword : ${keywordsByCategory.get(category)}" th:value="${keyword.id}"
+                        th:text="${keyword.keywordName}">[[${keyword.keywordName}]]</option>
+                    </select>
+                  </div>
+
+                  <!-- custom KeyWord Form -->
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="customKeywordCheckbox"
+                      name="customKeywordCheckbox">
+                    <label class="form-check-label-review-keyword" for="customKeywordCheckbox">존재하지 않은 키워드를
+                      작성해주세요</label>
+                  </div>
+                  <input type="text" class="form-control" id="customKeywordInput" name="customKeywordInput" disabled>
+                  <input type="hidden" id="customKeywordName" name="customKeywordName">
+                </div>
+
+
+                <hr class="Review-Write-hr">
+                <div class="form-group">
+                  <label for="visitDate">방문 시기</label>
+                  <input type="date" class="form-control" id="visitDate" name="visitDate" required>
+                </div>
+                <div class="form-group">
+                  <label for="file">리뷰 사진 업로드</label>
+                  <input type="file" class="form-control-file" id="file" name="file" multiple>
+                </div>
+                <input type="hidden" name="restaurant_id" th:value="${restaurant_id}">
+
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-primary">작성</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Report Modal -->
       <div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel"
         aria-hidden="true">
@@ -227,10 +348,10 @@
 
               <hr class="Review-Write-hr">
               <div class="form-group">
-                <label for="keywords">키워드 등록</label>
+                <label for="updateKeywords">키워드 등록</label>
                 <div th:each="category : ${T(com.example.deliciousBee.model.keyWord.KeywordCategory).values()}">
-                  <label for="keywords" th:text="${category.name().replace('_', ' ')}"></label>
-                  <select class="form-control" multiple name="keywords">
+                  <label for="updateKeywords" th:text="${category.name().replace('_', ' ')}"></label>
+                  <select class="form-control" multiple name="updateKeywords">
                     <option th:each="keyword : ${keywordsByCategory.get(category)}" th:value="${keyword.id}"
                       th:text="${keyword.keywordName}">[[${keyword.keywordName}]]</option>
                   </select>
@@ -671,11 +792,7 @@
           });
 
           //키워드 표기
-          $('select[name="keywords"]').each(function () {
-            // console.log(this);
-            // $(data.keywords.keyWord).val('');
-            // $(this).val('');
-            // $(this).find('option').prop('selected', false);
+          $('select[name="updateKeywords"]').each(function () {
             const selectElement = $(this);
             selectElement.find('option').each(function () {
               const optionElement = $(this);
@@ -687,13 +804,6 @@
               }
             });
           });
-
-          $('select[name="keywords"]').each(function () {
-            // $(this).val('');
-          });
-
-
-
 
           $('#updateReviewModal').modal('show');
         },
@@ -744,7 +854,7 @@
 
       // 키워드 전달
       const selectedKeywordIds = []; // 항상 새로운 빈 배열을 생성하여 값 저장
-      document.querySelectorAll('select[name="keywords"]').forEach(selectElement => {
+      document.querySelectorAll('select[name="updateKeywords"]').forEach(selectElement => {
         Array.from(selectElement.selectedOptions).forEach(option => {
           selectedKeywordIds.push(parseInt(option.value)); // 선택된 값만 배열에 추가
         });
