@@ -232,14 +232,7 @@ public class MemberController {
 		return "member/loginForm";
 	}
 
-	// *******로그아웃 처리
-	@GetMapping("logout")
-	public String logout(HttpServletResponse response, HttpServletRequest request) {
-		// JWT 기반 로그아웃은 클라이언트 측에서 로컬에 저장된 토큰을 삭제하는 것이 일반적
-		// 서버 측에서는 세션을 사용하지 않으므로, 세션 무효화는 불필요
-		// 클라이언트에서 로그아웃을 처리하도록 안내
-		return "redirect:/";
-	}
+
 
 	// ***************@@@@내정보 이동@@@********************
 	@GetMapping("myInfo")
@@ -396,7 +389,7 @@ public class MemberController {
 	// *************************회원탈퇴하기*****************************
 	@PostMapping("deleteMember")
 	public String deleteMember(@AuthenticationPrincipal BeeMember loginMember,
-							   @RequestParam("password") String password, RedirectAttributes redirectAttributes) {
+							   @RequestParam("password") String password, RedirectAttributes redirectAttributes, HttpServletResponse response) {
 
 		// 비밀번호 확인
 		if (!passwordEncoder.matches(password, loginMember.getPassword())) {
@@ -412,7 +405,12 @@ public class MemberController {
 
 		// 세션 무효화 대신 클라이언트 측에서 토큰 삭제 안내
 		// 클라이언트 측에서 로컬 스토리지의 JWT 토큰 삭제 유도
-
+		Cookie jwtCookie = new Cookie("Authorization", null);
+		jwtCookie.setHttpOnly(true);
+		jwtCookie.setSecure(true);
+		jwtCookie.setPath("/");
+		jwtCookie.setMaxAge(0);  // 쿠키 삭제
+		response.addCookie(jwtCookie);
 		return "redirect:/";
 	}
 	

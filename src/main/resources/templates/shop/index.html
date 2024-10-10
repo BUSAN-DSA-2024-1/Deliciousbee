@@ -92,7 +92,7 @@
       								  <img th:src="@{'/restaurant/display?filename='+${file.saved_filename}}" alt="레스토랑 이미지" />
     							</div>
 							</div>
-							<div th:if="${#lists.size(restaurant.attachedFile) == 0}">
+							<div class="image-wrapper" th:if="${#lists.size(restaurant.attachedFile) == 0}">
     							<img th:src="@{/image/nothing.png}" alt="이미지 없음" />
 							</div>
                             <div class="intro-content">

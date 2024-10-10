@@ -39,8 +39,8 @@ public class MessageService {
 
     @Transactional
     public Message ReportMessage(String receiverNickname, String content) {
-        BeeMember sender = beeMemberRepository.findByNickname("admin")
-                .orElseThrow(() -> new RuntimeException("발신자 없음: admin"));
+        BeeMember sender = beeMemberRepository.findByNickname("운영자")
+                .orElseThrow(() -> new RuntimeException("발신자 없음: 운영자"));
         BeeMember receiver = beeMemberRepository.findByNickname(receiverNickname)
                 .orElseThrow(() -> new RuntimeException("수신자 없음: " + receiverNickname));
 
@@ -57,7 +57,7 @@ public class MessageService {
     public Message ReviewReportSubmitMessage(String receiverNickname) {
         String content = "리뷰 신고가 검토 후 정상적으로 처리되었습니다.";
 
-        BeeMember sender = beeMemberRepository.findByNickname("admin")
+        BeeMember sender = beeMemberRepository.findByNickname("운영자")
                 .orElseThrow(() -> new RuntimeException("발신자 없음: admin"));
         BeeMember receiver = beeMemberRepository.findByNickname(receiverNickname)
                 .orElseThrow(() -> new RuntimeException("수신자 없음: " + receiverNickname));
@@ -75,7 +75,7 @@ public class MessageService {
     public Message RestaurantReportSubmitMessage(String receiverNickname) {
         String content = "레스토랑 등록이 검토 후 정상적으로 처리되었습니다.";
 
-        BeeMember sender = beeMemberRepository.findByNickname("admin")
+        BeeMember sender = beeMemberRepository.findByNickname("운영자")
                 .orElseThrow(() -> new RuntimeException("발신자 없음: admin"));
         BeeMember receiver = beeMemberRepository.findByNickname(receiverNickname)
                 .orElseThrow(() -> new RuntimeException("수신자 없음: " + receiverNickname));
@@ -93,7 +93,7 @@ public class MessageService {
     public Message RestaurantReportMessage(String receiverNickname) {
         String content = "레스토랑 등록이 정상적으로 요청되었습니다.";
 
-        BeeMember sender = beeMemberRepository.findByNickname("admin")
+        BeeMember sender = beeMemberRepository.findByNickname("운영자")
                 .orElseThrow(() -> new RuntimeException("발신자 없음: admin"));
         BeeMember receiver = beeMemberRepository.findByNickname(receiverNickname)
                 .orElseThrow(() -> new RuntimeException("수신자 없음: " + receiverNickname));

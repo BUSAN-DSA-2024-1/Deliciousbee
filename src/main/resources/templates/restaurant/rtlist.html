@@ -161,14 +161,17 @@
         display: flex;
         width: 99.5%;
     }
-    .filter-box {
-        border: none;
-        border-radius: 12px;
-        padding: 20px;
-        background-color: #FFFFFF;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        width: 180px; /* 필터 박스의 고정 너비 */
-    }
+.filter-box {
+    position: sticky; /* 필터 박스가 스크롤 시 고정되도록 설정 */
+    top: 20px; /* 화면 상단에서 20px 떨어진 위치에서 고정됨 */
+    border: none;
+    border-radius: 12px;
+    padding: 20px;
+    background-color: #FFFFFF;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    width: 180px; /* 필터 박스의 고정 너비 */
+}
+
 
     /* 필터 제목 스타일 */
     .filter-box h5 {
@@ -790,8 +793,6 @@
     </div>
 </div>
 
-
-
 <div class="container-fluid">
     <div class="content-wrapper">
         <!-- 왼쪽 필터 박스 -->
@@ -802,19 +803,6 @@
                     <div class="filter-category">
                         <h5>카테고리</h5>
                         <div id="categoryFilters"></div>
-                        <button class="btn-toggle" id="toggleCategory">펼쳐보기</button>
-                    </div>
-                    <!-- 분위기 필터 -->
-                    <div class="filter-ambiance mt-3">
-                        <h5>분위기</h5>
-                        <div id="ambianceFilters"></div>
-                        <button class="btn-toggle" id="toggleAmbiance">펼쳐보기</button>
-                    </div>
-                    <!-- 방문목적 필터 -->
-                    <div class="filter-purpose">
-                        <h5>방문목적</h5>
-                        <div id="purposeFilters"></div>
-                        <button class="btn-toggle" id="togglePurpose">펼쳐보기</button>
                     </div>
                 </div>
             </div>
@@ -886,13 +874,16 @@
     let infoWindows = [];
     let restaurantCount = 0; // 정렬 순서 번호
     let currentRestaurantId = null;
-    let radius = 1500; // 기본값 500m 설정
+    let radius = 1500; // 기본값 1500m 설정
     let selectedButton = $('#distance1500'); // 기본 선택 버튼 설정
     let initialLoad = true; // 초기 로드 여부
 
+    // 이미 표시된 레스토랑과 마커의 ID를 저장하는 Set
+    let displayedRestaurantIds = new Set();
+    let displayedMarkerIds = new Set();
 
-
-
+    // 로드된 모든 레스토랑 데이터를 저장
+    let allRestaurants = [];
 
     // 레스토랑 신고 모달 열기
     function openRestaurantReportModal(button) {
@@ -950,6 +941,7 @@
                 console.error('오류 발생:', error);
             });
     });
+
     // 로딩 화면을 숨기는 함수 (두 플래그가 모두 true일 때)
     function hideLoaderIfReady() {
         if (windowLoaded && ajaxLoaded) {
@@ -963,6 +955,7 @@
         windowLoaded = true;
         hideLoaderIfReady();
     };
+
     // 전역 스코프에 initMap 정의
     function initMap() {
         const initialCenter = { lat: 37.5665, lng: 126.9780 }; // 서울 시청
@@ -1012,80 +1005,130 @@
         }
     }
 
-    // 전역 스코프에 loadRestaurants 함수 정의
-    // loadRestaurants 함수 수정
-    function loadRestaurants(append = false) {
-        if (isLoading) return;
-        isLoading = true;
-
-        if (!append) {
-            currentPage = 0;
-            restaurantCount = 0;
-            clearMarkers();
-        }
-
-        $.ajax({
-            url: '/api/restaurants/search',
-            type: 'GET',
-            data: {
-                keyword: currentKeyword,
-                page: currentPage,
-                size: 10,
-                sortBy: currentSortBy,
-                latitude: userLatitude,
-                longitude: userLongitude,
-                radius: radius
-            },
-            success: function(data) {
-                if (data && data._embedded && Array.isArray(data._embedded.restaurantDtoList) && data._embedded.restaurantDtoList.length > 0) {
-                    renderRestaurants(data, append);
-
-                    if (!append) {
-                        if (data.page && data.page.totalPages) {
-                            totalPages = data.page.totalPages;
-                        }
-                        ajaxLoaded = true;
-                        hideLoaderIfReady();
-                        initialLoad = false;
-                    }
-
-                    currentPage++; // 페이지 증가
-                } else {
-                    if (!append) {
-                        $('#restaurantList').html('<p>검색 결과가 없습니다.</p>');
-                        ajaxLoaded = true;
-                        hideLoaderIfReady();
-                        initialLoad = false;
-                    }
-                }
-                isLoading = false;
-            },
-            error: function(error) {
-                console.error("레스토랑 로딩 중 오류 발생:", error);
-                isLoading = false;
-            }
-        });
+    // 데이터 및 상태 초기화 함수
+    function resetData() {
+        currentPage = 0;
+        restaurantCount = 0;
+        $('#restaurantList').empty();
+        clearMarkers();
+        displayedRestaurantIds.clear(); // Set 초기화
+        displayedMarkerIds.clear();     // Set 초기화
+        allRestaurants = []; // 로드된 모든 레스토랑 데이터 초기화
     }
 
+    // 레스토랑 데이터 로드 함수 수정
+function loadRestaurants(append = false) {
+    if (isLoading) return;
+    isLoading = true;
 
-    // renderRestaurants 함수 수정
-    function renderRestaurants(data, append = false) {
-        if (!append) {
-            restaurantCount = 0; // 정렬 순서 번호 초기화
+    if (!append) {
+        if (!initialLoad) {
+            resetData();
+        }
+    }
+
+    // 선택된 카테고리 수집
+    let selectedCategories = [];
+    $('.form-check-input:checked').each(function () {
+        selectedCategories.push($(this).data('category'));
+    });
+
+    $.ajax({
+        url: '/api/restaurants/search',
+        type: 'GET',
+        traditional: true, // 배열 파라미터 전송을 위해 추가
+        data: {
+            keyword: currentKeyword,
+            page: currentPage,
+            size: 5, // 기본 페이지 크기
+            sortBy: currentSortBy,
+            latitude: userLatitude,
+            longitude: userLongitude,
+            radius: radius,
+            categories: selectedCategories // 선택된 카테고리 전달
+        },
+        success: function(data) {
+            if (data && data._embedded && Array.isArray(data._embedded.restaurantDtoList) && data._embedded.restaurantDtoList.length > 0) {
+                renderRestaurants(data._embedded.restaurantDtoList, append);
+                totalPages = data.page.totalPages;
+
+                ajaxLoaded = true;
+                hideLoaderIfReady();
+                initialLoad = false;
+
+                currentPage++; // 페이지 증가
+            } else {
+                if (!append) {
+                    $('#restaurantList').html('<p>검색 결과가 없습니다.</p>');
+                    ajaxLoaded = true;
+                    hideLoaderIfReady();
+                    initialLoad = false;
+                }
+            }
+            isLoading = false;
+        },
+        error: function(error) {
+            console.error("레스토랑 로딩 중 오류 발생:", error);
+            isLoading = false;
+        }
+    });
+}
+
+
+    // 필터 적용 후 렌더링 함수
+    function applyFiltersAndRender(append = false) {
+        // 선택된 카테고리 수집
+        let selectedCategories = [];
+        $('.form-check-input:checked').each(function () {
+            selectedCategories.push($(this).data('category'));
+        });
+
+        // 필터 적용
+        let filteredRestaurants = allRestaurants.filter(function(restaurant) {
+            let cardCategory = restaurant.mainCategory;
+            if (selectedCategories.length === 0 || selectedCategories.includes(cardCategory)) {
+                return true;
+            } else {
+                return false;
+            }
+        });
+
+        // 이미 표시된 레스토랑 제거
+        filteredRestaurants = filteredRestaurants.filter(function(restaurant) {
+            return !displayedRestaurantIds.has(restaurant.id);
+        });
+
+        // 최대 5개의 레스토랑을 렌더링
+        let restaurantsToRender = filteredRestaurants.slice(0, 5 - displayedRestaurantIds.size);
+
+        // 렌더링
+        renderRestaurants(restaurantsToRender, append);
+
+        // 필요한 경우 추가 데이터 로드
+        if (displayedRestaurantIds.size < 5 && currentPage < totalPages) {
+            loadRestaurants(true); // append 모드로 추가 데이터 로드
+        }
+    }
+
+    // 레스토랑 렌더링 함수 수정
+function renderRestaurants(restaurants, append = false) {
+    let html = '';
+
+    restaurants.forEach(function(restaurant) {
+        // 이미 표시된 레스토랑인지 확인
+        if (displayedRestaurantIds.has(restaurant.id)) {
+            return; // 이미 표시된 경우 건너뜁니다.
         }
 
-        if (data._embedded && Array.isArray(data._embedded.restaurantDtoList)) {
-            let restaurants = data._embedded.restaurantDtoList;
-            let html = '';
+        // 레스토랑 ID를 Set에 추가
+        displayedRestaurantIds.add(restaurant.id);
 
-            restaurants.forEach(function(restaurant) {
-                restaurantCount++; // 정렬 순서 번호 증가
-                let imageUrl = restaurant.imageUrls && restaurant.imageUrls.length > 0
-                    ? `/restaurant/display?filename=${restaurant.imageUrls[0]}`
-                    : 'default_image_url.jpg';
+        restaurantCount++; // 정렬 순서 번호 증가
+        let imageUrl = restaurant.imageUrls && restaurant.imageUrls.length > 0
+            ? `/restaurant/display?filename=${restaurant.imageUrls[0]}`
+            : 'default_image_url.jpg';
 
-                html += `
-
+        html += `
         <div class="col-12 mb-4">
             <div class="card" data-latitude="${restaurant.latitude}" data-longitude="${restaurant.longitude}" data-maincategory="${restaurant.mainCategory}">
                 <a href="/restaurant/rtread/${restaurant.id}">
@@ -1102,38 +1145,35 @@
                         <h3 class="card-text">★${restaurant.average_rating} 
                         <div class="review-count">(${restaurant.review_count})</div></h3>
                         <h3 class="card-text">현 위치에서 ${formatDistance(restaurant.distance)}</h3>
-                      <!--   <button class="update-btn" title="가게정보가 잘못됐어요"
-                            data-restaurant-id="${restaurant.id}"
-                            data-restaurant-name="${restaurant.name}"
-                            onclick="openRestaurantReportModal(this)">
-                            신고
-                        </button> -->
-
-               
-                            </div>
-                        </div>
-
                     </div>
                 </div>
-            `;
+            </div>
+        </div>
+        `;
 
-                // 지도에 마커 추가
-                addMarker(restaurant, restaurantCount);
-            });
+        // 지도에 마커 추가
+        addMarker(restaurant, restaurantCount);
+    });
 
-            if(append) {
-                $('#restaurantList').append(html);
-            } else {
-                $('#restaurantList').html(html);
-            }
-        } else {
-            console.error("유효하지 않은 데이터 구조: ", data);
-        }
+    if(append) {
+        $('#restaurantList').append(html);
+    } else {
+        $('#restaurantList').html(html);
     }
+}
 
-    // 마커 추가 함수
+
+    // 마커 추가 함수 수정
     function addMarker(restaurant, count) {
         if (!map) return;
+
+        // 이미 표시된 마커인지 확인
+        if (displayedMarkerIds.has(restaurant.id)) {
+            return; // 이미 표시된 경우 건너뜁니다.
+        }
+
+        // 마커의 레스토랑 ID를 Set에 추가
+        displayedMarkerIds.add(restaurant.id);
 
         const position = { lat: restaurant.latitude, lng: restaurant.longitude };
         const marker = new google.maps.Marker({
@@ -1170,58 +1210,57 @@
         infoWindows = [];
     }
 
-
+    // 버튼 스타일 업데이트 함수
     function updateButtonStyles() {
         $('.btn-sort').removeClass('btn-selected'); // 모든 버튼에서 선택 효과 제거
         selectedButton.addClass('btn-selected'); // 현재 선택된 버튼에 선택 효과 추가
     }
 
-
+    // 거리 버튼 클릭 이벤트 수정
     $('#distance500').click(function() {
         radius = 500;
         selectedButton = $(this); // 현재 클릭된 버튼 저장
         updateButtonStyles();
-        loadRestaurants();
+        resetData();
+        loadRestaurants(false);
     });
 
     $('#distance1500').click(function() {
         radius = 1500;
         selectedButton = $(this);
         updateButtonStyles();
-        loadRestaurants();
+        resetData();
+        loadRestaurants(false);
     });
 
     $('#distance3000').click(function() {
         radius = 3000;
         selectedButton = $(this);
         updateButtonStyles();
-        loadRestaurants();
+        resetData();
+        loadRestaurants(false);
     });
 
     $('#distance5000').click(function() {
         radius = 5000;
         selectedButton = $(this);
         updateButtonStyles();
-        loadRestaurants();
+        resetData();
+        loadRestaurants(false);
     });
 
     $('#distance10000').click(function() {
         radius = 10000;
         selectedButton = $(this);
         updateButtonStyles();
-        loadRestaurants();
+        resetData();
+        loadRestaurants(false);
     });
 
-
-    // 초기 로드 시 500m 버튼 선택 효과 적용
+    // 초기 로드 시 1.5km 버튼 선택 효과 적용
     updateButtonStyles();
 
-
-
     $(document).ready(function() {
-
-
-
         $(window).scroll(function () {
             if ($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
                 if (!initialLoad && !isLoading && currentPage < totalPages) {
@@ -1229,6 +1268,7 @@
                 }
             }
         });
+
         // 쿠키에서 위치 정보 가져오기
         const userLocation = getCookie("userLocation");
         if (userLocation) {
@@ -1245,53 +1285,36 @@
             return null;
         }
 
-// 기타 이벤트 핸들러에서 currentPage와 restaurantCount 초기화 및 마커 제거
+        // 검색 텍스트 이벤트 수정
         $('#searchText').on('keyup', function (e) {
             if (e.key === 'Enter') {
                 currentKeyword = $(this).val();
-                currentPage = 0;
-                restaurantCount = 0;
-                $('#restaurantList').empty();
-                clearMarkers();
+                resetData();
                 loadRestaurants(false);
             }
         });
 
+        // 정렬 버튼 클릭 이벤트 수정
         $('#sort-distance').click(function () {
             currentSortBy = "distance";
-            currentPage = 0;
-            restaurantCount = 0;
-            $('#restaurantList').empty();
-            clearMarkers();
+            resetData();
             loadRestaurants(false);
         });
 
         $('#sort-rating').click(function () {
             currentSortBy = "rating";
-            currentPage = 0;
-            restaurantCount = 0;
-            $('#restaurantList').empty();
-            clearMarkers();
+            resetData();
             loadRestaurants(false);
         });
 
-// // 거리 버튼 클릭 이벤트에서도 동일하게 처리
-//         $('.btn-sort').click(function() {
-//             currentPage = 0;
-//             restaurantCount = 0;
-//             $('#restaurantList').empty();
-//             clearMarkers();
-//             loadRestaurants(false);
-//         });
-
-        // 필터 데이터 로드 함수
+        // 필터 데이터 로드 함수 호출
         loadFilters();
 
         // 필터 렌더링 함수
         function renderFilters(elementId, filters) {
             let html = '';
             filters.forEach((filter, index) => {
-                const isHidden = index >= 3 ? 'style="display:none;"' : '';
+                const isHidden = index >= 10 ? 'style="display:none;"' : '';
                 html += `
                         <div class="form-check" ${isHidden}>
                             <input class="form-check-input custom-checkbox" type="checkbox" id="${elementId}-${index}" data-category="${filter}">
@@ -1303,81 +1326,29 @@
             document.getElementById(elementId).innerHTML = html;
         }
 
-        // 필터 토글
-        $('#toggleCategory').click(function () {
-            const $target = $('#categoryFilters .form-check').slice(3);
-            $target.slideToggle();
-            $(this).text($target.is(':visible') ? '접기' : '펼쳐보기');
-        });
-
-        $('#toggleAmbiance').click(function () {
-            const $target = $('#ambianceFilters .form-check').slice(3);
-            $target.slideToggle();
-            $(this).text($target.is(':visible') ? '접기' : '펼쳐보기');
-        });
-
-        $('#togglePurpose').click(function () {
-            const $target = $('#purposeFilters .form-check').slice(3);
-            $target.slideToggle();
-            $(this).text($target.is(':visible') ? '접기' : '펼쳐보기');
-        });
-
-        // 필터링 함수
-        function filterRestaurants() {
-            let selectedCategories = [];
-
-            // 체크된 카테고리 수집
-            $('.form-check-input:checked').each(function () {
-                selectedCategories.push($(this).data('category'));
-            });
-
-            // 필터링 로직 적용
-            $('.card').each(function () {
-                let cardCategory = $(this).data('maincategory');
-
-                if (selectedCategories.length === 0 || selectedCategories.includes(cardCategory)) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
-                }
-            });
-
-            // 지도 마커도 필터링
-            markers.forEach(marker => {
-                const markerCategory = marker.content.mainCategory;
-                if (selectedCategories.length === 0 || selectedCategories.includes(markerCategory)) {
-                    marker.setMap(map);
-                } else {
-                    marker.setMap(null);
-                }
-            });
-        }
-
-        // 카테고리 체크박스 변경 이벤트
+        // 필터 변경 이벤트
         $('#categoryFilters').on('change', '.form-check-input', function () {
-            filterRestaurants();
+            // 필터 변경 시 데이터를 초기화하고 다시 로드
+            resetData();
+            loadRestaurants(false);
         });
-
-        // 필터 초기화
-        filterRestaurants();
 
         // 더 많은 레스토랑 데이터 로드
         function loadMoreRestaurants() {
-            loadRestaurants(true);
+            if (currentPage < totalPages) {
+                loadRestaurants(true);
+            }
         }
-        // 필터 데이터 로드 함수
+
+        // 필터 데이터 로드 함수 수정
         function loadFilters() {
             const categories = ['한식', '중식', '일식', '양식', '아시안', '패스트푸드', '디저트'];
-            const ambiances = ['가성비 좋은', '분위기 좋은', '고급스러운', '조용한', '시끌벅적', '뷰맛집', '이색적인', '로컬', '예쁜', '힙한'];
-            const purposes = ['점심식사', '아침식사', '저녁식사', '가족외식', '데이트', '회식', '모임', '접대', '혼밥', '혼술', '아이동반', '혼카페', '건강식'];
-
             renderFilters('categoryFilters', categories);
-            renderFilters('ambianceFilters', ambiances);
-            renderFilters('purposeFilters', purposes);
         }
+
     });
 
-    
+    //거리 포맷 함수
     function formatDistance(distance) {
         if (distance >= 1000) {
             // 1000 이상일 때 km로 변환
@@ -1395,7 +1366,6 @@
             return distanceInMeters + " m";
         }
     }
-
 
 </script>
 

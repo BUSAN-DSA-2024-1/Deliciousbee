@@ -743,24 +743,13 @@
       }
 
       // 키워드 전달
-      // const selectedKeywordIds = [];
-      // document.querySelectorAll('select[name="keywords"]').forEach(selectElement => {
-      //   Array.from(selectElement.selectedOptions).forEach(option => {
-      //     selectedKeywordIds.push(parseInt(option.value));
-      //   });
-      // });
-
-      const selectedKeywordIds = [];
-      $('select[name="keywords"]').each(function () {
-        if (this.selectedOptions !== undefined) { // selectedOptions 유효성 검증
-          Array.from(this.selectedOptions).forEach(option => {
-            selectedKeywordIds.push(parseInt(option.value));
-          });
-        }
+      const selectedKeywordIds = []; // 항상 새로운 빈 배열을 생성하여 값 저장
+      document.querySelectorAll('select[name="keywords"]').forEach(selectElement => {
+        Array.from(selectElement.selectedOptions).forEach(option => {
+          selectedKeywordIds.push(parseInt(option.value)); // 선택된 값만 배열에 추가
+        });
       });
-      // 키워드가 선택되지 않았을 경우 빈 배열을 명시적으로 전송
-      formData.append('reviewKeywordsIds', selectedKeywordIds.length > 0 ? selectedKeywordIds : []);
-      console.log('선택된 키워드 넘버:', selectedKeywordIds);
+      formData.append('reviewKeywordsIds', selectedKeywordIds); // 선택된 키워드의 ID 배열을 폼에 추가
 
 
       // 커스텀 키워드 저장
