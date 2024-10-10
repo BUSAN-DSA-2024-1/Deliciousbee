@@ -52,20 +52,28 @@ public class RestaurantRestController {
             @RequestParam(value = "latitude", required = false) Double userLatitude,
             @RequestParam(value = "longitude", required = false) Double userLongitude,
             @RequestParam(value = "radius", required = false, defaultValue = "1500") Double radius,
+            @RequestParam(value = "categories", required = false) List<String> categories, 
             @RequestParam(value = "page", defaultValue = "0") int page,
             PagedResourcesAssembler<RestaurantDto> assembler) {
 
-        // Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sort)); // 제거
-
-        // page 파라미터를 사용하여 Pageable 객체 수정 (필요한 경우)
+        // 기존 코드 유지
         if (page > 0) {
             pageable = PageRequest.of(page - 1, pageable.getPageSize(), pageable.getSort());
         }
 
-        Page<RestaurantDto> restaurants = restaurantService.searchRestaurants(keyword, pageable, sortBy, userLatitude, userLongitude, radius);
+        Page<RestaurantDto> restaurants;
+
+        if (categories != null && !categories.isEmpty()) {
+            // 카테고리 필터링이 필요한 경우 새로운 서비스 메서드 호출
+            restaurants = restaurantService.searchRestaurantsByCategory(keyword, pageable, sortBy, userLatitude, userLongitude, radius, categories);
+        } else {
+            // 기존 서비스 메서드 호출
+            restaurants = restaurantService.searchRestaurants(keyword, pageable, sortBy, userLatitude, userLongitude, radius);
+        }
 
         return ResponseEntity.ok(assembler.toModel(restaurants));
     }
+
 
 
     @PostMapping("create")
