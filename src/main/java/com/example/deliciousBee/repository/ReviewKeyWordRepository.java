@@ -11,5 +11,4 @@ public interface ReviewKeyWordRepository extends JpaRepository<ReviewKeyWord, Lo
 	
 	// 리뷰를 통하여 리뷰키워드 삭제
 	void deleteAllByIdIn(List<Long> ids);
-
 }
