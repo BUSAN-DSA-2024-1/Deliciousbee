@@ -5,11 +5,15 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.example.deliciousBee.model.board.Restaurant;
+import com.example.deliciousBee.model.like.RtLike;
 import com.example.deliciousBee.model.member.*;
 import com.example.deliciousBee.model.mypage.MyPage;
+import com.example.deliciousBee.repository.LikeRtRepository;
 import com.example.deliciousBee.repository.MyPageVisitRepository;
+import com.example.deliciousBee.repository.RestaurantRepository;
 import com.example.deliciousBee.security.jwt.JwtTokenProvider;
 import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.member.FollowService;
@@ -65,7 +69,8 @@ public class MemberController {
 	private final MyPageService myPageService;
 	private final MyPageVisitRepository myPageVisitRepository;
 	private final JwtTokenProvider jwtTokenProvider;
-
+	private final LikeRtRepository likeRtRepository;
+	private final RestaurantRepository restaurantRepository;
 
 
 	@Autowired
@@ -227,14 +232,7 @@ public class MemberController {
 		return "member/loginForm";
 	}
 
-	// *******로그아웃 처리
-	@GetMapping("logout")
-	public String logout(HttpServletResponse response, HttpServletRequest request) {
-		// JWT 기반 로그아웃은 클라이언트 측에서 로컬에 저장된 토큰을 삭제하는 것이 일반적
-		// 서버 측에서는 세션을 사용하지 않으므로, 세션 무효화는 불필요
-		// 클라이언트에서 로그아웃을 처리하도록 안내
-		return "redirect:/";
-	}
+
 
 	// ***************@@@@내정보 이동@@@********************
 	@GetMapping("myInfo")
@@ -391,7 +389,7 @@ public class MemberController {
 	// *************************회원탈퇴하기*****************************
 	@PostMapping("deleteMember")
 	public String deleteMember(@AuthenticationPrincipal BeeMember loginMember,
-							   @RequestParam("password") String password, RedirectAttributes redirectAttributes) {
+							   @RequestParam("password") String password, RedirectAttributes redirectAttributes, HttpServletResponse response) {
 
 		// 비밀번호 확인
 		if (!passwordEncoder.matches(password, loginMember.getPassword())) {
@@ -407,7 +405,12 @@ public class MemberController {
 
 		// 세션 무효화 대신 클라이언트 측에서 토큰 삭제 안내
 		// 클라이언트 측에서 로컬 스토리지의 JWT 토큰 삭제 유도
-
+		Cookie jwtCookie = new Cookie("Authorization", null);
+		jwtCookie.setHttpOnly(true);
+		jwtCookie.setSecure(true);
+		jwtCookie.setPath("/");
+		jwtCookie.setMaxAge(0);  // 쿠키 삭제
+		response.addCookie(jwtCookie);
 		return "redirect:/";
 	}
 	
@@ -455,6 +458,20 @@ public class MemberController {
 	    }
 	}
 	
+	//레스토랑 좋아요 리스트
+	@GetMapping("/likedRestaurants")
+	public String likedRestaurants(@AuthenticationPrincipal BeeMember loginMember, Model model) {
+	    if (loginMember == null) {
+	        return "redirect:/member/login"; // 또는 다른 적절한 처리
+	    }
 
+	    List<RtLike> likedRts = likeRtRepository.findByBeeMember(loginMember);
+	    List<Restaurant> likedRestaurants = likedRts.stream()
+	            .map(RtLike::getRestaurant) // LikeRt에서 Restaurant 객체 추출
+	            .collect(Collectors.toList());
 
+	    model.addAttribute("likedRestaurants", likedRestaurants);
+	    return "member/likedRestaurants"; // 좋아요한 레스토랑 목록을 표시할 뷰 이름
+	}
+	
 }

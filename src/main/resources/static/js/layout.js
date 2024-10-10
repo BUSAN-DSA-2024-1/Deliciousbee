@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (myPageLink) {
         myPageLink.addEventListener('click', function (event) {
             event.preventDefault();
-            fetch('member/api/check-auth', {
+                fetch('/member/api/check-auth', {
                 method: 'GET',
                 credentials: 'include'  // 쿠키 포함
             })

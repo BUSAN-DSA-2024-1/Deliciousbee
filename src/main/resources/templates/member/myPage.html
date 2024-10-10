@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="/css/myPage.css">
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+	
 
 <title>마이페이지</title>
 </head>
@@ -16,6 +17,10 @@
 	<th:block th:replace="~{fragments/navbar-login :: navbar}"></th:block>
 	<!-- 로그인 모달 삽입 -->
 	<th:block th:replace="~{fragments/navbar-login :: loginModal}"></th:block>
+
+
+
+
 
 
 	<div class="main-image">
@@ -151,269 +156,341 @@
 		</div>
 		<ul class="myPageNav">
 			<li class="nav-item"
-				th:classappend="${tab == 'myReview'} ? 'active' : ''"><a
-				href="#" onclick="showTab('myReview')">마이리뷰</a></li>
+				th:classappend="${tab == 'myReview'} ? 'active' : ''">
+				<button type="button" onclick="showTab('myReview')">마이리뷰</button>
+			</li>
 			<li class="nav-item"
-				th:classappend="${tab == 'myRt'} ? 'active' : ''"><a href="#"
-				onclick="showTab('myRestaurant')">마이레스토랑</a></li>
+				th:classappend="${tab == 'myRestaurant'} ? 'active' : ''">
+				<button type="button" onclick="showTab('myRestaurant')">자주가는
+					식당</button>
+			</li>
 		</ul>
 	</div>
+
+
 	<!-- 마이레스토랑 내용 -->
 	<div id="myRestaurantContent" style="display: none;"
 		class="myRestaurantContent">
-		<h2>마이레스토랑</h2>
-		<div
+		<div class="rt"
 			th:if="${likedRestaurants != null and !likedRestaurants.isEmpty()}">
-			<div th:each="restaurant : ${likedRestaurants}"
-				class="restaurant-item">
-				<img
-					th:if="${restaurant.attachedFile != null and !restaurant.attachedFile.isEmpty()}"
-					th:src="@{'/restaurant/display?filename=' + ${restaurant.attachedFile[0].saved_filename}}"
-					alt="Restaurant Image" class="restaurant-image"> <img
-					th:unless="${restaurant.attachedFile != null and !restaurant.attachedFile.isEmpty()}"
-					src="/myPageImage/no-review-img.jpg" alt="No Restaurant Image"
-					class="restaurant-image">
-				<div class="restaurant-info">
-					<h3 th:text="${restaurant.name}"></h3>
-					<p th:text="'평균 평점: ' + ${restaurant.average_rating}"></p>
-					<p th:text="'리뷰 수: ' + ${restaurant.review_count}"></p>
-					<p th:text="'카테고리: ' + ${restaurant.review_count}"></p>
-					<p th:text="'리뷰 수: ' + ${restaurant.review_count}"></p>
+			<div class="restaurant-list">
+				<div th:each="restaurant : ${likedRestaurants}"
+					class="restaurant-item">
+					<img
+						th:if="${restaurant.attachedFile != null and !restaurant.attachedFile.isEmpty()}"
+						th:src="@{'/restaurant/display?filename=' + ${restaurant.attachedFile[0].saved_filename}}"
+						alt="Restaurant Image" class="restaurant-image"> <img
+						th:unless="${restaurant.attachedFile != null and !restaurant.attachedFile.isEmpty()}"
+						src="/myPageImage/no-review-img.jpg" alt="No Restaurant Image"
+						class="restaurant-image">
+					<div class="restaurant-info">
+						<a th:href="@{/restaurant/rtread/{id}(id=${restaurant.id})}"
+							title="식당 정보로 이동">
+							<h3 th:text="${restaurant.name}" class="restaurant_name"
+								style="text-decoration: none;"></h3>
+						</a>
+						<p>
+							⭐ 평균 평점: <span th:text="${restaurant.average_rating}"></span>
+						</p>
+						<p>
+							📖 리뷰 수: <span th:text="${restaurant.review_count}"></span>
+						</p>
+						<p>
+							🍽️ 카테고리: <span th:text="${restaurant.mainCategory}"></span>
+						</p>
+						<button type="button" class="menu-button"
+							th:onclick="|showRtMenuModal('RtMenuModal${restaurant.id}')|">🍽️
+							메뉴 보기</button>
+
+						<div th:id="'RtMenuModal' + ${restaurant.id}" class="menu-modal">
+							<div class="menu-modal-content">
+								<span class="close"
+									th:onclick="|closeRtMenuModal('RtMenuModal${restaurant.id}')|">×</span>
+								<ul>
+									<li th:each="menu : ${restaurant.menuList}"><span
+										th:text="'🍯' + ${menu.name} + ' - 가격: ' + ${#numbers.formatInteger(menu.price, 0, 'COMMA')}"></span>
+									</li>
+								</ul>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+			<div class="ranking-rt">
+				<table class="top-liked-restaurants">
+				<h2 class="ranking-title">좋아요 왕👑</h2>
+					<thead>
+						<tr>
+							<th>#</th>
+							<th style="text-align: left;">식당 이름</th>
+							<th style="text-align: center;">좋아요 수</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="restaurant, status : ${mostLikedRestaurants}"
+							th:if="${status.index} < 4">
+							<td class="center" th:if="${status.index} == 0">🥇</td>
+							<td class="center" th:if="${status.index} == 1">🥈</td>
+							<td class="center" th:if="${status.index} == 2">🥉</td>
+							<td class="center" th:unless="${status.index} < 3"
+								th:text="${status.index + 1} + '.'"></td>
+							<td class="center"><a
+								 th:href="@{/restaurant/rtread/{id}(id=${restaurant.id})}"
+								class="restaurant-name-link"> <span
+									th:text="${restaurant.name}"></span>
+							</a></td>
+							<td class="center" style="text-align: center;"
+								th:text="${restaurant.likeCount}"><span
+								th:if="${restaurant.likeCount} >= 100"> 🎉</span> <!-- 100 이상 좋아요 이모티콘 -->
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<!--랜덤 레스토랑  -->
+				<div id="randomRestaurantContainer"
+					class="restaurant-random-container">
+					<h3>오늘의 식당</h3>
+					<div id="currentRandomRestaurant">
+						<!-- id 변경: currentRandomRestaurant -->
+						<!-- 랜덤 레스토랑 리뷰가 여기에 표시됩니다. -->
+					</div>
+					<button id="nextRestaurantButton">다음</button>
 				</div>
 			</div>
 		</div>
 		<p
-			th:unless="${likedRestaurants != null and !likedRestaurants.isEmpty()}">아직
-			등록된 레스토랑이 없습니다.</p>
+			th:unless="${likedRestaurants != null and !likedRestaurants.isEmpty()}">
+			좋아요한 레스토랑이 없어요ㅠ</p>
 	</div>
-
-	<div class="myPageMain">
-		<div id="reviewListContainer" th:if="${!reviews.isEmpty()}"
-			class="myPageReview">
-			<div th:each="review, status : ${reviews}" class="review-box"
-				th:id="'reviewBox' + ${status.index}">
-				<div class="restaurant_name_head">
-					<span><img src="/image/bee.jpg" alt="벌 이미지"
-						style="width: 35px; height: 35px; object-fit: cover;"></span> <a
-						th:href="@{/restaurant/rtread/{id}(id=${review.restaurant.id}, reviewId=${review.id})}"
-						title="식당 정보로 이동"> <span th:text="${review.restaurant.name}"
-						class="restaurant_name" style="text-decoration: none;"></span>
-					</a>
-					<div class="rating-stars">
-						<span th:each="i : ${#numbers.sequence(1, 5)}"> <img
-							th:if="${review.rating >= i}" src="/myPageImage/full_star.png"
-							alt="꽉 찬 별"> <img th:unless="${review.rating >= i}"
-							src="/myPageImage/empty_star.png" alt="빈 별">
+	<div class="main">
+		<div class="myPageMain">
+			<div id="reviewListContainer" th:if="${!reviews.isEmpty()}"
+				class="myPageReview">
+				<div th:each="review, status : ${reviews}" class="review-box"
+					th:id="'reviewBox' + ${status.index}">
+					<div class="restaurant_name_head">
+						<span><img src="/image/bee.jpg" alt="벌 이미지"
+							style="width: 35px; height: 35px; object-fit: cover;"></span> <a
+							th:href="@{/restaurant/rtread/{id}(id=${review.restaurant.id}, reviewId=${review.id})}"
+							title="식당 정보로 이동"> <span th:text="${review.restaurant.name}"
+							class="restaurant_name" style="text-decoration: none;"></span>
+						</a>
+						<div class="rating-stars">
+							<span th:each="i : ${#numbers.sequence(1, 5)}"> <img
+								th:if="${review.rating >= i}" src="/myPageImage/full_star.png"
+								alt="꽉 찬 별"> <img th:unless="${review.rating >= i}"
+								src="/myPageImage/empty_star.png" alt="빈 별">
+							</span>
+						</div>
+						<span class="review-date"
+							th:text="'방문 날짜 :   ' + ${review.visitDate}"></span> <span
+							class="go-review"> <a
+							th:href="@{/restaurant/rtread/{restaurantId}(restaurantId=${review.restaurant.id}, reviewId=${review.id})}">리뷰보러
+								가기</a>
 						</span>
 					</div>
-					<span class="review-date"
-						th:text="'방문 날짜 :   ' + ${review.visitDate}"></span> <span
-						class="go-review"> <a
-						th:href="@{/restaurant/rtread/{restaurantId}(restaurantId=${review.restaurant.id}, reviewId=${review.id})}">리뷰보러
-							가기</a>
-					</span>
-				</div>
-				<div class="img-and-review">
-					<div class="image-box"
-						th:if="${review.attachedFile != null and !review.attachedFile.isEmpty()}">
-						<div th:if="${review.attachedFile.size() > 1}">
-							<img
-								th:src="@{'/review/display?filename='+${review.attachedFile[0].saved_filename}}"
-								alt="Review Image"
-								style="width: 160px; height: 160px; object-fit: cover;">
-							<button class="image-more-button"
-								th:onclick="|showImageModal(${review.id})|">
-								사진 더보기 <span th:text="|+${review.attachedFile.size() - 1}|"></span>
-							</button>
-							<div class="image-modal" th:id="'imageModal' + ${review.id}">
-								<div class="image-modal-content">
-									<span class="close-modal"
-										th:onclick="|closeImageModal(${review.id})|">×</span>
-									<div th:each="file : ${review.attachedFile}">
-										<img
-											th:src="@{'/review/display?filename='+${file.saved_filename}}"
-											alt="Review Image"
-											th:onclick="|showLargeImageModal('@{'/review/display?filename='+${file.saved_filename}}', ${review.id})|">
+					<div class="img-and-review">
+						<div class="image-box"
+							th:if="${review.attachedFile != null and !review.attachedFile.isEmpty()}">
+							<div th:if="${review.attachedFile.size() > 1}">
+								<img
+									th:src="@{'/review/display?filename='+${review.attachedFile[0].saved_filename}}"
+									alt="Review Image"
+									style="width: 160px; height: 160px; object-fit: cover;">
+								<button class="image-more-button"
+									th:onclick="|showImageModal(${review.id})|">
+									사진 더보기 <span th:text="|+${review.attachedFile.size() - 1}|"></span>
+								</button>
+								<div class="image-modal" th:id="'imageModal' + ${review.id}">
+									<div class="image-modal-content">
+										<span class="close-modal"
+											th:onclick="|closeImageModal(${review.id})|">×</span>
+										<div th:each="file : ${review.attachedFile}">
+											<img
+												th:src="@{'/review/display?filename='+${file.saved_filename}}"
+												alt="Review Image"
+												th:onclick="|showLargeImageModal('@{'/review/display?filename='+${file.saved_filename}}', ${review.id})|">
+										</div>
+									</div>
+								</div>
+
+								<!-- largeImageModal을 imageModal과 같은 레벨로 이동 -->
+								<div id="largeImageModal" class="modal">
+									<div class="large-image-modal-content">
+										<span class="close-modal" onclick="closeLargeImageModal()">×</span>
+										<img id="largeImage" src="" alt="Large Image">
 									</div>
 								</div>
 							</div>
-
-							<!-- largeImageModal을 imageModal과 같은 레벨로 이동 -->
-							<div id="largeImageModal" class="modal">
-								<div class="large-image-modal-content">
-									<span class="close-modal" onclick="closeLargeImageModal()">×</span>
-									<img id="largeImage" src="" alt="Large Image">
-								</div>
+							<div th:unless="${review.attachedFile.size() > 1}">
+								<img
+									th:src="@{'/review/display?filename='+${review.attachedFile[0].saved_filename}}"
+									alt="Review Image"
+									style="width: 160px; height: 160px; object-fit: cover;"
+									th:onclick="|showLargeImageModal('@{'/review/display?filename='+${review.attachedFile[0].saved_filename}}')|">
 							</div>
 						</div>
-						<div th:unless="${review.attachedFile.size() > 1}">
-							<img
-								th:src="@{'/review/display?filename='+${review.attachedFile[0].saved_filename}}"
-								alt="Review Image"
-								style="width: 160px; height: 160px; object-fit: cover;"
-								th:onclick="|showLargeImageModal('@{'/review/display?filename='+${review.attachedFile[0].saved_filename}}')|">
+						<div class="image-box"
+							th:unless="${review.attachedFile != null and !review.attachedFile.isEmpty()}">
+							<img src="/myPageImage/no-review-img.jpg" alt="No Review Image"
+								style="width: 160px; height: 160px; object-fit: cover;">
 						</div>
-					</div>
-					<div class="image-box"
-						th:unless="${review.attachedFile != null and !review.attachedFile.isEmpty()}">
-						<img src="/myPageImage/no-review-img.jpg" alt="No Review Image"
-							style="width: 160px; height: 160px; object-fit: cover;">
-					</div>
-					<div class="review-main">
-						<div class="review-rating">
-							<p>
-								친절 포인트: <span class="gauge-container"> <span
-									class="gauge"
-									th:style="'width:' + ${review.kindRating * 33.33} + '%; background-color:' + (${review.kindRating == 1 ? '#ff4c4c' : (review.kindRating == 2 ? '#ffc107' : '#4caf50')})"></span>
-								</span> 맛 포인트: <span class="gauge-container"> <span
-									class="gauge"
-									th:style="'width:' + ${review.tasteRating * 33.33} + '%; background-color:' + (${review.tasteRating == 1 ? '#ff4c4c' : (review.tasteRating == 2 ? '#ffc107' : '#4caf50')})"></span>
-								</span> 가격 포인트: <span class="gauge-container"> <span
-									class="gauge"
-									th:style="'width:' + ${review.priceRating * 33.33} + '%; background-color:' + (${review.priceRating == 1 ? '#ff4c4c' : (review.priceRating == 2 ? '#ffc107' : '#4caf50')})"></span>
-								</span>
-							</p>
-						</div>
-						<div class="review-comment">
-							<div class="recommendItems">
-								<span>추천 메뉴: </span> <span
-									th:each="reviewMenu, iterStat : ${review.reviewMenuList}"
-									th:text="${reviewMenu?.menu?.name 
+						<div class="review-main">
+							<div class="review-rating">
+								<p>
+									친절 포인트: <span class="gauge-container"> <span
+										class="gauge"
+										th:style="'width:' + ${review.kindRating * 33.33} + '%; background-color:' + (${review.kindRating == 1 ? '#ff4c4c' : (review.kindRating == 2 ? '#ffc107' : '#4caf50')})"></span>
+									</span> 맛 포인트: <span class="gauge-container"> <span
+										class="gauge"
+										th:style="'width:' + ${review.tasteRating * 33.33} + '%; background-color:' + (${review.tasteRating == 1 ? '#ff4c4c' : (review.tasteRating == 2 ? '#ffc107' : '#4caf50')})"></span>
+									</span> 가격 포인트: <span class="gauge-container"> <span
+										class="gauge"
+										th:style="'width:' + ${review.priceRating * 33.33} + '%; background-color:' + (${review.priceRating == 1 ? '#ff4c4c' : (review.priceRating == 2 ? '#ffc107' : '#4caf50')})"></span>
+									</span>
+								</p>
+							</div>
+							<div class="review-comment">
+								<div class="recommendItems">
+									<span>추천 메뉴: </span> <span
+										th:each="reviewMenu, iterStat : ${review.reviewMenuList}"
+										th:text="${reviewMenu?.menu?.name 
                 ?: reviewMenu?.customMenuName 
                 ?: ''} + ${!iterStat.last ? ', ' : ''}"></span>
+								</div>
+								<div class="review_content"
+									th:id="'reviewContent' + ${review.id}"
+									th:data-short-content="${review.reviewContents.length() > 100 ? review.reviewContents.substring(0, 100) : review.reviewContents}"
+									th:data-full-content="${review.reviewContents}">
+
+									<span th:id="'shortContent' + ${review.id}"
+										th:text="${review.reviewContents.length() > 100 ? review.reviewContents.substring(0, 100) + '...' : review.reviewContents}">
+									</span> <span th:id="'fullContent' + ${review.id}"
+										th:text="${review.reviewContents}" style="display: none;"></span>
+
+									<button th:if="${review.reviewContents.length() > 100}"
+										th:id="'moreButton' + ${review.id}" class="more-button"
+										th:attr="onclick=|toggleReview(this, '${review.id}')|">더보기</button>
+								</div>
+
 							</div>
-							<div class="review_content"
-								th:id="'reviewContent' + ${review.id}"
-								th:data-short-content="${review.reviewContents.length() > 100 ? review.reviewContents.substring(0, 100) : review.reviewContents}"
-								th:data-full-content="${review.reviewContents}">
-
-								<span th:id="'shortContent' + ${review.id}"
-									th:text="${review.reviewContents.length() > 100 ? review.reviewContents.substring(0, 100) + '...' : review.reviewContents}">
-								</span> <span th:id="'fullContent' + ${review.id}"
-									th:text="${review.reviewContents}" style="display: none;"></span>
-
-								<button th:if="${review.reviewContents.length() > 100}"
-									th:id="'moreButton' + ${review.id}" class="more-button"
-									th:attr="onclick=|toggleReview(this, '${review.id}')|">더보기</button>
-							</div>
-
+							<div class="review-create-date"
+								th:text="'리뷰 작성 날짜 : '+ ${review.createDate}"></div>
 						</div>
-						<div class="review-create-date"
-							th:text="'리뷰 작성 날짜 : '+ ${review.createDate}"></div>
 					</div>
 				</div>
 			</div>
-		</div>
-		<div class="no-review"
-			th:unless="${!myPage.beeMember.review.isEmpty()}">
-			<div class="no-review-info">
-				작성된 리뷰가 없습니다ㅠ
-				<p th:if="${#authentication.isAuthenticated() and isOwner}">
-					<a href="/">리뷰 작성하러 가기</a> 👉
-				</p>
-			</div>
-		</div>
-
-		<div class="ranking">
-			<h2>리뷰왕👑</h2>
-			<table class="table table-striped">
-				<thead>
-					<tr>
-						<th>#</th>
-						<th style="text-align: left;">닉네임</th>
-						<th style="text-align: light; white-space: nowrap;">리뷰 수</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr th:each="myPage, status : ${reviewCount}"
-						th:if="${status.index} < 4">
-						<td class="center" th:if="${status.index} == 0">🥇</td>
-						<td class="center" th:if="${status.index} == 1">🥈</td>
-						<td class="center" th:if="${status.index} == 2">🥉</td>
-						<td class="center" th:unless="${status.index} < 3"
-							th:text="${status.index + 1} + ." style="padding-left: 8px;"></td>
-						<td class="center"><a
-							th:href="@{/member/myPage(id=${myPage.id})}"
-							class="nickname-link"> <span
-								th:text="${myPage.beeMember.nickname}"></span>
-						</a> 님</td>
-						<td class="center" style="text-align: center;"
-							th:text="${myPage.beeMember.review.size()}"></td>
-					</tr>
-				</tbody>
-			</table>
-
-
-			<div class="random-review" id="randomReviewSlider">
-				<h3>오늘의 리뷰</h3>
-				<div id="randomReviewContainer">
-					<div class="random-review-item" id="currentRandomReview">
-						<!-- JavaScript에서 내용을 채웁니다. -->
-					</div>
+			<div class="no-review"
+				th:unless="${!myPage.beeMember.review.isEmpty()}">
+				<div class="no-review-info">
+					작성된 리뷰가 없습니다ㅠ
+					<p th:if="${#authentication.isAuthenticated() and isOwner}">
+						<a href="/">리뷰 작성하러 가기</a> 👉
+					</p>
 				</div>
-				<button id="nextReviewsButton">다음</button>
+			</div>
+
+			<div class="ranking">
+				<h2>리뷰왕👑</h2>
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th style="text-align: left;">닉네임</th>
+							<th style="text-align: light; white-space: nowrap;">리뷰 수</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="myPage, status : ${reviewCount}"
+							th:if="${status.index} < 4">
+							<td class="center" th:if="${status.index} == 0">🥇</td>
+							<td class="center" th:if="${status.index} == 1">🥈</td>
+							<td class="center" th:if="${status.index} == 2">🥉</td>
+							<td class="center" th:unless="${status.index} < 3"
+								th:text="${status.index + 1} + ." style="padding-left: 8px;"></td>
+							<td class="center"><a
+								th:href="@{/member/myPage(id=${myPage.id})}"
+								class="nickname-link"> <span
+									th:text="${myPage.beeMember.nickname}"></span>
+							</a> 님</td>
+							<td class="center" style="text-align: center;"
+								th:text="${myPage.beeMember.review.size()}"></td>
+						</tr>
+					</tbody>
+				</table>
+
+
+				<div class="random-review" id="randomReviewSlider">
+					<h3>오늘의 리뷰</h3>
+					<div id="randomReviewContainer" class="review-random-container">
+						<div class="random-review-item" id="currentRandomReview">
+							<!-- JavaScript에서 내용을 채웁니다. -->
+						</div>
+					</div>
+					<button id="nextReviewButton">다음</button>
+				</div>
 			</div>
 		</div>
-	</div>
 
 
-	<!-- 위로가는 화살표 버튼 -->
-	<a onclick="scrollToTop()" id="scrollToTopButton"> <svg
-			xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-			viewBox="0 0 24 24" fill="none" stroke="currentColor"
-			stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-			class="feather-arrow-up">
+		<!-- 위로가는 화살표 버튼 -->
+		<a onclick="scrollToTop()" id="scrollToTopButton"> <svg
+				xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+				viewBox="0 0 24 24" fill="none" stroke="currentColor"
+				stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+				class="feather-arrow-up">
         <line x1="12" y1="19" x2="12" y2="5"></line>
         <polyline points="7 10 12 5 17 10"></polyline>
     </svg>
-	</a>
+		</a>
 
-	<nav th:if="${reviews.totalPages > 1}" aria-label="Page navigation"
-		class="pagination-container">
-		<ul class="pagination">
-			<!-- 5페이지씩 이동하는 버튼 -->
-			<li th:if="${reviews.number > 4}" class="page-item"><a
-				class="page-link"
-				th:href="@{/member/myPage(id=${myPage.id}, sort=${currentSort}, page=${reviews.number - 5})}">
-					<i class="fas fa-angle-double-left"></i>
-			</a></li>
+		<nav th:if="${reviews.totalPages > 1}" aria-label="Page navigation"
+			class="pagination-container">
+			<ul class="pagination">
+				<!-- 5페이지씩 이동하는 버튼 -->
+				<li th:if="${reviews.number > 4}" class="page-item"><a
+					class="page-link"
+					th:href="@{/member/myPage(id=${myPage.id}, sort=${currentSort}, page=${reviews.number - 5})}">
+						<i class="fas fa-angle-double-left"></i>
+				</a></li>
 
-			<!-- 이전 페이지 버튼 -->
-			<li th:if="${reviews.hasPrevious}" class="page-item"><a
-				class="page-link"
-				th:href="@{/member/myPage(id=${myPage.id}, sort=${currentSort}, page=${reviews.number - 1})}">
-					<i class="fas fa-chevron-left"></i>
-			</a></li>
+				<!-- 이전 페이지 버튼 -->
+				<li th:if="${reviews.hasPrevious}" class="page-item"><a
+					class="page-link"
+					th:href="@{/member/myPage(id=${myPage.id}, sort=${currentSort}, page=${reviews.number - 1})}">
+						<i class="fas fa-chevron-left"></i>
+				</a></li>
 
-			<!-- 현재 페이지를 기준으로 5페이지 링크 표시 -->
-			<li th:each="i : ${#numbers.sequence(0, reviews.totalPages - 1)}"
-				th:if="${i >= (reviews.number - 2) && i <= (reviews.number + 2)}"
-				th:classappend="${reviews.number == i} ? 'active' : ''"><a
-				class="page-link"
-				th:href="@{/member/myPage(id=${myPage.id}, sort=${currentSort}, page=${i})}"
-				th:text="${i + 1}"></a></li>
+				<!-- 현재 페이지를 기준으로 5페이지 링크 표시 -->
+				<li th:each="i : ${#numbers.sequence(0, reviews.totalPages - 1)}"
+					th:if="${i >= (reviews.number - 2) && i <= (reviews.number + 2)}"
+					th:classappend="${reviews.number == i} ? 'active' : ''"><a
+					class="page-link"
+					th:href="@{/member/myPage(id=${myPage.id}, sort=${currentSort}, page=${i})}"
+					th:text="${i + 1}"></a></li>
 
-			<!-- 다음 페이지 버튼 -->
-			<li th:if="${reviews.hasNext}" class="page-item"><a
-				class="page-link"
-				th:href="@{/member/myPage(id=${myPage.id}, sort=${currentSort}, page=${reviews.number + 1})}">
-					<i class="fas fa-chevron-right"></i>
-			</a></li>
+				<!-- 다음 페이지 버튼 -->
+				<li th:if="${reviews.hasNext}" class="page-item"><a
+					class="page-link"
+					th:href="@{/member/myPage(id=${myPage.id}, sort=${currentSort}, page=${reviews.number + 1})}">
+						<i class="fas fa-chevron-right"></i>
+				</a></li>
 
-			<!-- 5페이지씩 이동하는 버튼 -->
-			<li th:if="${reviews.totalPages - reviews.number > 5}"
-				class="page-item"><a class="page-link"
-				th:href="@{/member/myPage(id=${myPage.id}, sort=${currentSort}, page=${reviews.number + 5})}">
-					<i class="fas fa-angle-double-right"></i>
-			</a></li>
-		</ul>
-	</nav>
+				<!-- 5페이지씩 이동하는 버튼 -->
+				<li th:if="${reviews.totalPages - reviews.number > 5}"
+					class="page-item"><a class="page-link"
+					th:href="@{/member/myPage(id=${myPage.id}, sort=${currentSort}, page=${reviews.number + 5})}">
+						<i class="fas fa-angle-double-right"></i>
+				</a></li>
+			</ul>
+		</nav>
 
-	<div class="under-bar">
-		<img src="/image/bee.jpg" class="under-image"> <span
-			class="under-comment">DeliciousBee</span>
+		<div class="under-bar">
+			<img src="/image/bee.jpg" class="under-image"> <span
+				class="under-comment">DeliciousBee</span>
+		</div>
 	</div>
-
 
 
 	<script
@@ -512,6 +589,36 @@
 		    document.getElementById('visitorsModal').style.display = 'none';
 		    window.onclick = null; // 닫힐 때 이벤트 리스너 제거
 		}
+
+		//메뉴 모달
+		  function showRtMenuModal(modalId) {
+	            const modal = document.getElementById(modalId);
+	            const underBar = document.querySelector('.under-bar'); 
+	            // 이미 열려있는 경우 닫기
+	            if (modal.style.display === 'block') {
+	                closeRtMenuModal(modalId);
+	                return; // 함수 종료
+	            }
+			
+	            modal.style.display = 'block';
+	            underBar.style.marginTop = '200px';
+	             // 모달 외부 클릭 시 닫기 (클로저 함수 사용)
+			   function handleImageModalOutsideClick(event) {
+			     if (event.target == modal) {
+			       closeRtMenuModal(modalId); 
+			     }
+			   }
+			   window.addEventListener('click', handleImageModalOutsideClick);
+	        }
+
+	        function closeRtMenuModal(modalId) {
+	             const modal = document.getElementById(modalId);
+	             const underBar = document.querySelector('.under-bar'); // .under-bar 선택
+			     modal.style.display = 'none';
+			     underBar.style.marginTop = '0';
+			     window.removeEventListener('click', handleImageModalOutsideClick);  // 리스너 제거
+	            
+	        }
 
 
 
@@ -674,7 +781,7 @@ function sortReviews() {
         });
     }
 
-    $("#nextReviewsButton").click(function() {
+    $("#nextReviewButton").click(function() {
         clearInterval(intervalId); // 수동 클릭 시 자동 슬라이드 멈춤
         currentReviewIndex = (currentReviewIndex + 1) % randomReviews.length;
         showRandomReview(currentReviewIndex);
@@ -689,31 +796,143 @@ function sortReviews() {
     }
 });
  
+//랜덤 레스토랑
+ $(document).ready(function() {
+     let currentRestaurantIndex = 0;
+     let randomRestaurants = [];
+     let restaurantIntervalId; // 자동 슬라이드를 위한 interval ID 저장
+
+     function loadRandomRestaurants() {
+         $.ajax({
+             url: '/member/randomRestaurants',
+             type: 'GET',
+             success: function(data) {
+                 randomRestaurants = JSON.parse(data);
+                 if (randomRestaurants.length > 0) {
+                     showRandomRestaurant(currentRestaurantIndex);
+                     startRestaurantAutoSlide(); // 함수명 변경
+                 }
+             },
+             error: function(error) {
+                 console.error('랜덤 레스토랑 가져오기 실패:', error);
+             }
+         });
+     }
+
+     loadRandomRestaurants(); // 페이지 로드 시 레스토랑 로드
+
+     function showRandomRestaurant(index) {
+         if (randomRestaurants.length === 0) {
+             $('#currentRandomRestaurant').html("<p>오늘의 레스토랑이 없습니다.</p>"); // ID 변경 반영
+             return;
+         }
+
+         const restaurant = randomRestaurants[index];
+         let restaurantHtml = `
+              <a href="/restaurant/rtread/${restaurant.restaurantId}?reviewId=${restaurant.restaurantId}" class="random-restaurant-link">
+                  <div class="random-restaurant-image">
+                      <img src="${restaurant.imageUrl}" alt="Random Restaurant Image">
+                  </div>
+                  <div class="restaurant-info-wrapper"> <span class="random-restaurant-content">${restaurant.restaurantName}</span>
+                  <div class="random-restaurant-like">
+                    <div class="heart-icon">
+                      <span class="like-count">${restaurant.likeCount}</span>
+                    </div>
+                  </div>
+                </div>
+                  
+              </a>
+          `;
+
+          $('#currentRandomRestaurant').slideUp(800, function() { // ID 변경 반영
+              $(this).html(restaurantHtml).slideDown(800);
+          });
+      }
+
+     $("#nextRestaurantButton").click(function() { // ID 변경 반영
+         clearInterval(restaurantIntervalId); // interval ID 변수명 변경
+         currentRestaurantIndex = (currentRestaurantIndex + 1) % randomRestaurants.length;
+         showRandomRestaurant(currentRestaurantIndex);
+         startRestaurantAutoSlide(); // 함수명 변경
+     });
+
+
+     function startRestaurantAutoSlide() { // 함수명 변경
+         restaurantIntervalId = setInterval(function() { // interval ID 변수명 변경
+             currentRestaurantIndex = (currentRestaurantIndex + 1) % randomRestaurants.length;
+             showRandomRestaurant(currentRestaurantIndex);
+         }, 7000);
+     }
+ });
  
- function showTab(tab) {
-	    const rankingElement = document.querySelector('.ranking'); // .ranking 요소 선택
+ 
+ 
+ //탭 변경******************
+ let pageFullyLoaded = false;
+ let currentTab = 'myReview'; // 현재 선택된 탭을 추적
 
-	    if (tab === 'myReview') {
-	        document.getElementById('reviewListContainer').style.display = 'block';
-	        document.getElementById('myRestaurantContent').style.display = 'none';
-	        rankingElement.style.display = 'block'; // 마이리뷰 탭에서 랭킹 표시
-	        document.getElementById('reviewSortContainer').style.display = 'block';
-	        document.querySelector('.pagination-container').style.display = 'block';
-	        document.getElementById('reviewListContainer').classList.add('myPageReview'); // 클래스 추가
-	    } else if (tab === 'myRestaurant') {
-	        document.getElementById('reviewListContainer').style.display = 'none';
-	        document.getElementById('myRestaurantContent').style.display = 'block';
-	        rankingElement.style.display = 'none'; // 마이레스토랑 탭에서 랭킹 숨김
-	        document.getElementById('reviewSortContainer').style.display = 'none';
-	        document.querySelector('.pagination-container').style.display = 'none'; 
-	    }
-	}
-
- // 페이지 로드 시 기본적으로 "마이리뷰"를 보이도록 설정
- window.onload = function() {
+ document.addEventListener('DOMContentLoaded', function() {
+     // DOM이 로드되면 기본 탭 설정
      showTab('myReview');
- };
+     
+     // 탭 클릭 이벤트 리스너 추가
+     document.querySelectorAll('.nav-item button').forEach(button => {
+         button.addEventListener('click', function() {
+             const tabName = this.getAttribute('onclick').match(/'(.+)'/)[1];
+             if (!pageFullyLoaded && tabName === 'myRestaurant') {
+                 alert('페이지 로딩 중입니다. 잠시만 기다려 주세요.'); // 알림창 추가
+             } else {
+                 showTab(tabName);
+             }
+         });
+     });
+ });
+
+ window.addEventListener('load', function() {
+     // 페이지가 완전히 로드되면 pageFullyLoaded를 true로 설정
+     pageFullyLoaded = true;
+ });
+
+ function showTab(tab) {
+
+     currentTab = tab; // 현재 탭 업데이트
+
+     const reviewListContainer = document.getElementById('reviewListContainer');
+     const myRestaurantContent = document.getElementById('myRestaurantContent');
+     const rankingElement = document.querySelector('.ranking');
+     const paginationContainer = document.querySelector('.pagination-container');
+     const reviewSort = document.getElementById('reviewSort');
+     const navItems = document.querySelectorAll('.nav-item');
+
+     navItems.forEach(item => item.classList.remove('active'));
+
+     if (tab === 'myReview') {
+         reviewListContainer.style.display = 'block';
+         myRestaurantContent.style.display = 'none';
+         rankingElement.style.display = 'block';
+         reviewSort.style.display = 'block';
+         paginationContainer.style.display = 'block';
+         document.querySelector('.nav-item:first-child').classList.add('active');
+     } else if (tab === 'myRestaurant') {
+         reviewListContainer.style.display = 'none';
+         myRestaurantContent.style.display = 'block';
+         rankingElement.style.display = 'none';
+         reviewSort.style.display = 'none';
+         paginationContainer.style.display = 'none';
+         document.querySelector('.nav-item:last-child').classList.add('active');
+     }
+ }
+
  
+ function openModal(modalId) {
+     const modal = document.getElementById(modalId);
+     modal.style.display = 'block';
+ }
+
+ function closeModal(modalId) {
+     const modal = document.getElementById(modalId);
+     modal.style.display = 'none';
+ }
 	</script>
 	<script th:src="@{/js/layout.js}"></script>
 

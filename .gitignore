@@ -31,6 +31,6 @@ out/
 /.nb-gradle/
 ### VS Code ###
 .vscode/
-/src/main/resources/application.properties
-/src/main/resources/application.yml
-/src/main/resources/deliciousbee-acb114448e3c.json
+#/src/main/resources/application.properties
+#/src/main/resources/application.yml
+#/src/main/resources/deliciousbee-acb114448e3c.json

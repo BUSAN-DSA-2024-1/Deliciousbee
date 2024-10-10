@@ -1,19 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="ko">
 <head>
-
   <meta charset="UTF-8">
-  <title>메시지 보내기</title>
+  <title>메시지함</title>
+  <!-- jQuery 라이브러리 로드 -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- Thymeleaf를 사용하는 경우, 현재 사용자의 닉네임을 서버에서 전달받습니다 -->
   <script th:inline="javascript">
     /*<![CDATA[*/
     var currentUser = '[[${auth.username}]]';
     currentUser = currentUser.replace(/"/g, ''); // 모든 따옴표 제거
     /*]]>*/
   </script>
+
   <style>
-    /* 스타일 추가 (선택사항) */
+    /* 기본 스타일 설정 */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+
     /* 네비게이션 바 스타일 */
     .navbar {
       background-color: #343a40;
@@ -43,6 +52,7 @@
       color: white;
       text-decoration: none;
       font-size: 16px;
+      cursor: pointer;
     }
 
     .navbar-menu a:hover {
@@ -52,6 +62,10 @@
     /* 섹션 스타일 */
     .section {
       padding: 20px;
+      background-color: #fff;
+      margin: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
     .section h2 {
@@ -65,11 +79,11 @@
     }
 
     .message-list li {
-      background-color: white;
+      background-color: #f9f9f9;
       margin-bottom: 10px;
       padding: 15px;
       border-radius: 5px;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
     }
 
     /* 메시지 팝업 스타일 */
@@ -84,11 +98,14 @@
       padding: 20px;
       background-color: white;
       z-index: 1000;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      border-radius: 10px;
     }
 
     .message-form h2 {
       margin-top: 0;
+      margin-bottom: 15px;
+      color: #333;
     }
 
     .message-form label {
@@ -134,176 +151,226 @@
     .message-form button:hover {
       opacity: 0.9;
     }
+
+    /* 팝업 배경 어둡게 */
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+    }
   </style>
 </head>
-
 <body>
 
-  <!-- 네비게이션 바 -->
-  <nav class="navbar">
-    <div class="navbar-brand">메시지함</div>
-    <ul class="navbar-menu">
-      <li><a href="#" onclick="showSection('inbox')">받은 메시지</a></li>
-      <li><a href="#" onclick="showSection('sent')">보낸 메시지</a></li>
-      <li><a href="#" onclick="openMessagePopup()">새 메시지</a></li>
-    </ul>
-  </nav>
+<!-- 네비게이션 바 -->
+<nav class="navbar">
+  <div class="navbar-brand">메시지함</div>
+  <ul class="navbar-menu">
+    <li><a href="#" onclick="showSection('inbox')">받은 메시지</a></li>
+    <li><a href="#" onclick="showSection('sent')">보낸 메시지</a></li>
+    <li><a href="#" onclick="openMessagePopup()">새 메시지</a></li>
+  </ul>
+</nav>
 
-  <!-- 받은 메시지 섹션 -->
-  <div class="section" id="inboxSection" style="display: none;">
-    <h2>받은 메시지</h2>
-    <ul id="inboxList" class="message-list"></ul>
-  </div>
+<!-- 받은 메시지 섹션 -->
+<div class="section" id="inboxSection" style="display: none;">
+  <h2>받은 메시지</h2>
+  <ul id="inboxList" class="message-list"></ul>
+</div>
 
-  <!-- 보낸 메시지 섹션 -->
-  <div class="section" id="sentSection" style="display: none;">
-    <h2>보낸 메시지</h2>
-    <ul id="sentList" class="message-list"></ul>
-  </div>
+<!-- 보낸 메시지 섹션 -->
+<div class="section" id="sentSection" style="display: none;">
+  <h2>보낸 메시지</h2>
+  <ul id="sentList" class="message-list"></ul>
+</div>
 
-  <!-- 메시지 작성 팝업 -->
-  <div class="message-popup" id="messagePopup">
-    <form class="message-form">
-      <h2>새 메시지 작성</h2>
-      <label for="senderId">보내는 사람 ID:</label>
-      <input type="text" id="senderId" name="sender">
+<!-- 팝업 배경 -->
+<div class="overlay" id="overlay" onclick="closeMessagePopup()"></div>
 
-      <label for="receiverId">받는 사람 ID:</label>
-      <input type="text" id="receiverId" name="receiver">
+<!-- 메시지 작성 팝업 -->
+<div class="message-popup" id="messagePopup">
+  <form class="message-form" onsubmit="return false;">
+    <h2>새 메시지 작성</h2>
+    <label for="senderNickname">보내는 사람 닉네임:</label>
+    <input type="text" id="senderNickname" name="senderNickname" readonly>
 
-      <label for="message">내용:</label>
-      <textarea id="message" name="message"></textarea>
+    <label for="receiverNickname">받는 사람 닉네임:</label>
+    <input type="text" id="receiverNickname" name="receiverNickname" required>
 
-      <div class="form-buttons">
-        <button type="button" onclick="sendMessage()">보내기</button>
-        <button type="button" class="cancel" onclick="closeMessagePopup()">취소</button>
-      </div>
-    </form>
-  </div>
+    <label for="message">내용:</label>
+    <textarea id="message" name="message" required></textarea>
 
-  <script>
-    $(document).ready(function () {
-      // 기본으로 받은 메시지 섹션을 표시
-      showSection('inbox');
+    <div class="form-buttons">
+      <button type="button" onclick="sendMessage()">보내기</button>
+      <button type="button" class="cancel" onclick="closeMessagePopup()">취소</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  $(document).ready(function() {
+    // 기본으로 받은 메시지 섹션을 표시
+    showSection('inbox');
+    // 메시지 팝업에서 보내는 사람 닉네임 필드를 현재 사용자 닉네임으로 설정
+    $('#senderNickname').val(currentUser);
+  });
+
+  function openMessagePopup() {
+    $('#overlay').show();
+    $('#messagePopup').fadeIn();
+  }
+
+  function closeMessagePopup() {
+    $('#overlay').hide();
+    $('#messagePopup').fadeOut();
+    // 폼 초기화
+    document.querySelector(".message-form").reset();
+    // 보내는 사람 닉네임 다시 설정
+    $('#senderNickname').val(currentUser);
+  }
+
+  function sendMessage() {
+    const senderNickname = $('#senderNickname').val().trim(); // 현재 사용자 닉네임 사용
+    const receiverNickname = $('#receiverNickname').val().trim();
+    const content = $('#message').val().trim();
+
+    if (!receiverNickname || !content) {
+      alert("받는 사람과 내용을 입력해야 합니다.");
+      return;
+    }
+
+    $.ajax({
+      type: "POST",
+      url: "/api/messages/send",
+      contentType: "application/json",
+      data: JSON.stringify({
+        senderNickname: senderNickname,
+        receiverNickname: receiverNickname,
+        content: content
+      }),
+      success: function(response) {
+        alert("메시지가 전송되었습니다.");
+        closeMessagePopup();
+        // 메시지 목록을 새로 고침
+        if (currentSection === 'sent') {
+          loadSentMessages();
+        }
+        if (currentSection === 'inbox') {
+          loadReceivedMessages();
+        }
+      },
+      error: function(error) {
+        console.error("메시지 전송 실패:", error);
+        alert("메시지 전송에 실패했습니다. 닉네임을 확인해주세요.");
+      }
     });
+  }
 
-    function openMessagePopup() {
-      document.getElementById("messagePopup").style.display = "block";
+  let currentSection = '';
+
+  function showSection(section) {
+    currentSection = section;
+    // 모든 섹션 숨기기
+    $('#inboxSection').hide();
+    $('#sentSection').hide();
+
+    // 해당 섹션 표시 및 데이터 로드
+    if (section === 'inbox') {
+      $('#inboxSection').show();
+      loadReceivedMessages();
+    } else if (section === 'sent') {
+      $('#sentSection').show();
+      loadSentMessages();
     }
+  }
 
-    function closeMessagePopup() {
-      document.getElementById("messagePopup").style.display = "none";
-    }
+  function loadReceivedMessages() {
+    const receiverNickname = currentUser; // 현재 사용자 닉네임 사용
 
-    function sendMessage() {
-      const senderId = currentUser; // 현재 사용자 ID 사용
-      const receiverId = document.getElementById("receiverId").value;
-      const content = document.getElementById("message").value;
+    $.ajax({
+      type: "GET",
+      url: `/api/messages/received/${encodeURIComponent(receiverNickname)}`,
+      success: function(response) {
+        const inboxList = $("#inboxList");
+        inboxList.empty();
 
-      if (!receiverId || !content) {
-        alert("받는 사람과 내용을 입력해야 합니다.");
-        return;
+        if (response.length === 0) {
+          inboxList.append('<li>받은 메시지가 없습니다.</li>');
+          return;
+        }
+
+        response.forEach(message => {
+          const listItem = `
+            <li>
+              <strong>보낸 사람:</strong> ${escapeHtml(message.senderNickname)}<br>
+              <strong>내용:</strong> ${escapeHtml(message.content)}<br>
+              <small>${formatTimestamp(message.timestamp)}</small>
+            </li>
+          `;
+          inboxList.append(listItem);
+        });
+      },
+      error: function(error) {
+        console.error("메시지 로드 실패:", error);
+        alert("받은 메시지를 로드하는 데 실패했습니다.");
       }
+    });
+  }
 
-      $.ajax({
-        type: "POST",
-        url: "/api/messages/send",
-        contentType: "application/json",
-        data: JSON.stringify({
-          senderId: senderId,
-          receiverId: receiverId,
-          content: content
-        }),
-        success: function (response) {
-          alert("메시지가 전송되었습니다.");
-          closeMessagePopup();
-          // 메시지 목록을 새로 고침
-          if (currentSection === 'sent') {
-            loadSentMessages();
-          }
-          if (currentSection === 'inbox') {
-            loadReceivedMessages();
-          }
-        },
-        error: function (error) {
-          console.error("메시지 전송 실패:", error);
-          alert("메시지 전송에 실패했습니다.");
+  function loadSentMessages() {
+    const senderNickname = currentUser; // 현재 사용자 닉네임 사용
+
+    $.ajax({
+      type: "GET",
+      url: `/api/messages/sent/${encodeURIComponent(senderNickname)}`,
+      success: function(response) {
+        const sentList = $("#sentList");
+        sentList.empty();
+
+        if (response.length === 0) {
+          sentList.append('<li>보낸 메시지가 없습니다.</li>');
+          return;
         }
-      });
-    }
 
-    let currentSection = '';
-
-    function showSection(section) {
-      currentSection = section;
-      // 모든 섹션 숨기기
-      document.getElementById("inboxSection").style.display = "none";
-      document.getElementById("sentSection").style.display = "none";
-
-      // 해당 섹션 표시 및 데이터 로드
-      if (section === 'inbox') {
-        document.getElementById("inboxSection").style.display = "block";
-        loadReceivedMessages();
-      } else if (section === 'sent') {
-        document.getElementById("sentSection").style.display = "block";
-        loadSentMessages();
+        response.forEach(message => {
+          const listItem = `
+            <li>
+              <strong>받는 사람:</strong> ${escapeHtml(message.receiverNickname)}<br>
+              <strong>내용:</strong> ${escapeHtml(message.content)}<br>
+              <small>${formatTimestamp(message.timestamp)}</small>
+            </li>
+          `;
+          sentList.append(listItem);
+        });
+      },
+      error: function(error) {
+        console.error("메시지 로드 실패:", error);
+        alert("보낸 메시지를 로드하는 데 실패했습니다.");
       }
-    }
+    });
+  }
 
-    function loadReceivedMessages() {
-      const receiverId = currentUser; // 현재 사용자 ID 사용
-      console.log(currentUser);
-      $.ajax({
-        type: "GET",
-        url: `/api/messages/received/${receiverId}`,
-        success: function (response) {
-          const inboxList = document.getElementById("inboxList");
-          inboxList.innerHTML = '';
-          response.forEach(message => {
-            const listItem = document.createElement('li');
-            listItem.innerHTML = `
-              <strong>보낸 사람:</strong> ${message.senderId}<br>
-              <strong>내용:</strong> ${message.content}<br>
-              <small>${message.timestamp}</small>
-            `;
-            inboxList.appendChild(listItem);
-          });
-        },
-        error: function (error) {
-          console.error("메시지 로드 실패:", error);
-          alert("받은 메시지를 로드하는 데 실패했습니다.");
-        }
-      });
-    }
+  function formatTimestamp(timestamp) {
+    const date = new Date(timestamp);
+    return date.toLocaleString();
+  }
 
-    function loadSentMessages() {
-      const senderId = currentUser; // 현재 사용자 ID 사용
-
-      $.ajax({
-        type: "GET",
-        url: `/api/messages/sent/${senderId}`,
-        success: function (response) {
-          const sentList = document.getElementById("sentList");
-          sentList.innerHTML = '';
-          response.forEach(message => {
-            const listItem = document.createElement('li');
-            listItem.innerHTML = `
-              <strong>받는 사람:</strong> ${message.receiverId}<br>
-              <strong>내용:</strong> ${message.content}<br>
-              <small>${message.timestamp}</small>
-            `;
-            sentList.appendChild(listItem);
-          });
-        },
-        error: function (error) {
-          console.error("메시지 로드 실패:", error);
-          alert("보낸 메시지를 로드하는 데 실패했습니다.");
-        }
-      });
-    }
-
-  </script>
+  function escapeHtml(text) {
+    var map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+  }
+</script>
 
 </body>
-
 </html>

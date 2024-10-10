@@ -84,7 +84,7 @@ public class Review {
     @JsonProperty
     private boolean canEdit;
     
-    @OneToMany(mappedBy = "review", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<ReviewMenu> reviewMenuList;
     
@@ -94,7 +94,7 @@ public class Review {
 	
 	@OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-    private List<ReviewKeyWord> keywords = new ArrayList<>();;
+    private List<ReviewKeyWord> keywords = new ArrayList<>();
 	
 	@ManyToOne
 	@JsonIgnore

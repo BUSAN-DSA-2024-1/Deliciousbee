@@ -69,7 +69,7 @@ public class ReportController {
 			log.error("Report submission error", e);
 		}
 
-		messageService.ReportMessage(loginMember.getMember_id(),"리뷰 신고가 완료되었습니다.");
+		messageService.ReportMessage(loginMember.getNickname(),"리뷰 신고가 완료되었습니다.");
 
 		return ResponseEntity.ok(response);
 	}
@@ -142,7 +142,7 @@ public class ReportController {
 			Restaurant restaurant = restaurantService.findRestaurant(restaurantId);
 			restaurantService.updateApprove(restaurant);
 			BeeMember member = restaurant.getMember();
-			messageService.ReportMessage(member.getMember_id(),"레스토랑이 승인이 되었습니다.");
+			messageService.ReportMessage(member.getNickname(),"레스토랑이 승인이 되었습니다.");
 
 
 			response.put("success", true);
@@ -219,7 +219,7 @@ public class ReportController {
 		RestaurantReportDTO reportDTO = new RestaurantReportDTO(report);
 
 
-		messageService.ReportMessage(loginMember.getMember_id(),"레스토랑 신고가 제출되었습니다.");
+		messageService.ReportMessage(loginMember.getNickname(),"레스토랑 신고가 제출되었습니다.");
 
 		Map<String, Object> response = new HashMap<>();
 		response.put("success", true);
