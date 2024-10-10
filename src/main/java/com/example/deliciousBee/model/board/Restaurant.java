@@ -39,11 +39,6 @@ public class Restaurant {
 	
     private String mainCategory;
     
-    @Enumerated(EnumType.STRING)
-    private MoodType mood; 
-    
-    @Enumerated(EnumType.STRING)
-    private PurposeType purpose;
     
 	@ManyToOne
 	@JoinColumn(name = "member_id")

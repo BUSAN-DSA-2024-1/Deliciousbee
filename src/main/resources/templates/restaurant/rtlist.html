@@ -161,14 +161,17 @@
         display: flex;
         width: 99.5%;
     }
-    .filter-box {
-        border: none;
-        border-radius: 12px;
-        padding: 20px;
-        background-color: #FFFFFF;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        width: 180px; /* 필터 박스의 고정 너비 */
-    }
+.filter-box {
+    position: sticky; /* 필터 박스가 스크롤 시 고정되도록 설정 */
+    top: 20px; /* 화면 상단에서 20px 떨어진 위치에서 고정됨 */
+    border: none;
+    border-radius: 12px;
+    padding: 20px;
+    background-color: #FFFFFF;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    width: 180px; /* 필터 박스의 고정 너비 */
+}
+
 
     /* 필터 제목 스타일 */
     .filter-box h5 {
@@ -802,19 +805,6 @@
                     <div class="filter-category">
                         <h5>카테고리</h5>
                         <div id="categoryFilters"></div>
-                        <button class="btn-toggle" id="toggleCategory">펼쳐보기</button>
-                    </div>
-                    <!-- 분위기 필터 -->
-                    <div class="filter-ambiance mt-3">
-                        <h5>분위기</h5>
-                        <div id="ambianceFilters"></div>
-                        <button class="btn-toggle" id="toggleAmbiance">펼쳐보기</button>
-                    </div>
-                    <!-- 방문목적 필터 -->
-                    <div class="filter-purpose">
-                        <h5>방문목적</h5>
-                        <div id="purposeFilters"></div>
-                        <button class="btn-toggle" id="togglePurpose">펼쳐보기</button>
                     </div>
                 </div>
             </div>
@@ -1291,7 +1281,7 @@
         function renderFilters(elementId, filters) {
             let html = '';
             filters.forEach((filter, index) => {
-                const isHidden = index >= 3 ? 'style="display:none;"' : '';
+                const isHidden = index >= 10 ? 'style="display:none;"' : '';
                 html += `
                         <div class="form-check" ${isHidden}>
                             <input class="form-check-input custom-checkbox" type="checkbox" id="${elementId}-${index}" data-category="${filter}">
@@ -1303,24 +1293,6 @@
             document.getElementById(elementId).innerHTML = html;
         }
 
-        // 필터 토글
-        $('#toggleCategory').click(function () {
-            const $target = $('#categoryFilters .form-check').slice(3);
-            $target.slideToggle();
-            $(this).text($target.is(':visible') ? '접기' : '펼쳐보기');
-        });
-
-        $('#toggleAmbiance').click(function () {
-            const $target = $('#ambianceFilters .form-check').slice(3);
-            $target.slideToggle();
-            $(this).text($target.is(':visible') ? '접기' : '펼쳐보기');
-        });
-
-        $('#togglePurpose').click(function () {
-            const $target = $('#purposeFilters .form-check').slice(3);
-            $target.slideToggle();
-            $(this).text($target.is(':visible') ? '접기' : '펼쳐보기');
-        });
 
         // 필터링 함수
         function filterRestaurants() {
@@ -1368,12 +1340,8 @@
         // 필터 데이터 로드 함수
         function loadFilters() {
             const categories = ['한식', '중식', '일식', '양식', '아시안', '패스트푸드', '디저트'];
-            const ambiances = ['가성비 좋은', '분위기 좋은', '고급스러운', '조용한', '시끌벅적', '뷰맛집', '이색적인', '로컬', '예쁜', '힙한'];
-            const purposes = ['점심식사', '아침식사', '저녁식사', '가족외식', '데이트', '회식', '모임', '접대', '혼밥', '혼술', '아이동반', '혼카페', '건강식'];
 
             renderFilters('categoryFilters', categories);
-            renderFilters('ambianceFilters', ambiances);
-            renderFilters('purposeFilters', purposes);
         }
     });
 

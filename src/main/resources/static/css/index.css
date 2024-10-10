@@ -208,11 +208,24 @@ input:hover {
     overflow: hidden;
 }
 
-.content-wrapper .image-wrapper {
+/* Hover 효과 */
+.content-wrapper:hover .image-wrapper {
+    filter: blur(7px) brightness(0.9); /* 블러 효과 + 밝기 조절 */
+    position: relative;
+}
+
+/* 어둡게 만드는 효과를 위한 ::after 가상 요소 추가 */
+.content-wrapper:hover .image-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    transition: filter 0.6s, transform 0.6s;
+    background-color: rgba(0, 0, 0, 0.4); /* 어둡게 만드는 반투명 검은색 */
+    border-radius: 17px; /* 이미지 모서리와 맞추기 위해 동일한 border-radius */
 }
+
 
 .intro-content {
     border-radius: 17px;
@@ -299,12 +312,6 @@ input:hover {
 .slider-buttons button:active {
     color: #777; /* 클릭 시 더 진한 색상 */
     transform: scale(1.1); /* 클릭 시 살짝 축소 */
-}
-
-
-
-.content-wrapper:hover .image-wrapper {
-    filter: blur(7px);
 }
 
 .content-wrapper:hover .intro-content {
