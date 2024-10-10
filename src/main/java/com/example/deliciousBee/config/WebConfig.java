@@ -13,7 +13,7 @@ public class WebConfig implements WebMvcConfigurer { //거쳐서 서버켜라
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://deliciousbee.shop")
+                        .allowedOrigins("https://deliciousbee.shop")
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedHeaders("*")
                         .allowCredentials(true);
