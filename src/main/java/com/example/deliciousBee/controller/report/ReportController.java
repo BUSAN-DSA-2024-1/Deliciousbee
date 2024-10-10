@@ -142,7 +142,7 @@ public class ReportController {
 			Restaurant restaurant = restaurantService.findRestaurant(restaurantId);
 			restaurantService.updateApprove(restaurant);
 			BeeMember member = restaurant.getMember();
-			messageService.ReportMessage(member.getMember_id(),"레스토랑이 승인이 되었습니다.");
+			messageService.ReportMessage(member.getNickname(),"레스토랑이 승인이 되었습니다.");
 
 
 			response.put("success", true);
