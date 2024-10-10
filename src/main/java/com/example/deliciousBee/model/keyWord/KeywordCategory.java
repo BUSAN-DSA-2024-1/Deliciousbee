@@ -5,7 +5,6 @@ public enum KeywordCategory {
 	VISIT_PURPOSE, 
 	// 분위기
 	ATMOSPHERE,  
-	// 편의시설
-    FACILITY     
 
+	FACILITY
 }

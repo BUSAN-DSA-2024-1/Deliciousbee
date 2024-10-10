@@ -11,15 +11,12 @@ import java.util.stream.Collectors;
 import com.example.deliciousBee.dto.report.ReportDto;
 import com.example.deliciousBee.dto.report.RestaurantVerificationDto;
 import com.example.deliciousBee.model.board.Restaurant;
-import com.example.deliciousBee.model.board.VerificationStatus;
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.report.Report;
 import com.example.deliciousBee.model.report.RestaurantReport;
 import com.example.deliciousBee.model.report.RestaurantReportDTO;
 import com.example.deliciousBee.model.report.RestaurantReportRequest;
 import com.example.deliciousBee.model.review.Review;
-import com.example.deliciousBee.repository.MessageRepository;
-import com.example.deliciousBee.repository.ReportRepository;
 import com.example.deliciousBee.service.message.MessageService;
 import com.example.deliciousBee.service.report.ReportService;
 import com.example.deliciousBee.service.report.RestaurantReportService;
@@ -72,7 +69,7 @@ public class ReportController {
 			log.error("Report submission error", e);
 		}
 
-		messageService.ReviewReportMessage(loginMember.getMember_id());
+		messageService.ReportMessage(loginMember.getNickname(),"리뷰 신고가 완료되었습니다.");
 
 		return ResponseEntity.ok(response);
 	}
@@ -133,7 +130,7 @@ public class ReportController {
 			log.error("Review deletion error", e);
 		}
 
-
+		//리포트 상대에게 메세지 전송
 		return ResponseEntity.ok(response);
 	}
 
@@ -144,6 +141,10 @@ public class ReportController {
 		try {
 			Restaurant restaurant = restaurantService.findRestaurant(restaurantId);
 			restaurantService.updateApprove(restaurant);
+			BeeMember member = restaurant.getMember();
+			messageService.ReportMessage(member.getNickname(),"레스토랑이 승인이 되었습니다.");
+
+
 			response.put("success", true);
 			response.put("message", "레스토랑이 성공적으로 승인되었습니다.");
 		} catch (Exception e) {
@@ -208,17 +209,17 @@ public class ReportController {
 			@Valid @RequestBody RestaurantReportRequest request,
 			@AuthenticationPrincipal BeeMember loginMember) {
 
-		String reporterId = loginMember != null ? loginMember.getMember_id() : null;
+		BeeMember reporterId = loginMember;
 		RestaurantReport report = restaurantReportService.createReport(
 				restaurantId,
-                Long.valueOf(reporterId),
+				reporterId,
 				request.getReportContent()
 		);
 
 		RestaurantReportDTO reportDTO = new RestaurantReportDTO(report);
 
 
-		messageService.RestaurantReportMessage(loginMember.getMember_id());
+		messageService.ReportMessage(loginMember.getNickname(),"레스토랑 신고가 제출되었습니다.");
 
 		Map<String, Object> response = new HashMap<>();
 		response.put("success", true);
@@ -268,11 +269,14 @@ public class ReportController {
 	@DeleteMapping("/admin/restaurant-reports-confirm/{reportId}")
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> confirmRestaurantReport(@PathVariable Long reportId) {
-		restaurantReportService.deleteReport(reportId);
 
 		Map<String, Object> response = new HashMap<>();
 		response.put("success", true);
 		response.put("message", "레스토랑 신고가 성공적으로 처리되었습니다.");
+		restaurantReportService.deleteReport(reportId);
+
+		//리포트 상대에게 메세지 전송
+
 		return ResponseEntity.ok(response);
 	}
 
@@ -283,11 +287,19 @@ public class ReportController {
 	@DeleteMapping("/admin/restaurant-reports/{reportId}")
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> deleteRestaurantReport(@PathVariable Long reportId) {
-		restaurantReportService.deleteReport(reportId);
 
 		Map<String, Object> response = new HashMap<>();
 		response.put("success", true);
 		response.put("message", "레스토랑 신고가 성공적으로 삭제되었습니다.");
+		//리포트 상대에게 메세지 전송
+		Restaurant restaurant = restaurantService.findRestaurant(reportId);
+
+		Long restaurantId = restaurant.getId();
+
+		restaurantService.deleteRestaurant(restaurantId);
+		restaurantReportService.deleteReport(reportId);
+
+
 		return ResponseEntity.ok(response);
 	}
 

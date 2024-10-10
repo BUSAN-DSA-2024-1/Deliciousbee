@@ -12,27 +12,29 @@
 <title>마이페이지 수정하기</title>
 </head>
 <body>
-	<!-- 네비게이션 바 삽입 -->
-	<th:block th:replace="~{fragments/navbar-login :: navbar}"></th:block>
-	<!-- 로그인 모달 삽입 -->
-	<th:block th:replace="~{fragments/navbar-login :: loginModal}"></th:block>
+<!--	&lt;!&ndash; 네비게이션 바 삽입 &ndash;&gt;-->
+<!--	<th:block th:replace="~{fragments/navbar-login :: navbar}"></th:block>-->
+<!--	&lt;!&ndash; 로그인 모달 삽입 &ndash;&gt;-->
+<!--	<th:block th:replace="~{fragments/navbar-login :: loginModal}"></th:block>-->
 
 
 
-	<form action="/myPage/updateMyPage" onsubmit="return formCheck()" method="POST" enctype="multipart/form-data">
+	<form action="member/updateMyPage" onsubmit="return formCheck()" method="POST" enctype="multipart/form-data">
 		<div class="main-image">
 			<!-- 메인 이미지 -->
-			  <img th:if="${myPage.mainImage == null}" src="/myPageImage/no-main-image.png" alt="기본 이미지"
-                class="default-main-image" id="mainImagePreview">
-            <img th:unless="${myPage.mainImage == null}"
-                th:src="@{'/loginMember/display?filename=' + ${loginMember.profileImage.saved_filename}}"
-                alt="메인 이미지" id="mainImagePreview">
+			<img th:if="${myPage.mainImage == null}"
+				 src="/myPageImage/no-main-image.png" alt="기본 이미지"
+				 class="default-main-image">
+			<img
+					th:unless="${myPage.mainImage == null}"
+					th:src="@{'/member/display?filename=' + ${myPage.mainImage.saved_filename}}"
+					alt="메인 이미지">
 
 			<div class="image-upload-container">
 				<label for="mainImageInput" class="image-upload-button"> <img
 					src="/myPageImage/image-upload-icon.png" alt="업로드 아이콘">
-				</label> <input type="file" id="mainImageInput" accept="image/*"
-					style="display: none;">
+				</label><input type="file" id="mainImageInput" name="file" accept="image/*" style="display: none;">
+
 			</div>
 
 			<!-- 프로필 이미지 -->

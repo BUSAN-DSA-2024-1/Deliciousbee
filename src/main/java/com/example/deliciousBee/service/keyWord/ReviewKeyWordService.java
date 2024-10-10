@@ -7,9 +7,11 @@ import org.springframework.stereotype.Service;
 import com.example.deliciousBee.model.keyWord.KeyWord;
 import com.example.deliciousBee.model.keyWord.KeywordCategory;
 import com.example.deliciousBee.model.keyWord.ReviewKeyWord;
+import com.example.deliciousBee.model.review.Review;
 import com.example.deliciousBee.repository.KeyWordRepository;
 import com.example.deliciousBee.repository.ReviewKeyWordRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,6 +47,11 @@ public class ReviewKeyWordService {
 
 	public void save(ReviewKeyWord reviewKeyWord) {
 		reviewKeyWordRepository.save(reviewKeyWord);
+	}
+
+	@Transactional
+	public void deleteReviewKeywordsByReviewId(Long id) {
+		reviewKeyWordRepository.deleteReviewKeywordsByReviewId(id);
 	}
 
 }

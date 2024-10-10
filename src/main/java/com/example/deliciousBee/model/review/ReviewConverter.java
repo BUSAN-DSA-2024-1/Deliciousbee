@@ -1,9 +1,32 @@
 package com.example.deliciousBee.model.review;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.example.deliciousBee.model.file.AttachedFile;
+import com.example.deliciousBee.service.keyWord.ReviewKeyWordService;
+import com.example.deliciousBee.service.menu.MenuService;
+import com.example.deliciousBee.service.restaurant.RestaurantService;
+import com.example.deliciousBee.service.review.ReviewService;
+import com.example.deliciousBee.util.FileService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@RequiredArgsConstructor
+@Slf4j
+@Component
 public class ReviewConverter {
+
+	private final FileService fileService;
+
 	public static Review reviewWriteFormToReview(ReviewWriteForm writeForm) {
 		Review review = new Review();
 		review.setReviewContents(writeForm.getReviewContents());
@@ -18,11 +41,12 @@ public class ReviewConverter {
 		review.setPriceRating(writeForm.getPriceRating());
 		review.setKindRating(writeForm.getKindRating());
 //		review.setReviewMenuList(writeForm.getReviewMenuList());
-		review.setReviewMenuList(new ArrayList<>()); 
+		review.setReviewMenuList(new ArrayList<>());
 		return review;
 	}
 
 	// reviewUpdateForm -> review
+	@Transactional
 	public static Review reviewUpdateFormToReview(ReviewUpdateForm reviewUpdateForm) {
 		Review review = new Review();
 		review.setId(reviewUpdateForm.getReviewId());

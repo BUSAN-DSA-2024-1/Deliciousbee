@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 로그아웃 함수
     function logout() {
-        fetch('member/logout', {
+        fetch('/member/logout', {
             method: 'POST',
             credentials: 'include'  // 쿠키 포함
         })
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (myPageLink) {
         myPageLink.addEventListener('click', function (event) {
             event.preventDefault();
-            fetch('member/api/check-auth', {
+                fetch('/member/api/check-auth', {
                 method: 'GET',
                 credentials: 'include'  // 쿠키 포함
             })
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 member_id: formData.get('member_id'),
                 password: formData.get('password')
             };
-            fetch('member/login', {
+            fetch('/member/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(loginData),

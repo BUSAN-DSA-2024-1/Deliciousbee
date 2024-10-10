@@ -18,12 +18,12 @@ public class Message {
     private Long id;
 
     // 발신자
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)  // 연쇄 삭제 추가
     @JoinColumn(name = "sender_id", nullable = false)
     private BeeMember sender;
 
     // 수신자
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)  // 연쇄 삭제 추가
     @JoinColumn(name = "receiver_id", nullable = false)
     private BeeMember receiver;
 

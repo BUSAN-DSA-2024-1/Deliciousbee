@@ -3,10 +3,12 @@ package com.example.deliciousBee.controller.review;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,12 +50,15 @@ import com.example.deliciousBee.service.menu.MenuService;
 import com.example.deliciousBee.service.restaurant.RestaurantService;
 import com.example.deliciousBee.service.review.ReviewService;
 import com.example.deliciousBee.util.FileService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -70,10 +76,9 @@ public class ReviewController {
 	private final RestaurantService restaurantService;
 	private final MenuService menuService;
 	private final ReviewKeyWordService reviewKeyWordService;
-	private final ObjectMapper objectMapper;
 
-	 private List<Review> cachedReviewsWithImages = null; 
-	
+	private List<Review> cachedReviewsWithImages = null;
+
 	@PostMapping("write/{restaurant_id}")
 	public String postWriteReview(@Validated @ModelAttribute("writeForm") ReviewWriteForm reviewWriteForm,
 			BindingResult result, @RequestParam(name = "file", required = false) MultipartFile[] files,
@@ -257,20 +262,75 @@ public class ReviewController {
 	// 리뷰 수정
 	@PostMapping("/update/{reviewId}")
 	@ResponseBody
-	public ResponseEntity<Map<String, Object>> postUpdateReview(
-			@Validated @ModelAttribute ReviewUpdateForm reviewUpdateForm, BindingResult result) {
-		if (result.hasErrors()) {
-		    for (FieldError error : result.getFieldErrors()) {
-		        log.error("Error field: {}, Error message: {}", error.getField(), error.getDefaultMessage());
-		    }
-		    return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Validation failed"));
-		}
-		Review updateReview = ReviewConverter.reviewUpdateFormToReview(reviewUpdateForm);
-		log.info("*****************************updateReview:{}", updateReview);
-		
-		
-//		reviewService.updateReview(updateReview, reviewUpdateForm.isFileRemoved(), file);
+	@Transactional
+	public ResponseEntity<Map<String, Object>> postUpdateReview(@ModelAttribute ReviewUpdateForm reviewUpdateForm,
+			@RequestPart(name = "updateReviewAttachedFile", required = false) MultipartFile[] updateReviewAttachedFile) {
 
+		Review findReview = ReviewConverter.reviewUpdateFormToReview(reviewUpdateForm);
+
+		// 첨부파일 처리
+		List<AttachedFile> attachedFiles = new ArrayList<>();
+		if (updateReviewAttachedFile != null && updateReviewAttachedFile.length > 0) {
+			for (MultipartFile file : updateReviewAttachedFile) {
+				if (!file.isEmpty()) {
+					try {
+						AttachedFile attachedFile = fileService.saveFile(file);
+						attachedFile.setReview(findReview);
+						attachedFiles.add(attachedFile);
+					} catch (IOException e) {
+						e.printStackTrace();
+						return null;
+					}
+				}
+			}
+		}
+
+		// 메뉴 수정 처리
+		List<ReviewMenu> reviewMenus = new ArrayList<>();
+		List<Long> updateReviewMenuListIds = reviewUpdateForm.getReviewMenuListIds();
+		if (updateReviewMenuListIds != null) {
+			reviewMenus.addAll(updateReviewMenuListIds.stream().map(menuId -> {
+				Menu menu = menuService.findMenuById(menuId);
+				ReviewMenu reviewMenu = new ReviewMenu();
+				reviewMenu.setReview(findReview);
+				reviewMenu.setMenu(menu);
+				return reviewMenu;
+			}).collect(Collectors.toList()));
+		}
+
+		// 커스텀 메뉴 처리
+		if (reviewUpdateForm.getCustomMenuName() != null && !reviewUpdateForm.getCustomMenuName().isEmpty()) {
+			ReviewMenu reviewMenu = new ReviewMenu();
+			reviewMenu.setReview(findReview);
+			reviewMenu.setCustomMenuName(reviewUpdateForm.getCustomMenuName());
+			reviewMenus.add(reviewMenu);
+		}
+
+		findReview.setReviewMenuList(reviewMenus);
+
+		
+		// 키워드 수정 처리
+		List<ReviewKeyWord> reviewKeywords = new ArrayList<>();
+		List<Long> reviewKeywordsIds = reviewUpdateForm.getReviewKeywordsIds();
+		if (reviewKeywordsIds != null && !reviewKeywordsIds.isEmpty()) {
+			reviewKeywords.addAll(reviewKeywordsIds.stream().map(keywordsId -> {
+				KeyWord keyWord = reviewKeyWordService.findById(keywordsId);
+				return new ReviewKeyWord(findReview, keyWord, null);
+			}).collect(Collectors.toList()));
+		}
+		findReview.setKeywords(reviewKeywords);
+
+		// 커스텀 키워드 처리
+		if (reviewUpdateForm.getCustomKeywordName() != null && !reviewUpdateForm.getCustomKeywordName().isEmpty()) {
+			ReviewKeyWord reviewKeyWord = new ReviewKeyWord(findReview, null, reviewUpdateForm.getCustomKeywordName());
+			reviewKeyWordService.save(reviewKeyWord);
+			List<ReviewKeyWord> existingKeywords = findReview.getKeywords();
+			existingKeywords.add(reviewKeyWord);
+			findReview.setKeywords(existingKeywords);
+		}
+		
+
+		reviewService.updateReview(findReview, attachedFiles);
 		Map<String, Object> response = new HashMap<>();
 		response.put("success", true);
 		return ResponseEntity.ok(response);

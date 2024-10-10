@@ -54,7 +54,7 @@ public class HomeController {
 			if (beeMember != null) {
 				auth.put("isAuthenticated", true);
 				auth.put("isAdmin", beeMember.getRole() == Role.ADMIN); // Enum 직접 비교
-				auth.put("username", beeMember.getMember_id());
+				auth.put("username", beeMember.getNickname());
 			}
 		}
 		return auth;
