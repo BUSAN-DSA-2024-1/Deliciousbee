@@ -28,12 +28,14 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.keyWord.KeyWord;
@@ -352,5 +354,28 @@ public class RestaurantController {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+			//레스토랑 좋아요(황)
+			@PostMapping("/{restaurantId}/like")
+			@ResponseBody
+			public ResponseEntity<Map<Object, Object>> likeRt(@PathVariable(name = "restaurantId") Long restaurantId,
+					@AuthenticationPrincipal BeeMember loginMember) {
+				Map<Object, Object> response = new HashMap<>();
+				long likeCount = restaurantService.likeRt(loginMember, restaurantId);
+				response.put("success", true);
+				response.put("likeCount", likeCount);
+				return ResponseEntity.ok(response);
+			}
+
+			@PostMapping("/{restaurantId}/unlike")
+			@ResponseBody
+			public ResponseEntity<Map<String, Object>> unlikeReview(@PathVariable(name = "restaurantId") Long restaurantId,
+					@AuthenticationPrincipal BeeMember loginMember) {
+				Map<String, Object> response = new HashMap<>();
+				int likeCount = restaurantService.unlikeRt(loginMember, restaurantId);
+				response.put("success", true);
+				response.put("likeCount", likeCount);
+				return ResponseEntity.ok(response);
+			}
 
 }

@@ -330,32 +330,36 @@
 			return false;
 		}
 	}
-	  let isNicknameValid = false;
-	    let isNicknameChecked = false;
+	let isNicknameValid = false;
+	let isNicknameChecked = false;
 
-	    $("#nicknameInput").on("input", function () {
-	        const currentNickname = $(this).val().trim();
-	        const nicknameLength = currentNickname.length;
+	$("#nicknameInput").on("input", function () {
+	    const currentNickname = $(this).val().trim(); // 앞뒤 공백 제거
+	    const nicknameLength = currentNickname.length;
 
-	        if (nicknameLength < 2 || nicknameLength > 8) {
-	            $("#nicknameCheckResult").text(" (2~8자 사이여야 합니다.)").css("color", "red");
-	            isNicknameValid = false;
-	            isNicknameChecked = false;
-	            $("#nicknameCheckButton").prop("disabled", true);
-	        } else {
-	            $("#nicknameCheckResult").empty();
-	            isNicknameValid = true;
-	            $("#nicknameCheckButton").prop("disabled", false);
-	        }
-	    });
+	    if (currentNickname.includes(" ")) { // 공백 포함 여부 확인
+	        $("#nicknameCheckResult").text("공백을 포함할 수 없습니다.").css("color", "red");
+	        isNicknameValid = false;
+	        isNicknameChecked = false;
+	        $("#nicknameCheckButton").prop("disabled", true);
+	    } else if (nicknameLength < 2 || nicknameLength > 8) { // 길이 제한 확인
+	        $("#nicknameCheckResult").text(" (2~8자 사이여야 합니다.)").css("color", "red");
+	        isNicknameValid = false;
+	        isNicknameChecked = false;
+	        $("#nicknameCheckButton").prop("disabled", true);
+	    } else {
+	        $("#nicknameCheckResult").empty();
+	        isNicknameValid = true;
+	        $("#nicknameCheckButton").prop("disabled", false);
+	    }
+	});
 
-		function checkNickname() {
-			if (!isNicknameValid) {
-				return;
-			}
+	function checkNickname() {
+	    if (!isNicknameValid) {
+	        return;
+	    }
 
-			let nickname = $("#nicknameInput").val().trim();
-
+	    let nickname = $("#nicknameInput").val().trim();
 
 	    $.ajax({
 	        url: "/member/checkNickname", // Ensure this URL matches your controller
@@ -375,10 +379,8 @@
 	        }
 	    });
 	}
-	
-	function formCheck() {
-	    // ... (기존 유효성 검사 코드)
 
+	function formCheck() {
 	    if (!isNicknameChecked) {
 	        alert("닉네임 중복 체크를 해주세요.");
 	        return false; // 가입 막기

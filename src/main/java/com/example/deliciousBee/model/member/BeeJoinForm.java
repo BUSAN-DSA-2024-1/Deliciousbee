@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +21,7 @@ public class BeeJoinForm {
 	
 	@NotBlank(message = "정확한 이름을 입력해주세요") //null, 빈값, 공백 허용 x
 	@Size(min = 2, max = 8, message = "2~8자로 입력해주세요")
+	@Pattern(regexp = "\\S+", message = "공백을 포함할수없습니다")
 	private String nickname;         //이름
 	
 	@NotNull(message = "성별을 선택해주세요")  //null 불가 but 빈값, 공백 허용

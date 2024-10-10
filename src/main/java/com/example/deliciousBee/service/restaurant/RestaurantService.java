@@ -1,33 +1,36 @@
 package com.example.deliciousBee.service.restaurant;
 
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.example.deliciousBee.model.file.AttachedFile;
-import com.example.deliciousBee.repository.MenuRepository;
-import io.jsonwebtoken.io.IOException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.deliciousBee.dto.report.RestaurantVerificationDto;
 import com.example.deliciousBee.dto.restaurant.RestaurantDto;
 import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.board.VerificationStatus;
 import com.example.deliciousBee.model.file.RestaurantAttachedFile;
+import com.example.deliciousBee.model.like.ReviewLike;
+import com.example.deliciousBee.model.like.RtLike;
+import com.example.deliciousBee.model.member.BeeMember;
+import com.example.deliciousBee.model.review.Review;
+import com.example.deliciousBee.repository.BeeMemberRepository;
+import com.example.deliciousBee.repository.LikeRtRepository;
+import com.example.deliciousBee.repository.MenuRepository;
 import com.example.deliciousBee.repository.RestaurantRepository;
 import com.example.deliciousBee.repository.RtFileRepository;
 import com.example.deliciousBee.util.RestaurantFileService;
 
+import io.jsonwebtoken.io.IOException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.web.multipart.MultipartFile;
 
 
 @Slf4j
@@ -40,7 +43,8 @@ public class RestaurantService {
 	private final RtFileRepository fileRepository;
 	private final RestaurantFileService fileService;
     private final MenuRepository menuRepository;
-
+    private final LikeRtRepository likeRtRepository;
+    private final BeeMemberRepository beeMemberRepository;
 
     public void saveRestaurant(Restaurant restaurant, List<RestaurantAttachedFile> attachedFile) {
     	if(attachedFile != null) {
@@ -270,5 +274,36 @@ public Page<RestaurantDto> searchRestaurants(String keyword, Pageable pageable, 
             }
         }
     }
+    
+    //좋아요 로직
+ 	public long likeRt(BeeMember beeMember, Long restaurantId) {
+ 		Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow();
+ 		if (!likeRtRepository.existsByBeeMemberAndRestaurant(beeMember, restaurant)) {
+ 			RtLike like = new RtLike(beeMember, restaurant);
+ 			likeRtRepository.save(like);
+ 			restaurant.setLikeCount(restaurant.getLikeCount() + 1);
+ 			restaurantRepository.save(restaurant);
+ 		}
+ 		return restaurant.getLikeCount();
+ 	}
 
+ 	// 좋아요 취소 로직
+ 	@Transactional
+ 	public int unlikeRt(BeeMember beeMember, Long restaurantId) {
+ 		Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow();
+ 		if (likeRtRepository.existsByBeeMemberAndRestaurant(beeMember, restaurant)) {
+ 			likeRtRepository.deleteByBeeMemberAndRestaurant(beeMember, restaurant);
+ 			restaurant.setLikeCount(restaurant.getLikeCount() - 1);
+ 			restaurantRepository.save(restaurant);
+ 		}
+ 		return restaurant.getLikeCount();
+ 	}
+
+
+
+	public List<Restaurant> findAllRestaurants() {
+		return restaurantRepository.findAll();
+	}
+ 	
+ 	
 }

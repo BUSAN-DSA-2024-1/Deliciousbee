@@ -8,16 +8,19 @@ import java.time.LocalDateTime;
 @Setter
 public class MessageResponse {
     private Long id;
-    private String senderId;
-    private String receiverId;
+    private String senderNickname;
+    private String receiverNickname;
     private String content;
     private LocalDateTime timestamp;
 
     public MessageResponse(Message message) {
         this.id = message.getId();
-        this.senderId = message.getSender().getMember_id();
-        this.receiverId = message.getReceiver().getMember_id();
+        this.senderNickname = message.getSender().getNickname();
+        this.receiverNickname = message.getReceiver().getNickname();
         this.content = message.getContent();
         this.timestamp = message.getTimestamp();
     }
+
+    // getters and setters
 }
+
