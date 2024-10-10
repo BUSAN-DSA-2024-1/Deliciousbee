@@ -46,7 +46,7 @@
 //        return args -> {
 //            Random random = new Random();
 //
-//            IntStream.range(0, 30).forEach(i -> {
+//            IntStream.range(0, 10).forEach(i -> {
 //                Restaurant restaurant = new Restaurant();
 //                restaurant.setName(RESTAURANT_NAMES.get(random.nextInt(RESTAURANT_NAMES.size())));
 //                restaurant.setDescription("맛있는 밥집 " + restaurant.getName());

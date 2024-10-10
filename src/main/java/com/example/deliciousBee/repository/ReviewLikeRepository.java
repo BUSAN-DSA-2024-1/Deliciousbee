@@ -1,5 +1,7 @@
 package com.example.deliciousBee.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.deliciousBee.model.like.ReviewLike;
@@ -12,4 +14,6 @@ public interface ReviewLikeRepository extends JpaRepository<ReviewLike, Long>{
 	boolean existsByBeeMemberAndReview(BeeMember beeMember, Review review);
     // 좋아요 삭제
 	void deleteByBeeMemberAndReview(BeeMember beeMember, Review review);
+	
+	List<ReviewLike> findByBeeMember(BeeMember member);
 }
