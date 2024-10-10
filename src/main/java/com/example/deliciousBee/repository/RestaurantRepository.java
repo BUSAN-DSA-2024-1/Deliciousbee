@@ -91,4 +91,8 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 
     @Query("SELECT DISTINCT r FROM Restaurant r WHERE (r.name LIKE %:keyword% OR r.menu_name LIKE %:keyword%) AND r.verificationStatus = 'APPROVED' ORDER BY r.average_rating DESC")
     Page<Restaurant> searchByNameOrMenuNameSortedByRating(@Param("keyword") String keyword, Pageable pageable);
+
+
+
+
 }
