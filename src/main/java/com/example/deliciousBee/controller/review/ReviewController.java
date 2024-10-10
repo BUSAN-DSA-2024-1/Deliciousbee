@@ -56,6 +56,7 @@ import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -259,6 +260,7 @@ public class ReviewController {
 	// 리뷰 수정
 	@PostMapping("/update/{reviewId}")
 	@ResponseBody
+	@Transactional
 	public ResponseEntity<Map<String, Object>> postUpdateReview(@ModelAttribute ReviewUpdateForm reviewUpdateForm,
 			@RequestPart(name = "updateReviewAttachedFile", required = false) MultipartFile[] updateReviewAttachedFile) {
 
@@ -302,21 +304,29 @@ public class ReviewController {
 			reviewMenu.setCustomMenuName(reviewUpdateForm.getCustomMenuName());
 			reviewMenus.add(reviewMenu);
 		}
+
 		findReview.setReviewMenuList(reviewMenus);
 		
+		// 키워드 비우기
+		List<Long> deleteReviewKeywordsIds = reviewUpdateForm.getReviewKeywordsIds();
+		if (deleteReviewKeywordsIds != null) {
+//			deleteReviewKeywordsIds.clear(); 
+			reviewKeyWordService.deleteReviewKeywordsByIds(deleteReviewKeywordsIds);
+		}
+
 		// 키워드 처리
-//		if (selectedKeywords != null) {
-//			selectedKeywords.forEach(keywordId -> {
-//				KeyWord keyword = reviewKeyWordService.findById(keywordId);
-//				ReviewKeyWord reviewKeyWord = new ReviewKeyWord(review, keyword, null);
-//				reviewKeyWordService.save(reviewKeyWord);
-//
-//				List<ReviewKeyWord> existingkeywords = review.getKeywords();
-//				existingkeywords.add(reviewKeyWord);
-//				review.setKeywords(existingkeywords);
-//			});
-//		}
-		
+		List<ReviewKeyWord> reviewkeywords = new ArrayList<>();
+		List<Long> updateReviewKeywordsIds = reviewUpdateForm.getReviewKeywordsIds();
+		if (updateReviewKeywordsIds != null) {
+			reviewkeywords.addAll(updateReviewKeywordsIds.stream().map(keywordsId -> {
+				KeyWord keyWord = reviewKeyWordService.findById(keywordsId);
+				ReviewKeyWord reviewKeyWord = new ReviewKeyWord(findReview, keyWord, null);
+				return reviewKeyWord;
+			}).collect(Collectors.toList()));
+		}
+		log.info("*************** reviewkeywords:{}", reviewkeywords);
+		findReview.setKeywords(reviewkeywords);
+
 		// 커스텀 키워드 처리
 		if (reviewUpdateForm.getCustomKeywordName() != null && !reviewUpdateForm.getCustomKeywordName().isEmpty()) {
 			ReviewKeyWord reviewKeyWord = new ReviewKeyWord(findReview, null, reviewUpdateForm.getCustomKeywordName());
