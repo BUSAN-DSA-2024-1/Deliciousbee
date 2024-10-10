@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.deliciousBee.model.board.CategoryType;
 import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.file.AttachedFile;
+import com.example.deliciousBee.model.keyWord.ReviewKeyWord;
 import com.example.deliciousBee.model.like.ReviewLike;
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.menu.ReviewMenu;
@@ -31,10 +32,13 @@ import com.example.deliciousBee.repository.RestaurantRepository;
 import com.example.deliciousBee.repository.ReviewLikeRepository;
 import com.example.deliciousBee.repository.ReviewMenuRepository;
 import com.example.deliciousBee.repository.ReviewRepository;
+import com.example.deliciousBee.service.keyWord.ReviewKeyWordService;
 import com.example.deliciousBee.util.FileService;
 
 import jakarta.transaction.Transactional;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -51,6 +55,7 @@ public class ReviewService {
 	private final ReviewLikeRepository likeRepository;
 	private final RestaurantRepository restaurantRepository;
 	private final ReviewMenuRepository reviewMenuRepository;
+	private final ReviewKeyWordService reviewKeyWordService;
 
 	public void saveReview(Review review, List<AttachedFile> attachedFiles) {
 		if (attachedFiles != null) {
@@ -170,8 +175,9 @@ public class ReviewService {
 		updateReview.setUserName(findReview.getUserName());
 		updateReview.setRestaurant(findReview.getRestaurant());
 		updateReview.setBeeMember(findReview.getBeeMember());
+		
 		reviewRepository.save(updateReview);
-
+		
 		// 첨부파일 처리
 		if (attachedFiles != null) {
 			for (AttachedFile attachedFile : attachedFiles) {

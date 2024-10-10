@@ -50,10 +50,8 @@ public class ReviewKeyWordService {
 	}
 
 	@Transactional
-	public void deleteReviewKeywordsByIds(List<Long> ids) {
-		if (ids != null && !ids.isEmpty()) {
-			reviewKeyWordRepository.deleteAllByIdIn(ids);
-		}
+	public void deleteReviewKeywordsByReviewId(Long id) {
+		reviewKeyWordRepository.deleteReviewKeywordsByReviewId(id);
 	}
 
 }

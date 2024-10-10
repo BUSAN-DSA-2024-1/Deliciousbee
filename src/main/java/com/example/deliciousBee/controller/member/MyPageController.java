@@ -307,8 +307,8 @@ public class MyPageController {
 		MyPage myPage = null; // MyPage 객체를 가져옵니다.
 		myPage = myPageRepository.findMyPageWithVisitsByMemberId(loginMember.getMember_id());
 
-		System.out.println("확인용");
-		System.out.println(myPage.getMainImage().getSaved_filename());
+//		System.out.println("확인용");
+//		System.out.println(myPage.getMainImage().getSaved_filename());
 		model.addAttribute("myPage", myPage); // myPage를 모델에 추가합니다.
 		model.addAttribute("loginMember", loginMember);
 
