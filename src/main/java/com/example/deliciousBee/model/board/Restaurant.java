@@ -39,11 +39,6 @@ public class Restaurant {
 	
     private String mainCategory;
     
-    @Enumerated(EnumType.STRING)
-    private MoodType mood; 
-    
-    @Enumerated(EnumType.STRING)
-    private PurposeType purpose;
     
     //레스토랑 좋아요(황)
     @Column(name = "like_count", nullable = false)
