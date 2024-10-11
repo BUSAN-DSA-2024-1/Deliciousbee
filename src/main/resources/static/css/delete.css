@@ -118,3 +118,30 @@ body {
     color: yellow;
     font-weight: bold;
 }
+
+ .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+        font-size: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .modal img {
+        width: auto;
+            height: auto;
+        }
