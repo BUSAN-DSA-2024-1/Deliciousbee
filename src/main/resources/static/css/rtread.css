@@ -44,6 +44,18 @@ a {
     z-index: 1000;
 }
 
+.restaurant-report-form{
+    text-align: center;
+}
+.modal-input{
+    text-align: center;
+}
+
+.inputbox{
+    width: 200px;
+    height: 100px;
+}
+
 .restaurant-report-title {
     text-align: center;
     font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
