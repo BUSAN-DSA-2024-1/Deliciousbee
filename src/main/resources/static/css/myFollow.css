@@ -82,6 +82,7 @@ body {
     list-style: none; /* 리스트 스타일 제거 */
     padding: 0;
     margin: 0;
+     overflow-y: auto;
 }
 
 .follow-list li {

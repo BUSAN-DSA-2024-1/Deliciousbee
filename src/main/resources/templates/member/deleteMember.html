@@ -5,47 +5,72 @@
 <link rel="stylesheet" href="/css/delete.css">
 <title>회원 탈퇴</title>
 <script>
-	function deleteConfirm() {
+function showModal(event) {
+    event.preventDefault(); 
+    document.getElementById('deleteModal').style.display = 'flex'; 
+}
 
-		return confirm("정말로 삭제하시겠습니까?");
+function confirmDelete() {
+    var audio = document.getElementById('dungiAudio');
+    audio.play();
+    
+    setTimeout(function() {
+        document.getElementById('deleteForm').submit(); 
+    }, 2000);
+}
 
-	}
-</script>
+function closeModal() {
+    document.getElementById('deleteModal').style.display = 'none'; 
+}
+    </script>
 </head>
 <body>
-	<div class="header">
-		<a href="/" class="bee-image"> <img src="/image/bee.jpg"
-			class="home-image" alt="메인 페이지로 이동">
-		</a>
-	</div>
-	<div class=container>
-		<nav class="sidebar">
-			<ul>
-				<li><a href="/member/myPage">마이 페이지</a></li>
-				<li><a href="/member/myInfo">내 정보</a></li>
-				<li><a href="/member/myFollow">팔로워 관리</a></li>
-				<li><a href="/member/myList">내가 쓴글</a></li>
-				<li><a href="/member/myReply">내가 쓴 댓글</a></li>
-				<li><a href="/member/deleteMember" class="active">회원탈퇴</a></li>
-			</ul>
-		</nav>
-		<div class="contents">
-			<form action="/member/deleteMember" method="POST"
-				onsubmit="return deleteConfirm()">
-				<h1 class="title">델리비 회원 탈퇴</h1>
-				<div class="info">
-					<input type="password" name="password" placeholder="비밀번호를 입력하세요"
-						required style="padding: 15px; font-size: 16px; height: 40px; width: 200px; ">
-					<div th:if="${errorMessage}" style="color: red;">
-						<p th:text="${errorMessage}"></p>
-					</div>
-				</div>
-				<div class="buttons">
-					<button type="submit" class="delete-button">탈퇴하기</button>
-					<a href="/member/myPage" class="back-button">돌아가기</a>
-				</div>
-			</form>
-		</div>
-	</div>
+    <div class="header">
+        <a href="/" class="bee-image">
+            <img src="/image/bee.jpg" class="home-image" alt="메인 페이지로 이동">
+        </a>
+    </div>
+    <div class="container">
+        <nav class="sidebar">
+            <ul>
+                <li><a href="/member/myPage">마이 페이지</a></li>
+                <li><a href="/member/myInfo">내 정보</a></li>
+                <li><a href="/member/myFollow">팔로워 관리</a></li>
+                <li><a href="/member/myList">내가 쓴글</a></li>
+                <li><a href="/member/myReply">내가 쓴 댓글</a></li>
+                <li><a href="/member/deleteMember" class="active">회원탈퇴</a></li>
+            </ul>
+        </nav>
+        <div class="contents">
+            <form id="deleteForm" action="/member/deleteMember" method="POST" onsubmit="showModal(event)">
+                <h1 class="title">델리비 회원 탈퇴</h1>
+                <div class="info">
+                    <input type="password" name="password" placeholder="비밀번호를 입력하세요"
+                        required style="padding: 15px; font-size: 16px; height: 40px; width: 200px;">
+                    <div th:if="${errorMessage}" style="color: red;">
+                        <p th:text="${errorMessage}"></p>
+                    </div>
+                </div>
+                <div class="buttons">
+                    <button type="submit" class="delete-button">탈퇴하기</button>
+                    <a href="/member/myPage" class="back-button">돌아가기</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <audio id="dungiAudio" src="/myPageImage/뚱이.mp3"></audio>
+    <audio id="errorAudio" src="/myPageImage/못맞췄지롱~.mp3"></audio>
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <p>정말로 탈퇴하시겠습니까?</p>
+            <img src="/myPageImage/뚱이.gif" alt="탈퇴 확인 이미지">
+            <div>
+                <button onclick="confirmDelete()">확인</button>
+                <button onclick="closeModal()">취소</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

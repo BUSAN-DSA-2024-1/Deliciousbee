@@ -99,9 +99,13 @@
 					팔로워수: <span th:text="${myPage.beeMember.followerList.size()}"></span>
 				</p>
 				<ul>
-					<li th:each="follower : ${myPage.beeMember.followerList}"><a
-						th:href="@{/member/myPage(id=${follower.follower.myPage.id})}"
-						th:text="${follower.follower.nickname}"></a></li>
+					<li th:each="follower : ${myPage.beeMember.followerList}">
+						 <img th:if="${follower.follower.profileImage != null}" th:src="@{'/member/display?filename=' + ${follower.follower.profileImage.saved_filename}}" alt="프로필 사진" class="profile-thumbnail">
+               			 <img th:unless="${follower.follower.profileImage != null}" src="/myPageImage/no-profil.png" alt="기본 이미지" class="profile-thumbnail">
+						<a th:href="@{/member/myPage(id=${follower.follower.myPage.id})}"
+						th:text="${follower.follower.nickname}">
+						</a>
+					</li>
 				</ul>
 			</div>
 		</div>
@@ -115,9 +119,13 @@
 					팔로워수: <span th:text="${myPage.beeMember.followingList.size()}"></span>
 				</p>
 				<ul>
-					<li th:each="following : ${myPage.beeMember.followingList}"><a
+					<li th:each="following : ${myPage.beeMember.followingList}">
+					<img th:if="${following.following.profileImage != null}" th:src="@{'/member/display?filename=' + ${following.following.profileImage.saved_filename}}" alt="프로필 사진" class="profile-thumbnail">
+               			 <img th:unless="${following.following.profileImage != null}" src="/myPageImage/no-profil.png" alt="기본 이미지" class="profile-thumbnail">
+					<a
 						th:href="@{/member/myPage(id=${following.following.myPage.id})}"
-						th:text="${following.following.nickname}"></a></li>
+						th:text="${following.following.nickname}"></a>
+					</li>
 				</ul>
 			</div>
 		</div>
@@ -137,9 +145,20 @@
 				<span class="close-modal" onclick="closeVisitorsModal()">×</span>
 				<h3>오늘의 방문자</h3>
 				<ul>
-					<li th:each="visit : ${visitors}"><a
+					<li th:each="visit : ${visitors}">
+						<img th:if="${visit.visitor.profileImage != null}" 
+                     th:src="@{'/member/display?filename=' + ${visit.visitor.profileImage.saved_filename}}" 
+                     alt="프로필 사진" 
+                     class="profile-thumbnail">
+                     
+                <img th:unless="${visit.visitor.profileImage != null}" 
+                     src="/myPageImage/no-profil.png" 
+                     alt="기본 이미지" 
+                     class="profile-thumbnail">
+						<a
 						th:href="@{/member/myPage(id=${visit.visitor.myPage.id})}"
-						th:text="${visit.visitor.nickname}"></a></li>
+						th:text="${visit.visitor.nickname}"></a>
+					</li>
 				</ul>
 			</div>
 		</div>
@@ -170,9 +189,9 @@
 	<!-- 마이레스토랑 내용 -->
 	<div id="myRestaurantContent" style="display: none;"
 		class="myRestaurantContent">
-		<div class="rt"
-			th:if="${pagedLikedRestaurants.content != null and !pagedLikedRestaurants.content.isEmpty()}">
-			<div class="restaurant-list">
+		<div class="rt">
+			<div class="restaurant-list"
+				th:if="${pagedLikedRestaurants.content != null and !pagedLikedRestaurants.content.isEmpty()}">
 				<div th:each="restaurant : ${pagedLikedRestaurants.content}"
 					class="restaurant-item">
 					<img
@@ -183,11 +202,19 @@
 						src="/myPageImage/no-review-img.jpg" alt="No Restaurant Image"
 						class="restaurant-image">
 					<div class="restaurant-info">
+						<div class="like-button-container"> <!-- 좋아요 버튼을 감싸는 div 추가 -->
+               			<button type="button" class="btn btn-success like-button" th:data-restaurant-id="${restaurant.id}">
+    <i class="fas fa-heart" style="color: red;" onclick="likeRt(this.parentElement); event.stopPropagation();"></i> 
+    <span class="like-count">[[${restaurant.likeCount}]]</span>
+</button>
+           				 </div>
 						<a th:href="@{/restaurant/rtread/{id}(id=${restaurant.id})}"
 							title="식당 정보로 이동">
 							<h3 th:text="${restaurant.name}" class="restaurant_name"
 								style="text-decoration: none;"></h3>
 						</a>
+						
+						
 						<p>
 							⭐ 평균 평점: <span th:text="${restaurant.average_rating}"></span>
 						</p>
@@ -212,10 +239,19 @@
 								</ul>
 							</div>
 						</div>
-
 					</div>
 				</div>
 			</div>
+			
+			<div class="no-rt-like"
+			th:unless="${pagedLikedRestaurants.content != null and !pagedLikedRestaurants.content.isEmpty()}">
+			좋아요한 식당이 없음
+			<div>
+				<a href="/">식당 보러가기</a> 👉
+				</div>
+			</div>	
+
+			<!-- 좋아요 왕 👑 테이블은 항상 표시 -->
 			<div class="ranking-rt">
 				<table class="top-liked-restaurants">
 					<h2 class="ranking-title">좋아요 왕👑</h2>
@@ -247,105 +283,19 @@
 					</tbody>
 				</table>
 
-				<!--랜덤 레스토랑  -->
+				<!-- 랜덤 레스토랑 -->
 				<div id="randomRestaurantContainer"
 					class="restaurant-random-container">
 					<h3>오늘의 식당</h3>
 					<div id="currentRandomRestaurant">
-						<!-- id 변경: currentRandomRestaurant -->
 						<!-- 랜덤 레스토랑 리뷰가 여기에 표시됩니다. -->
 					</div>
 					<button id="nextRestaurantButton">다음</button>
 				</div>
 			</div>
 		</div>
-		<p
-			th:unless="${pagedLikedRestaurants.content != null and !pagedLikedRestaurants.content.isEmpty()}">좋아요한
-			레스토랑이 없어요ㅠ</p>
-		<div class="rtrt2">
-			<div class="ranking-rt2">
-				<table class="top-liked-restaurants">
-					<h2 class="ranking-title">좋아요 왕👑</h2>
-					<thead>
-						<tr>
-							<th>#</th>
-							<th style="text-align: left;">식당 이름</th>
-							<th style="text-align: center;">좋아요 수</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr th:each="restaurant, status : ${mostLikedRestaurants}"
-							th:if="${status.index} < 4">
-							<td class="center" th:if="${status.index} == 0">🥇</td>
-							<td class="center" th:if="${status.index} == 1">🥈</td>
-							<td class="center" th:if="${status.index} == 2">🥉</td>
-							<td class="center" th:unless="${status.index} < 3"
-								th:text="${status.index + 1} + '.'"></td>
-							<td class="center"><a
-								th:href="@{/restaurant/rtread/{id}(id=${restaurant.id})}"
-								class="restaurant-name-link"> <span
-									th:text="${restaurant.name}"></span>
-							</a></td>
-							<td class="center" style="text-align: center;"
-								th:text="${restaurant.likeCount}"><span
-								th:if="${restaurant.likeCount} >= 100"> 🎉</span> <!-- 100 이상 좋아요 이모티콘 -->
-							</td>
-						</tr>
-					</tbody>
-				</table>
-
-				<!--랜덤 레스토랑  -->
-				<div id="randomRestaurantContainer"
-					class="restaurant-random-container">
-					<h3>오늘의 식당</h3>
-					<div id="currentRandomRestaurant">
-						<!-- id 변경: currentRandomRestaurant -->
-						<!-- 랜덤 레스토랑 리뷰가 여기에 표시됩니다. -->
-					</div>
-					<button id="nextRestaurantButton">다음</button>
-				</div>
-			</div>
-			<div class="ranking2">
-				<h2>리뷰왕👑</h2>
-				<table class="table table-striped">
-					<thead>
-						<tr>
-							<th>#</th>
-							<th style="text-align: left;">닉네임</th>
-							<th style="text-align: light; white-space: nowrap;">리뷰 수</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr th:each="myPage, status : ${reviewCount}"
-							th:if="${status.index} < 4">
-							<td class="center" th:if="${status.index} == 0">🥇</td>
-							<td class="center" th:if="${status.index} == 1">🥈</td>
-							<td class="center" th:if="${status.index} == 2">🥉</td>
-							<td class="center" th:unless="${status.index} < 3"
-								th:text="${status.index + 1} + ." style="padding-left: 8px;"></td>
-							<td class="center"><a
-								th:href="@{/member/myPage(id=${myPage.id})}"
-								class="nickname-link"> <span
-									th:text="${myPage.beeMember.nickname}"></span>
-							</a> 님</td>
-							<td class="center" style="text-align: center;"
-								th:text="${myPage.beeMember.review.size()}"></td>
-						</tr>
-					</tbody>
-				</table>
-
-
-				<div class="random-review" id="randomReviewSlider">
-					<h3>오늘의 리뷰</h3>
-					<div id="randomReviewContainer" class="review-random-container">
-						<div class="random-review-item" id="currentRandomReview">
-							<!-- JavaScript에서 내용을 채웁니다. -->
-						</div>
-					</div>
-					<button id="nextReviewButton">다음</button>
-				</div>
-			</div>
-		</div>
+		<!-- 좋아요한 레스토랑이 없을 때 보여줄 메시지 -->
+		
 	</div>
 	<div class="main">
 		<div class="myPageMain">
@@ -1070,6 +1020,43 @@ function showTab(tab) {
      const modal = document.getElementById(modalId);
      modal.style.display = 'none';
  }
+ 
+ function likeRt(button) {
+	    const restaurantId = $(button).data('restaurant-id');
+	    const isLiked = $(button).hasClass('liked'); // 좋아요 상태 확인
+
+	    $.ajax({
+	        url: isLiked ? "/restaurant/" + restaurantId + "/unlike" : "/restaurant/" + restaurantId + "/like",
+	        type: "POST",
+	        contentType: "application/json",
+	        data: JSON.stringify({ "restaurantId": restaurantId }),
+	        success: function (data) {
+	            if (data.success) {
+	                const likeCountElement = button.querySelector('.like-count');
+	                likeCountElement.textContent = data.likeCount;
+	                
+	                // 아이콘 변경
+	                const heartIcon = button.querySelector('i');
+	                if (isLiked) {
+	                    // 좋아요 취소 시 빈 하트로 변경
+	                    heartIcon.classList.remove('fas', 'fa-heart');
+	                    heartIcon.classList.add('far', 'fa-heart'); // 빈 하트
+	                    $(button).removeClass('liked'); // liked 클래스 제거
+	                } else {
+	                    // 좋아요 상태일 때 채운 하트로 변경
+	                    heartIcon.classList.remove('far', 'fa-heart');
+	                    heartIcon.classList.add('fas', 'fa-heart'); // 채운 하트
+	                    $(button).addClass('liked'); // liked 클래스 추가
+	                }
+	            } else {
+	                alert('좋아요 처리에 실패했습니다.');
+	            }
+	        },
+	        error: function (xhr) {
+	            console.error('AJAX 요청 실패:', xhr);
+	        }
+	    });
+	}
 	</script>
 	<script th:src="@{/js/layout.js}"></script>
 

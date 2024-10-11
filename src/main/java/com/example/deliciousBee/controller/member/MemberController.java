@@ -7,13 +7,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.like.RtLike;
 import com.example.deliciousBee.model.member.*;
 import com.example.deliciousBee.model.mypage.MyPage;
+import com.example.deliciousBee.model.review.Review;
 import com.example.deliciousBee.repository.LikeRtRepository;
 import com.example.deliciousBee.repository.MyPageVisitRepository;
 import com.example.deliciousBee.repository.RestaurantRepository;
+import com.example.deliciousBee.repository.ReviewRepository;
 import com.example.deliciousBee.security.jwt.JwtTokenProvider;
 import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.member.FollowService;
@@ -71,7 +78,7 @@ public class MemberController {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final LikeRtRepository likeRtRepository;
 	private final RestaurantRepository restaurantRepository;
-
+	private final ReviewRepository reviewRepository;
 
 	@Autowired
 	private FileService fileService; // fileStore 주입 받음.
@@ -373,16 +380,25 @@ public class MemberController {
 		}
 
 	// **********************내가 쓴글 이동**********************
-	@GetMapping("myList")
-	public String myList(@AuthenticationPrincipal BeeMember loginMember, @ModelAttribute Restaurant restaurant,
-			Model model) {
-		if (loginMember == null) {
-			return "redirect:/member/login";
+		@GetMapping("myList")
+		public String myList(@AuthenticationPrincipal BeeMember loginMember, 
+				@RequestParam(name = "page", defaultValue = "1") int page, Model model) {
+
+			  if (loginMember == null) {
+			        return "redirect:/member/login";
+			    }
+
+			    // 페이지네이션 설정: 1페이지는 0으로 계산되므로 page - 1을 사용
+			    Pageable pageable = PageRequest.of(page - 1, 10, Sort.by("createDate").descending());
+			    Page<Review> reviews = reviewRepository.findByBeeMember(loginMember, pageable); 
+
+			    // 모델에 필요한 데이터 추가
+			    model.addAttribute("reviews", reviews);
+			    model.addAttribute("totalPages", reviews.getTotalPages()); // 총 페이지 수 추가
+			    model.addAttribute("currentPage", page); // 현재 페이지 정보 추가
+
+		    return "member/myList"; 
 		}
-		MyPage myPage = loginMember.getMyPage(); 
-	    model.addAttribute("myPage", myPage);
-	    return "member/myList"; 
-	}
 
 	// ***********************내가 쓴댓글 이동***************************
 	@GetMapping("myReply")

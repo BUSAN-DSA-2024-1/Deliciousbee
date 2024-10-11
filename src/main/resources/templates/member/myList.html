@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,21 +26,68 @@
 		</nav>
 
 		<section class="main">
-            <h1>내가 쓴글</h1>
-            <div class="post-list">
-                <div th:if="${!myPage.beeMember.review.isEmpty()}" class="myPageReview">
-                    <div th:each="review : ${myPage.beeMember.review}" class="review-box">
-                        <div>
-                            <span class="restaurant-name" th:text="${review.restaurant.name}"></span>
-                            <span th:text="'작성날짜 : ' + ${review.createDate}"></span>
-                        </div>
-                        <div th:text="${review.reviewContents}" class="review_content"></div>
-                        <a th:href="@{/restaurant/rtread/{restaurantId}(restaurantId=${review.restaurant.id}, reviewId=${review.id})}" class="detail-button">리뷰로가기</a>
-                    </div>
-                </div>
-                <p th:unless="${!myPage.beeMember.review.isEmpty()}">작성된 리뷰가 없습니다.</p>
-            </div>
-        </section>
+			<h1>내가 쓴글</h1>
+			<div class="post-list">
+				<div th:if="${!reviews.empty}" class="myPageReview">
+					<div th:each="review : ${reviews}" class="review-box">
+						<div>
+							<span class="restaurant-name" th:text="${review.restaurant.name}"></span>
+							<span th:text="'작성날짜 : ' + ${review.createDate}"></span>
+						</div>
+						<div th:text="${review.reviewContents}" class="review_content"></div>
+						<a
+							th:href="@{/restaurant/rtread/{restaurantId}(restaurantId=${review.restaurant.id}, reviewId=${review.id})}"
+							class="detail-button">리뷰로가기</a>
+					</div>
+				</div>
+				<p th:unless="${!reviews.empty}">작성된 리뷰가 없습니다.</p>
+
+				<div th:if="${totalPages > 1}"
+					aria-label="Restaurant page navigation"
+					class="pagination-container">
+					<ul class="pagination">
+
+						<!-- 첫 페이지가 아닌 경우에만 << 버튼 표시 (5페이지 앞으로 이동) -->
+						<li th:if="${currentPage > 5}" class="page-item"><a
+							class="page-link" th:href="@{/member/myList(page=1)}">
+								&laquo; <!-- HTML entity for << -->
+						</a></li>
+						<li th:if="${currentPage <= 5}" class="page-item"><a
+							class="page-link" th:href="@{/member/myList(page=1)}">
+								&laquo; <!-- HTML entity for << -->
+						</a></li>
+
+						<!-- 이전 페이지 버튼 -->
+						<li th:if="${currentPage > 1}" class="page-item"><a
+							class="page-link"
+							th:href="@{/member/myList(page=${currentPage - 1})}"> &lt; <!-- HTML entity for < -->
+						</a></li>
+
+						<!-- 페이지 번호 -->
+						<li th:each="page : ${#numbers.sequence(1, totalPages)}"
+							th:classappend="${currentPage == page} ? 'active' : ''"><a
+							th:href="@{/member/myList(page=${page})}" th:text="${page}"
+							class="page-link"></a></li>
+
+						<!-- 다음 페이지 버튼 -->
+						<li th:if="${currentPage < totalPages}" class="page-item"><a
+							class="page-link"
+							th:href="@{/member/myList(page=${currentPage + 1})}"> &gt; <!-- HTML entity for > -->
+						</a></li>
+
+						<!-- 마지막 페이지가 넘지 않는 범위에서 >> 버튼 표시 (5페이지 앞으로 이동) -->
+						<li th:if="${currentPage < totalPages - 1}" class="page-item">
+							<a class="page-link"
+							th:href="@{/member/myList(page=${currentPage + (currentPage + 5 <= totalPages ? 5 : totalPages - currentPage)})}">
+								&raquo; <!-- HTML entity for >> -->
+						</a>
+						</li>
+					</ul>
+				</div>
+
+
+			</div>
+		</section>
 	</main>
 </body>
 </html>
