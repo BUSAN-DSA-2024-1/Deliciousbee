@@ -12,7 +12,7 @@ import lombok.Data;
 
 @Data
 public class ReviewUpdateForm {
-	
+
 	private Long reviewId;
 	private String reviewContents;
 	private Integer rating;
@@ -21,9 +21,12 @@ public class ReviewUpdateForm {
 	private Integer kindRating;
 	private boolean fileRemoved;
 	private LocalDate visitDate;
-	private List<MultipartFile> AttachedFiles; 
-    private List<Long> deletedFileIds;
-	private List<ReviewMenu> reviewMenuList;
-	private List<ReviewKeyWord> keywords;
+	
+	private List<Long> reviewMenuListIds;
+	private List<Long> reviewKeywordsIds;
+	
+	// 커스텀관련
+	private String customMenuName;
+	private String customKeywordName;
 
 }

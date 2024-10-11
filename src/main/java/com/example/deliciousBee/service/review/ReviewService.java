@@ -1,5 +1,7 @@
 package com.example.deliciousBee.service.review;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -18,19 +20,25 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.deliciousBee.model.board.CategoryType;
 import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.file.AttachedFile;
+import com.example.deliciousBee.model.keyWord.ReviewKeyWord;
 import com.example.deliciousBee.model.like.ReviewLike;
 import com.example.deliciousBee.model.member.BeeMember;
+import com.example.deliciousBee.model.menu.ReviewMenu;
 import com.example.deliciousBee.model.review.Review;
 import com.example.deliciousBee.model.review.ReviewConverter;
 import com.example.deliciousBee.repository.FileRepository;
 import com.example.deliciousBee.repository.ReportRepository;
 import com.example.deliciousBee.repository.RestaurantRepository;
 import com.example.deliciousBee.repository.ReviewLikeRepository;
+import com.example.deliciousBee.repository.ReviewMenuRepository;
 import com.example.deliciousBee.repository.ReviewRepository;
+import com.example.deliciousBee.service.keyWord.ReviewKeyWordService;
 import com.example.deliciousBee.util.FileService;
 
 import jakarta.transaction.Transactional;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -46,6 +54,8 @@ public class ReviewService {
 	private final ReportRepository reportRepository;
 	private final ReviewLikeRepository likeRepository;
 	private final RestaurantRepository restaurantRepository;
+	private final ReviewMenuRepository reviewMenuRepository;
+	private final ReviewKeyWordService reviewKeyWordService;
 
 	public void saveReview(Review review, List<AttachedFile> attachedFiles) {
 		if (attachedFiles != null) {
@@ -70,9 +80,10 @@ public class ReviewService {
 		} else {
 			// 평균 평점 계산
 			double averageRating = reviews.stream().mapToDouble(Review::getRating).average().orElse(0.0);
+
 			// 리뷰 수 계산
 			long reviewCount = reviews.size();
-			
+
 			restaurant.setAverage_rating(averageRating);
 			restaurant.setReview_count(reviewCount);
 		}
@@ -156,29 +167,24 @@ public class ReviewService {
 
 	// 리뷰 업데이트
 	@Transactional
-	public void updateReview(Review updateReview, boolean fileRemoved, MultipartFile[] files) {
-		
+	public void updateReview(Review updateReview, List<AttachedFile> attachedFiles) {
+
 		Review findReview = findReview(updateReview.getId());
-		findReview.setReviewContents(updateReview.getReviewContents());
-		findReview.setRating(updateReview.getRating());
-		findReview.setTasteRating(updateReview.getTasteRating());
-		findReview.setPriceRating(updateReview.getPriceRating());
-		findReview.setKindRating(updateReview.getKindRating());
-		findReview.setVisitDate(updateReview.getVisitDate());
-
-		// 기존 파일 가져오기
-		List<AttachedFile> attachedFiles = findFilesByReviewId(findReview.getId());
-
-		if (attachedFiles != null && fileRemoved) {
-			removeFiles(attachedFiles);
-			attachedFiles = null;
+		updateReview.setCreateDate(findReview.getCreateDate());
+		updateReview.setLikeCount(findReview.getLikeCount());
+		updateReview.setUserName(findReview.getUserName());
+		updateReview.setRestaurant(findReview.getRestaurant());
+		updateReview.setBeeMember(findReview.getBeeMember());
+		
+		reviewRepository.save(updateReview);
+		
+		// 첨부파일 처리
+		if (attachedFiles != null) {
+			for (AttachedFile attachedFile : attachedFiles) {
+				attachedFile.setReview(updateReview);
+				fileRepository.saveAll(attachedFiles);
+			}
 		}
-
-		if (attachedFiles != null && !attachedFiles.isEmpty()) {
-			saveReview(findReview, attachedFiles);
-		}
-
-		reviewRepository.save(findReview);
 
 	}
 

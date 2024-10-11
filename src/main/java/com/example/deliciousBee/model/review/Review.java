@@ -94,7 +94,7 @@ public class Review {
 	
 	@OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-    private List<ReviewKeyWord> keywords = new ArrayList<>();;
+    private List<ReviewKeyWord> keywords = new ArrayList<>();
 	
 	@ManyToOne
 	@JsonIgnore

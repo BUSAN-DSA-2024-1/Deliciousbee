@@ -9,23 +9,23 @@
 		  href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
-			let menuIndex = 1;
+			let menuIndex = 3;
 
 			document.querySelector('.add-menu').addEventListener('click', function() {
 				menuIndex++;
 				let newMenuItem = document.createElement('div');
 				newMenuItem.classList.add('form-group', 'menu-item', 'd-flex', 'align-items-center');
 				newMenuItem.innerHTML = `
-            <input type="text" class="form-control flex-grow-1" name="menu_name[]" placeholder="메뉴 이름" id="menu_name_${menuIndex}" style="margin-right: 10px;" />
-            <input type="text" class="form-control flex-grow-1" name="price_range[]" placeholder="가격" id="price_range_${menuIndex}" />
-        `;
+                <input type="text" class="form-control flex-grow-1" name="menu_name[]" placeholder="메뉴 이름" id="menu_name_${menuIndex}" style="margin-right: 10px;" />
+                <input type="text" class="form-control flex-grow-1" name="price_range[]" placeholder="가격" id="price_range_${menuIndex}" />
+            `;
 				document.querySelector('#menu-container').appendChild(newMenuItem);
 			});
 
 			document.querySelector('#menu-container').addEventListener('click', function(event) {
 				if (event.target.classList.contains('remove-menu')) {
 					const menuItems = document.querySelectorAll('.menu-item');
-					if (menuItems.length > 1) {
+					if (menuItems.length > 3) {
 						menuItems[menuItems.length - 1].remove();
 					} else {
 						alert("최소한 하나의 메뉴와 가격대를 입력해야 합니다.");
@@ -78,6 +78,30 @@
 			const form = document.getElementById('restaurantForm');
 			const formData = new FormData(form);
 
+			// 맛집 이름과 주소 필드 가져오기
+			const nameField = document.getElementById('name');
+			const addressField = document.getElementById('address');
+		    const imageField = document.getElementById('image');
+
+			// 입력 값 확인
+			if (!nameField.value.trim()) {
+				alert('맛집 이름을 입력해 주세요.');
+				nameField.focus();
+				return;
+			}
+
+			if (!addressField.value.trim()) {
+				alert('주소를 입력해 주세요.');
+				addressField.focus();
+				return;
+			}
+			
+		    if (imageField.files.length === 0) {
+		        alert('이미지를 업로드해 주세요.');
+		        imageField.focus();
+		        return;
+		    }
+
 			// 선택된 상세 카테고리들을 배열로 저장
 			const selectedCategories = [];
 			const checkboxes = document.querySelectorAll('input[name="category[]"]:checked');
@@ -92,146 +116,314 @@
 				method: 'POST',
 				body: formData
 			})
-					.then(response => {
-						if (response.ok) {
-							// 등록 성공 시 처리 (예: 메인 페이지로 이동)
-							window.location.href = '/';
-						} else {
-							// 등록 실패 시 처리 (예: 에러 메시지 표시)
-							alert('맛집 등록에 실패했습니다.');
-						}
-					});
+			.then(response => {
+				if (response.ok) { 
+					alert('관리자 확인 후 승인 메시지 발송 예정입니다.');
+					// 등록 성공 시 처리 (예: 메인 페이지로 이동)
+					window.location.href = '/';
+				} else {
+					// 등록 실패 시 처리 (예: 에러 메시지 표시)
+					alert('맛집 등록에 실패했습니다.');
+				}
+			});
 		}
 	</script>
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=initMap" async defer></script>
-	<style>
-		body {
-			background: linear-gradient(135deg, #f5f5f5 0%, #d9d9d9 100%);
-			font-family: 'Noto Sans KR', sans-serif;
-		}
+<style>
+    body {
+        background: linear-gradient(135deg, #e5e5e5 0%, #bfbfbf 100%);
+        font-family: 'Noto Sans KR', sans-serif;
+    }
 
-		.container {
-			margin-top: 10px;
-			background-color: #fff;
-			padding: 40px;
-			border-radius: 15px;
-			box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-		}
+    .container {
+        margin-top: 10px;
+        background-color: #fff;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
 
-		header {
-			color: #333;
-			margin-bottom: 10px;
-		}
+    header {
+        color: #333;
+        margin-bottom: 10px;
+    }
 
-		h1 {
-			color: #333;
-			font-size: 2.5rem;
-			margin-bottom: 10px;
-		}
+    h1 {
+        color: #333;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
 
-		.lead {
-			color: #666;
-			font-size: 1.2rem;
-		}
+    .lead {
+        color: #666;
+        font-size: 1.2rem;
+        margin: 0px;
+    }
 
-		.form-group label {
-			font-weight: bold;
-			color: #000; /* 라벨 텍스트 색상 검정 */
-			margin-bottom: 0.5rem;
-		}
+    .form-group label {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
 
-		.form-control {
-			border-radius: 10px;
-			border: 1px solid #ddd;
-			transition: border-color 0.3s, box-shadow 0.3s;
-		}
+    .form-control {
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        transition: border-color 0.3s, box-shadow 0.3s;
+        margin-bottom: 1.5rem;
+    }
 
-		.form-control:focus {
-			border-color: #ffa500;
-			box-shadow: 0 0 0 0.2rem rgba(255, 165, 0, 0.25);
-		}
+    .form-control:focus {
+        border-color: #6c6c6c;
+        box-shadow: 0 0 0 0.2rem rgba(108, 108, 108, 0.25);
+    }
 
-		.form-control-file {
-			border-radius: 10px;
-			border: 1px solid #ddd;
-			padding: 5px;
-			transition: border-color 0.3s;
-		}
+    .form-control-file {
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        padding: 5px;
+        transition: border-color 0.3s;
+    }
 
-		.form-control-file:focus {
-			border-color: #ffa500;
-		}
+    .form-control-file:focus {
+        border-color: #6c6c6c;
+    }
 
-		.btn-primary {
-			background-color: #61686c;
-			border: none;
-			color: #fff; /* 텍스트 색상 흰색 */
-			font-weight: bold;
-			padding: 10px 20px;
-			border-radius: 10px;
-			transition: background-color 0.3s, transform 0.3s;
-		}
+    .btn-primary {
+        background-color: #4a4a4a;
+        border: none;
+        color: #fff;
+        font-weight: bold;
+        padding: 10px 20px;
+        border-radius: 10px;
+        transition: background-color 0.3s, transform 0.3s;
+    }
 
-		.btn-primary:hover {
-			background-color: #4e5458;
-			color: #fff;
-			transform: scale(1.05);
-		}
+    .btn-primary:hover {
+        background-color: #3a3a3a;
+        color: #fff;
+        transform: scale(1.05);
+    }
 
-		.btn-primary:active {
-			background-color: #3d4144;
-			transform: scale(1.00);
-		}
+    .btn-primary:active {
+        background-color: #2a2a2a;
+        transform: scale(1.00);
+    }
 
-		.form-group {
-			margin-bottom: 1.5rem;
-		}
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
 
-		.form-control::placeholder {
-			color: #aaa;
-		}
+    .form-control::placeholder {
+        color: #bbb;
+    }
 
-		#map
-		{
-			height: 300px;
-			width: 400px;
-		}
+    .map-container {
+        margin-left: auto; /* 오른쪽에 붙이기 */
+    }
+    #map {
+        height: 300px;
+        width: 500px;
+    }
 
-		#mapget
-		{
-			display: flex;
-			flex-direction: row;
-		}
+    #mapget {
+        display: flex;
+        justify-content: center; /* 수평 가운데 정렬 */
+        align-items: center; /* 수직 가운데 정렬 */
+    }
 
+    .form-fields {
+        display: flex;
+        flex-direction: column;
+        margin-right: 20px;
+        width: 50%;
+    }
 
-		#address
-		{
-			margin-top: 10%;
-			height: 30px;
-			width: 50%;
-			margin-right: 5px;
-			border-radius: 10px;
-			border: 1px solid #ddd;
-		}
-		#adrbutton
-		{
-			margin-top: 10%;
-			margin-right: 5px;
-			height: 30px;
-			width: 100px;
-			background-color: #61686c; /* 버튼 배경색 */
-			border: none;
-			color: #fff; /* 텍스트 색상 흰색 */
-			font-weight: bold;
-			border-radius: 10px;
-			transition: background-color 0.3s, transform 0.3s;
-			font-size: 15px;
-		}
+    #address {
+        height: 30px;
+        width: 400px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+    }
 
-		.hidden-field {
-			display: none;
-		}
-	</style>
+    #adrbutton {
+        height: 30px;
+        width: 45px;
+        background-color: #4a4a4a;
+        border: none;
+        color: #fff;
+        font-weight: bold;
+        border-radius: 10px;
+        transition: background-color 0.3s, transform 0.3s;
+        font-size: 15px;
+    }
+
+    .hidden-field {
+        display: none;
+    }    
+    
+    #mainCategory {
+    	width: 180px;
+    }
+    
+/* 메뉴 아이템 간 간격 조정 */
+    #menu-container .menu-item {
+        margin-bottom: 10px; /* 메뉴 아이템 간에 10px 간격 추가 */
+    }
+
+    /* 버튼 및 입력 필드 스타일 */
+    #menu-container .menu-button {
+        width: 36px; /* 버튼 너비 고정 */
+        border: 1px solid #ddd; /* 버튼 테두리 */
+        background-color: #fff;
+        color: #333;
+        border-radius: 5px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+        margin-left: 10px; /* 버튼 간격 */
+    }
+
+    #menu-container .menu-button.add-menu {
+        color: #6c6c6c;
+        width: 25px;
+    }
+
+    #menu-container .menu-button.remove-menu {
+        color: #6c6c6c;
+        width: 25px;
+    }
+    #menu-container .menu-button:hover {
+        background-color: #d9d9d9;
+    }
+
+#menu-container label {
+    margin-bottom: 10px; /* label과 입력 필드 사이 간격 */
+    display: block; /* label을 블록 요소로 만들어 줄바꿈 */
+}
+
+.setsumei {
+    display: flex;
+    flex-direction: row; /* 가로로 정렬 */
+    gap: 20px; /* 요소 간 간격 조정 */
+    align-items: flex-start; /* 상단 정렬 */
+    width: 100%; /* 부모 요소가 전체 너비를 차지하도록 설정 */
+    height: 100px;
+}
+
+.categoryKing {
+    display: flex;
+    flex-direction: row; /* 내부 요소들을 가로로 정렬 */
+    gap: 100px; /* 메인 카테고리와 서브 카테고리 간 간격 */
+    max-width: 500px; /* 최소 너비 설정 */
+    flex-shrink: 0; /* 축소되지 않도록 설정 */
+    margin-right: 58.5px;
+}
+
+.categoryKing .form-group {
+    display: flex;
+    flex-direction: column;
+    /* 개별 요소의 너비를 자동으로 설정하거나 필요에 따라 조정 */
+}
+
+.setsumei > .form-group {
+    flex-grow: 1; /* 남은 공간을 모두 차지 */
+    display: flex;
+    flex-direction: column;
+}
+
+#description {
+    flex-grow: 1; /* 부모 요소의 남은 공간을 채움 */
+    resize: none; /* 사용자가 크기를 조절하지 못하도록 설정 */
+    width: 100%; /* 부모의 너비를 100% 채움 */
+    height: 100%; /* 부모의 높이를 100% 채움 */
+    box-sizing: border-box; /* 패딩과 보더를 포함 */
+}
+#subcategory {
+	width:200px;
+}
+
+.checkbox-inline {
+	width: 90px;
+	margin-right: 10px;
+}
+#category-checkboxes {
+	width: 200px;
+}
+/* 체크박스 버튼 스타일 */
+#category-checkboxes input[type="checkbox"] {
+    appearance: none; /* 기본 체크박스 스타일 제거 */
+    width: 15px;
+    height: 15px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    margin-right: 5px;
+    position: relative;
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+/* 체크박스 선택 시 스타일 */
+#category-checkboxes input[type="checkbox"]:checked {
+    background-color: #6c6c6c;
+    border-color: #6c6c6c;
+}
+
+/* 체크박스 선택 시 체크마크 추가 */
+#category-checkboxes input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 1.5px;
+    left: 4px;
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* 체크박스 호버 시 효과 */
+#category-checkboxes input[type="checkbox"]:hover {
+    border-color: #6c6c6c;
+}
+
+/* 체크박스 버튼에 애니메이션 추가 */
+#category-checkboxes input[type="checkbox"] {
+    transition: all 0.2s ease-in-out;
+}
+
+#category-checkboxes input[type="checkbox"]:checked {
+    transform: scale(1.1);
+}
+.image-width {
+    float: right;
+    width: 47%; /* 필요에 따라 너비 조정 */
+    margin-top: 50px;
+}
+
+/* 폼의 float 해제 */
+form::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+/* 이미지 업로드 섹션의 레이블과 입력 필드를 나란히 배치 */
+.form-group.image-width {
+    display: flex;
+    align-items: center; /* 수직 가운데 정렬 */
+}
+
+.form-group.image-width label {
+    margin-right: 10px; /* 레이블과 입력 필드 간 간격 조정 */
+    margin-bottom: 0; /* 레이블의 하단 마진 제거 */
+}
+
+.sugoi {
+    width:60px;
+}
+
+</style>
 	<!-- Google Fonts -->
 	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
 
@@ -246,39 +438,51 @@
 	<div class="text-center">
 		<a class="btn btn-primary mt-2" href="/">목록으로 돌아가기</a>
 	</div>
+	<br>
 	<!-- 맛집 등록 폼 -->
 	<form id="restaurantForm" enctype="multipart/form-data">
 		<input type="text" id="latitude" name="latitude" class="hidden-field">
 		<input type="text" id="longitude" name="longitude" class="hidden-field">
 		<input type="text" id="true-address" name="true-address" class="hidden-field">
-		<div class="form-group">
-			<label for="name">맛집 이름</label>
-			<input type="text" class="form-control" id="name" name="name" required>
-		</div>
+		
+    <div id="mapget">
+        <div class="form-fields">
+            <label for="name">맛집 이름</label>
+            <input type="text" class="form-control" id="name" name="name" required>
 
-		<div class="form-group">
-			<label for="address">주소</label>
-			<div id="mapget">
-				<input id="address" type="text" placeholder="주소를 입력해주세요" name="address">
-				<button id="adrbutton" type="button" onclick="geocodeAddress()">주소 확인</button>
-				<div id="map"></div>
-			</div>
-		</div>
-
-		<div class="form-group">
-			<label for="phone_number">전화번호</label>
-			<input type="text" class="form-control" id="phone_number" name="phone_number">
-		</div>
-
-		<div id="menu-container">
-			<div class="form-group menu-item d-flex align-items-center">
-				<input type="text" class="form-control flex-grow-1" name="menu_name[]" placeholder="메뉴 이름" id="menu_name_1" style="margin-right: 10px;" />
-				<input type="text" class="form-control flex-grow-1" name="price_range[]" placeholder="가격" id="price_range_1" />
-				<button type="button" class="btn btn-primary add-menu" style="margin-left: 10px;">+</button>
-				<button type="button" class="btn btn-primary remove-menu" style="margin-left: 5px;">-</button>
-			</div>
-		</div>
-
+            <label for="phone_number">전화번호</label>
+            <input type="text" class="form-control" id="phone_number" name="phone_number">
+		
+<div id="menu-container">
+    <label for="menu_name">메뉴 및 가격
+        <button type="button" class="menu-button add-menu" style="margin-left: 10px;">+</button>
+        <button type="button" class="menu-button remove-menu" style="margin-left: 0px;">-</button>
+    </label>
+    <div class="form-group menu-item d-flex align-items-center">
+        <input type="text" class="form-control flex-grow-1" name="menu_name[]" placeholder="메뉴 이름" id="menu_name_1" style="margin-right: 10px;" />
+        <input type="text" class="form-control flex-grow-1" name="price_range[]" placeholder="가격" id="price_range_1" />
+    </div>
+    <div class="form-group menu-item d-flex align-items-center">
+        <input type="text" class="form-control flex-grow-1" name="menu_name[]" placeholder="메뉴 이름" id="menu_name_2" style="margin-right: 10px;" />
+        <input type="text" class="form-control flex-grow-1" name="price_range[]" placeholder="가격" id="price_range_2" />
+    </div>
+    <div class="form-group menu-item d-flex align-items-center">
+        <input type="text" class="form-control flex-grow-1" name="menu_name[]" placeholder="메뉴 이름" id="menu_name_3" style="margin-right: 10px;" />
+        <input type="text" class="form-control flex-grow-1" name="price_range[]" placeholder="가격" id="price_range_3" />
+    </div>
+</div>      
+        </div>
+		<div class="map-container">
+            <div id="map"></div>
+            <br>
+            <label for="address">주소</label>&nbsp;&nbsp;
+            <input id="address" type="text" placeholder=" 주소를 입력해주세요." name="address">&nbsp;&nbsp;
+            <button id="adrbutton" type="button" onclick="geocodeAddress()">확인</button>
+        </div>    
+    </div>
+		
+		<div class="setsumei">
+		<div class="categoryKing">
 		<div class="form-group">
 			<label for="mainCategory">메인 카테고리</label>
 			<select class="form-control" id="mainCategory" name="mainCategory" required onchange="updateSubcategories(this.value)">
@@ -299,19 +503,18 @@
 				<!-- 서브 카테고리 체크박스가 여기에 동적으로 추가될 예정입니다. -->
 			</div>
 		</div>
-
-
+		</div>
 		<div class="form-group">
 			<label for="description">설명</label>
 			<textarea class="form-control" id="description" name="description" rows="3" required></textarea>
 		</div>
+	</div>
 
-
-		<div class="form-group">
-			<label for="image">이미지 업로드</label>
+		<div class="form-group image-width">
+			<label class="sugoi" for="image">이미지업로드</label>
 			<input type="file" class="form-control-file" id="image" name="file" multiple>
 		</div>
-
+		<br><br>
 		<button type="button" class="btn btn-primary" onclick="submitRestaurant()">등록</button>
 	</form>
 </div>
@@ -319,7 +522,7 @@
 	// categoryEnum 객체 정의
 	const categoryEnum = {
 		"한식": ["백반", "죽", "국수", "찌개", "탕", "전골", "족발", "보쌈", "한정식", "분식"],
-		"일식": ["초밥", "회", "돈가스", "일본식카레", "일본식면요리"],
+		"일식": ["초밥", "회", "돈가스", "카레", "면요리"],
 		"중식": ["중식"],
 		"양식": ["파스타", "스테이크"],
 		"아시안": ["아시안"],

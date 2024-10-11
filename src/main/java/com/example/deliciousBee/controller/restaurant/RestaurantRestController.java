@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.deliciousBee.service.message.MessageService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +41,7 @@ public class RestaurantRestController {
     private final BeeMemberService beeMemberService;
     private final FileService fileService;
     private final RestaurantFileService restaurantFileService;
+    private final MessageService messageService;
 
 
     @GetMapping("search")
@@ -49,21 +51,29 @@ public class RestaurantRestController {
             @RequestParam(value = "sortBy", required = false, defaultValue = "default") String sortBy,
             @RequestParam(value = "latitude", required = false) Double userLatitude,
             @RequestParam(value = "longitude", required = false) Double userLongitude,
-            @RequestParam(value = "radius", required = false, defaultValue = "500") Double radius,
+            @RequestParam(value = "radius", required = false, defaultValue = "1500") Double radius,
+            @RequestParam(value = "categories", required = false) List<String> categories, 
             @RequestParam(value = "page", defaultValue = "0") int page,
             PagedResourcesAssembler<RestaurantDto> assembler) {
 
-        // Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sort)); // 제거
-
-        // page 파라미터를 사용하여 Pageable 객체 수정 (필요한 경우)
+        // 기존 코드 유지
         if (page > 0) {
             pageable = PageRequest.of(page - 1, pageable.getPageSize(), pageable.getSort());
         }
 
-        Page<RestaurantDto> restaurants = restaurantService.searchRestaurants(keyword, pageable, sortBy, userLatitude, userLongitude, radius);
+        Page<RestaurantDto> restaurants;
+
+        if (categories != null && !categories.isEmpty()) {
+            // 카테고리 필터링이 필요한 경우 새로운 서비스 메서드 호출
+            restaurants = restaurantService.searchRestaurantsByCategory(keyword, pageable, sortBy, userLatitude, userLongitude, radius, categories);
+        } else {
+            // 기존 서비스 메서드 호출
+            restaurants = restaurantService.searchRestaurants(keyword, pageable, sortBy, userLatitude, userLongitude, radius);
+        }
 
         return ResponseEntity.ok(assembler.toModel(restaurants));
     }
+
 
 
     @PostMapping("create")
@@ -143,6 +153,7 @@ public class RestaurantRestController {
                 }
             }
         }
+        messageService.ReportMessage(loginMember.getNickname(),"레스토랑 등록을 완료했습니다 승인까지 기다려주세요");
 
         // 레스토랑과 첨부 파일 정보를 데이터베이스에 저장
         restaurantService.saveRestaurant(restaurant, attachedFiles);

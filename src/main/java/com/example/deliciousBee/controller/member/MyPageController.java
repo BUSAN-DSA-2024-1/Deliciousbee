@@ -13,10 +13,7 @@ import org.springframework.data.domain.Sort;
 import com.example.deliciousBee.model.member.Role;
 import jakarta.servlet.http.Cookie;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestHeader;
-import com.example.deliciousBee.model.member.Role;
-import jakarta.servlet.http.Cookie;
-import org.springframework.util.StringUtils;
+
 import com.example.deliciousBee.security.jwt.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -340,10 +337,15 @@ public class MyPageController {
 		if (loginMember == null) {
 			return "redirect:/member/login";
 		}
-		MyPage myPage = loginMember.getMyPage(); // MyPage 객체를 가져옵니다.
+
+		MyPage myPage = null; // MyPage 객체를 가져옵니다.
+		myPage = myPageRepository.findMyPageWithVisitsByMemberId(loginMember.getMember_id());
+
+//		System.out.println("확인용");
+//		System.out.println(myPage.getMainImage().getSaved_filename());
 		model.addAttribute("myPage", myPage); // myPage를 모델에 추가합니다.
 		model.addAttribute("loginMember", loginMember);
-		
+
 		Pageable pageable = PageRequest.of(page, 6, Sort.by(sort).descending());
 
 	    Page<Review> reviews;
@@ -359,7 +361,7 @@ public class MyPageController {
 	}
 
 	// **********************마이페이지에서 수정하기*********************
-	@PostMapping("updateMyPage")
+	@PostMapping("/member/updateMyPage")
     public String updateMyPage(@AuthenticationPrincipal BeeMember loginMember,
                                @RequestParam(name = "introduce") String introduce,
                                @RequestParam(name = "isFileRemoved", required = false, defaultValue = "false") boolean isFileRemoved,
@@ -411,5 +413,5 @@ public class MyPageController {
 
 	}
 	
-	
+
 }
