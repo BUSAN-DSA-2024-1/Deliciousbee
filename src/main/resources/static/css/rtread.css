@@ -1,4 +1,36 @@
 /* 미슐랭 스타일 적용 */
+        .like-button {
+            display: inline-flex;
+            align-items: center;
+            background-color: #ff6b6b !important;
+            color: black;
+            border: none;
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .like-button:hover {
+            background-color: #ff4c4c;
+            transform: scale(1.05);
+        }
+
+        .like-button .like-icon {
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .like-count {
+            margin-left: 0.5rem;
+            font-weight: bold;
+        }
+        
+        .like-desc {
+        	    display: flex;
+		    justify-content: space-between;
+        }
 body {
     font-family: 'Noto Sans KR', sans-serif;
 }
