@@ -53,7 +53,14 @@
                 th:data-restaurant-name="${restaurant.name}" th:onclick="openRestaurantReportModal(this)">
                 🚨
               </button>
+<<<<<<< HEAD
 
+=======
+              <button type="button" class="btn btn-success mr-2 like-button" th:onclick="likeRt(this)"
+                th:data-restaurant-id="${restaurant.id}">
+                좋아요 <span class="like-count">[[${restaurant.likeCount}]]</span>
+              </button>
+>>>>>>> 414c70d62f50905434e0885445af4e298a8eb301
             </div>
             <h2 class="card-title" th:text="${restaurant.name}">Featured Post Title</h2>
             <div class="like-desc">
@@ -352,21 +359,20 @@
 
               <hr class="Review-Write-hr">
               <div class="form-group">
-                <label for="keywords">키워드 등록</label>
+                <label for="updateKeywords">키워드 등록</label>
                 <div th:each="category : ${T(com.example.deliciousBee.model.keyWord.KeywordCategory).values()}">
-                  <label for="keywords" th:text="${category.name().replace('_', ' ')}"></label>
-                  <select class="form-control" multiple name="keywords">
+                  <label for="updateKeywords" th:text="${category.name().replace('_', ' ')}"></label>
+                  <select class="form-control" multiple name="updateKeywords">
                     <option th:each="keyword : ${keywordsByCategory.get(category)}" th:value="${keyword.id}"
                       th:text="${keyword.keywordName}">[[${keyword.keywordName}]]</option>
                   </select>
                 </div>
-                <input type="hidden" id="keywordCategoriesJson" th:value="${keywordCategoriesJson}" />
+
                 <!-- custom KeyWord Form -->
                 <div class="form-check">
                   <input class="form-check-input" type="checkbox" id="updateReviewCustomKeywordCheckbox"
                     name="updateReviewCustomKeywordCheckbox">
-                  <label class="form-check-label-review-keyword" for="updateReviewCustomKeywordCheckbox">수정하고싶은 커스텀
-                    키워드를
+                  <label class="form-check-label-review-keyword" for="updateReviewCustomKeywordCheckbox">존재하지 않은 키워드를
                     작성해주세요</label>
                 </div>
                 <input type="text" class="form-control" id="updateReviewCustomKeywordInput"
@@ -516,16 +522,16 @@
                   </div>
                 </label>
                 <!--  <input type="hidden" class="review-id" th:value="${review.id}">
-                  <button type="button" class="btn btn-outline-danger mr-2" data-toggle="modal"
-                    data-target="#reportModal" th:data-review-id="${review.id}">신고</button>
-                  <div
-                    sec:authorize="isAuthenticated() and #authentication.principal.member_id == #vars.review.beeMember.member_id">
-                    <a class="btn btn-outline-secondary mr-1"
-                      th:href="@{/review/update/{reviewId}(reviewId=${review.id})}">수정</a>
-                    <input type="hidden" class="review-id" th:value="${review.id}">
-                    <button type="button" class="btn btn-outline-danger mr-2" data-bs-toggle="button"
-                      th:onclick="deleteReview(this)">삭제</button>
-                  </div> -->
+              <button type="button" class="btn btn-outline-danger mr-2" data-toggle="modal"
+                data-target="#reportModal" th:data-review-id="${review.id}">신고</button>
+              <div
+                sec:authorize="isAuthenticated() and #authentication.principal.member_id == #vars.review.beeMember.member_id">
+                <a class="btn btn-outline-secondary mr-1"
+                  th:href="@{/review/update/{reviewId}(reviewId=${review.id})}">수정</a>
+                <input type="hidden" class="review-id" th:value="${review.id}">
+                <button type="button" class="btn btn-outline-danger mr-2" data-bs-toggle="button"
+                  th:onclick="deleteReview(this)">삭제</button>
+              </div> -->
               </div>
             </div>
             <!-- Category list-->
@@ -719,7 +725,7 @@
       });
     }
 
-    // 신고모달 기능 
+    // 신고모달 기능
     function showReportReasons(button) {
       const reviewId = button.dataset.reviewId;
       $('#reportModal').data('review-id', reviewId);
@@ -788,8 +794,7 @@
             $('#updateReviewAttachedFileName').text('');
           }
 
-          //매뉴 표기 
-          console.log(data.reviewMenuList);
+          //매뉴 표기
           $('input[name="updateReviewMenuList"]').each(function () {
             const menuId = $(this).val();
             const selectedMenu = data.reviewMenuList.find(item => item.menu.id === parseInt(menuId));
@@ -797,15 +802,16 @@
           });
 
           //키워드 표기
-          console.log(data.keywords);
-          $('select[name="keywords"]').each(function () {
+          $('select[name="updateKeywords"]').each(function () {
             const selectElement = $(this);
             selectElement.find('option').each(function () {
               const optionElement = $(this);
               const optionValue = parseInt(optionElement.val());
-              const optionText = optionElement.text().trim(); 
+              const optionText = optionElement.text().trim();
               const selectedKeyword = data.keywords.find(keyword => keyword.keyWord.id === optionValue && keyword.keyWord.keywordName === optionText);
-              optionElement.prop('selected', !!selectedKeyword); 
+              if (selectedKeyword) {
+                optionElement.prop('selected', true);
+              }
             });
           });
 
@@ -857,13 +863,14 @@
       }
 
       // 키워드 전달
-      const selectedKeywordIds = [];
-      document.querySelectorAll('select[name="keywords"]').forEach(selectElement => {
+      const selectedKeywordIds = []; // 항상 새로운 빈 배열을 생성하여 값 저장
+      document.querySelectorAll('select[name="updateKeywords"]').forEach(selectElement => {
         Array.from(selectElement.selectedOptions).forEach(option => {
-          selectedKeywordIds.push(parseInt(option.value));
+          selectedKeywordIds.push(parseInt(option.value)); // 선택된 값만 배열에 추가
         });
       });
-      formData.append('reviewKeywordsIds', selectedKeywordIds);
+      formData.append('reviewKeywordsIds', selectedKeywordIds); // 선택된 키워드의 ID 배열을 폼에 추가
+
 
       // 커스텀 키워드 저장
       const customKeywordName = $('#updateReviewCustomKeywordName').val();
@@ -880,6 +887,7 @@
         contentType: false,
         success: function (response) {
           if (response.success) {
+            console.log(response)
             alert('리뷰가 성공적으로 수정되었습니다');
             console.log('리뷰가 성공적으로 수정되었습니다');
             location.reload();
@@ -1020,7 +1028,7 @@
                 attachedFileHTML += '</div>' + modalHTML;
               } else {
                 attachedFileHTML += `
-              <div class="image-container"> 
+              <div class="image-container">
                 <img src="/image/nothing.png" alt="Review Image" class="cardking">
               </div>
             `;
@@ -1067,26 +1075,26 @@
             <div class="card-header">
                   <div class="menu-date">
                     <span class="User-Info"> User Info </span>
-                   <div class="menu-container">
-                     <button class="menu-button1">
-                     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16px"
-                         height="16px" viewBox="0 0 16 16" version="1.1">
-                         <g id="surface1">
-                           <path style=" stroke:none;fill-rule:nonzero;fill:rgb(255%,255%,255%);fill-opacity:1;"
-                             d="M 8.804688 6.890625 C 9.085938 7.113281 9.277344 7.398438 9.34375 7.75 C 9.386719 8.179688 9.3125 8.542969 9.042969 8.890625 C 8.777344 9.179688 8.457031 9.339844 8.066406 9.359375 C 7.660156 9.363281 7.332031 9.242188 7.03125 8.96875 C 6.757812 8.667969 6.636719 8.339844 6.640625 7.933594 C 6.660156 7.542969 6.820312 7.222656 7.109375 6.957031 C 7.617188 6.5625 8.269531 6.535156 8.804688 6.890625 Z M 8.804688 6.890625 " />
-                           <path style=" stroke:none;fill-rule:nonzero;fill:rgb(255%,255%,255%);fill-opacity:1;"
-                             d="M 8.910156 11.644531 C 9.164062 11.871094 9.328125 12.207031 9.351562 12.542969 C 9.359375 12.96875 9.261719 13.3125 8.96875 13.628906 C 8.644531 13.941406 8.296875 14.015625 7.859375 14.007812 C 7.503906 13.992188 7.203125 13.808594 6.960938 13.558594 C 6.683594 13.230469 6.632812 12.851562 6.65625 12.4375 C 6.710938 12.09375 6.914062 11.777344 7.1875 11.5625 C 7.761719 11.210938 8.375 11.230469 8.910156 11.644531 Z M 8.910156 11.644531 " />
-                           <path style=" stroke:none;fill-rule:nonzero;fill:rgb(255%,255%,255%);fill-opacity:1;"
-                             d="M 8.773438 2.210938 C 9.074219 2.425781 9.273438 2.722656 9.34375 3.09375 C 9.371094 3.546875 9.296875 3.894531 9.007812 4.257812 C 8.765625 4.519531 8.4375 4.660156 8.082031 4.695312 C 7.675781 4.710938 7.324219 4.566406 7.023438 4.296875 C 6.738281 3.996094 6.640625 3.621094 6.648438 3.214844 C 6.671875 2.851562 6.839844 2.554688 7.101562 2.304688 C 7.578125 1.898438 8.25 1.890625 8.773438 2.210938 Z M 8.773438 2.210938 " />
-                         </g>
-                       </svg>
-                     </button>
-                     <ul class="dropdown-menu">
-                       <li class="dropmenu-mother"><button type="button" data-toggle="modal" data-target="#reportModal" data-review-id="${review.id}" onclick="showReportReasons(this)">신고</button></li>
-                       <li sec:authorize="isAuthenticated() and #authentication.principal.member_id == #vars.review.beeMember.member_id"><button type="button" class="btn btn-outline-secondary mr-2" data-toggle="modal" data-target="#updateReviewModal" data-review-id="${review.id}" onclick="showUpdateReview(this)">수정</button></li>
-                       <li class="dropmenu-mother"><input type="hidden" class="review-id" value="${review.id}"><button type="button" data-review-id="${review.id}" data-bs-toggle="button" onclick="deleteReview(this)">삭제</button></li>
-                     </ul>
-                   </div>
+                    <div class="menu-container">
+                      <button class="menu-button1">
+                      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16px"
+                        height="16px" viewBox="0 0 16 16" version="1.1">
+                        <g id="surface1">
+                          <path style=" stroke:none;fill-rule:nonzero;fill:rgb(255%,255%,255%);fill-opacity:1;"
+                            d="M 8.804688 6.890625 C 9.085938 7.113281 9.277344 7.398438 9.34375 7.75 C 9.386719 8.179688 9.3125 8.542969 9.042969 8.890625 C 8.777344 9.179688 8.457031 9.339844 8.066406 9.359375 C 7.660156 9.363281 7.332031 9.242188 7.03125 8.96875 C 6.757812 8.667969 6.636719 8.339844 6.640625 7.933594 C 6.660156 7.542969 6.820312 7.222656 7.109375 6.957031 C 7.617188 6.5625 8.269531 6.535156 8.804688 6.890625 Z M 8.804688 6.890625 " />
+                          <path style=" stroke:none;fill-rule:nonzero;fill:rgb(255%,255%,255%);fill-opacity:1;"
+                            d="M 8.910156 11.644531 C 9.164062 11.871094 9.328125 12.207031 9.351562 12.542969 C 9.359375 12.96875 9.261719 13.3125 8.96875 13.628906 C 8.644531 13.941406 8.296875 14.015625 7.859375 14.007812 C 7.503906 13.992188 7.203125 13.808594 6.960938 13.558594 C 6.683594 13.230469 6.632812 12.851562 6.65625 12.4375 C 6.710938 12.09375 6.914062 11.777344 7.1875 11.5625 C 7.761719 11.210938 8.375 11.230469 8.910156 11.644531 Z M 8.910156 11.644531 " />
+                          <path style=" stroke:none;fill-rule:nonzero;fill:rgb(255%,255%,255%);fill-opacity:1;"
+                            d="M 8.773438 2.210938 C 9.074219 2.425781 9.273438 2.722656 9.34375 3.09375 C 9.371094 3.546875 9.296875 3.894531 9.007812 4.257812 C 8.765625 4.519531 8.4375 4.660156 8.082031 4.695312 C 7.675781 4.710938 7.324219 4.566406 7.023438 4.296875 C 6.738281 3.996094 6.640625 3.621094 6.648438 3.214844 C 6.671875 2.851562 6.839844 2.554688 7.101562 2.304688 C 7.578125 1.898438 8.25 1.890625 8.773438 2.210938 Z M 8.773438 2.210938 " />
+                        </g>
+                      </svg>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li class="dropmenu-mother"><button type="button" data-toggle="modal" data-target="#reportModal" data-review-id="${review.id}" onclick="showReportReasons(this)">신고</button></li>
+                      <li sec:authorize="isAuthenticated() and #authentication.principal.member_id == #vars.review.beeMember.member_id"><button type="button" class="btn btn-outline-secondary mr-2" data-toggle="modal" data-target="#updateReviewModal" data-review-id="${review.id}" onclick="showUpdateReview(this)">수정</button></li>
+                      <li class="dropmenu-mother"><input type="hidden" class="review-id" value="${review.id}"><button type="button" data-review-id="${review.id}" data-bs-toggle="button" onclick="deleteReview(this)">삭제</button></li>
+                    </ul>
+                  </div>
                   </div>
 
                   <h3>${review.userName}</h3>
@@ -1279,7 +1287,7 @@
       // 현재 레스토랑 ID 설정
       currentRestaurantId = restaurantId;
 
-      // 
+      //
       const restaurantReportModal = document.getElementById("restaurantReportModal");
       restaurantReportModal.style.display = "block";
     }
@@ -1389,7 +1397,10 @@
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=initMap"
     async defer></script>
+<<<<<<< HEAD
 <script th:src="@{/js/layout.js}"></script>
+=======
+>>>>>>> 414c70d62f50905434e0885445af4e298a8eb301
 </body>
 
 </html>

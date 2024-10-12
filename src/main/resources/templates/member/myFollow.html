@@ -5,6 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/myFollow.css">
     <title>내가 쓴글</title>
+     <script>
+        function filterFollowList(searchType) {
+            var filter, ul, li, a, i, txtValue;
+            filter = document.getElementById(searchType + 'Search').value.toUpperCase();
+            ul = document.getElementById(searchType + 'List');
+            li = ul.getElementsByTagName('li');
+
+            for (i = 0; i < li.length; i++) {
+                a = li[i].getElementsByTagName("a")[0];
+                txtValue = a.textContent || a.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    li[i].style.display = "";
+                } else {
+                    li[i].style.display = "none";
+                }
+            }
+        }
+    </script>
 </head>
 <body>
     <header class="header">
@@ -25,27 +43,28 @@
             </ul>
         </nav>
 
-        <section class="main">
+         <section class="main">
             <div class="follow-list">
                 <h3>팔로잉 목록</h3>
                 <p>팔로잉수: <span th:text="${followingList.size()}"></span></p>
-                <ul>
+                <input type="text" id="followingSearch" onkeyup="filterFollowList('following')" placeholder="팔로잉 검색..">
+                <ul id="followingList">
                     <li th:each="following : ${followingList}">
                         <a th:href="@{/member/myPage(id=${following.myPage.id})}" th:text="${following.nickname}"></a>
-                   		
                     </li>
                 </ul>
             </div>
             <div class="follow-list">
                 <h3>팔로워 목록</h3>
                 <p>팔로워수: <span th:text="${followerList.size()}"></span></p>
-                <ul>
+                 <input type="text" id="followerSearch" onkeyup="filterFollowList('follower')" placeholder="팔로워 검색..">
+                <ul id="followerList">
                     <li th:each="follower : ${followerList}">
                         <a th:href="@{/member/myPage(id=${follower.myPage.id})}" th:text="${follower.nickname}"></a>
                     </li>
                 </ul>
             </div>
-		</section>
+        </section>
     </main>
 </body>
 </html>

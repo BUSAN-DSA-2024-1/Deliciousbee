@@ -102,3 +102,64 @@ body {
 .detail-button:hover {
     background-color: #0056b3;
 }
+/* 페이지네이션 스타일 */
+.pagination {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 10px 0;
+    margin: 20px 0;
+    background-color: #fff6d4; /* 부드러운 노란색 배경 */
+    border-radius: 8px; /* 모서리 둥글게 */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
+}
+
+/* 페이지 아이템 스타일 */
+.pagination li {
+    margin: 0 5px; /* 페이지 아이템 간 여백 */
+}
+
+/* 화살표 버튼 스타일 */
+.page-link {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #f7e36e; /* 꿀색 배경 */
+    color: #5b4f00; /* 어두운 색 텍스트 */
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* 호버 시 효과 */
+    font-weight: bold; /* 글자 두껍게 */
+    border: 2px solid transparent; /* 테두리 기본값 설정 */
+}
+
+/* 화살표 버튼 디자인 */
+.page-link i {
+    font-size: 1.5em; /* 화살표 아이콘 크기 조정 */
+}
+
+/* 일반 페이지 링크 스타일 */
+.page-link:hover {
+    background-color: #e6c93f; /* 호버 시 색상 변경 */
+    transform: scale(1.05); /* 호버 시 크기 변경 */
+}
+
+.page-link:active {
+    background-color: #c5b52e; /* 클릭 시 색상 변경 */
+}
+
+/* 현재 페이지 스타일 */
+.pagination li.active .page-link {
+    background-color: #ffe600; /* 현재 페이지 배경 색상 */
+    color: #333; /* 현재 페이지 텍스트 색상 */
+    border: 2px solid #5b4f00; /* 현재 페이지 테두리 색상 */
+}
+
+/* 비활성 페이지 링크 스타일 */
+.pagination li.page-item:not(.active) .page-link {
+    border: 1px solid #ddd; /* 비활성 페이지 링크에 테두리 추가 */
+}
+
+/* 페이지 번호 여백 조정 */
+.page-link {
+    margin: 0 3px; /* 버튼 간 간격 */
+}

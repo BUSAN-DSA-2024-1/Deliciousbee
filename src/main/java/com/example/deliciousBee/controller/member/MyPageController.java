@@ -36,6 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.deliciousBee.model.board.Restaurant;
+import com.example.deliciousBee.model.like.ReviewLike;
 import com.example.deliciousBee.model.like.RtLike;
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.mypage.MyPage;
@@ -45,6 +46,7 @@ import com.example.deliciousBee.repository.LikeRtRepository;
 import com.example.deliciousBee.repository.MyPageFileRepository;
 import com.example.deliciousBee.repository.MyPageRepository;
 import com.example.deliciousBee.repository.RestaurantRepository;
+import com.example.deliciousBee.repository.ReviewLikeRepository;
 import com.example.deliciousBee.repository.ReviewRepository;
 import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.member.FollowService;
@@ -85,6 +87,7 @@ public class MyPageController {
 	private final LikeRtRepository likeRtRepository;
 	private final RestaurantService restaurantService;
 	private final RestaurantRepository restaurantRepository;
+	private final ReviewLikeRepository reviewLikeRepository;
 
 	@Autowired
 	private MemberFileService memberFileService; // fileStore 주입 받음.
@@ -140,6 +143,8 @@ public class MyPageController {
 			@RequestParam(name = "id", required = false) Long id,
 			@RequestParam(name = "sort", defaultValue = "createDate") String sort,
 			@RequestParam(name = "page", defaultValue = "0") int page,
+			@RequestParam(name = "rtPage", defaultValue = "0") int rtPage,
+			@RequestParam(name = "tab", defaultValue = "myReview") String tab,
 			Model model) {
 			MyPage myPage = null;
 
@@ -160,13 +165,13 @@ public class MyPageController {
 			}
 		}
 
-		handleMyPageAccess(myPage, loginMember, sort, page, model);
-
+		handleMyPageAccess(myPage, loginMember, sort, page, rtPage, model);
+		model.addAttribute("currentTab", tab);
 		return "member/myPage";
 	}
 
 
-	private void handleMyPageAccess(MyPage myPage, BeeMember loginMember, String sort, int page, Model model) {
+	private void handleMyPageAccess(MyPage myPage, BeeMember loginMember, String sort, int page, int rtPage, Model model) {
 		myPageService.increaseHitCount(myPage.getId()); // 조회수 증가
 		myPageService.increaseVisitCount(myPage.getId(), loginMember); // 방문자 수 증가
 		
@@ -187,16 +192,28 @@ public class MyPageController {
 	    boolean isOwner = loginMember != null && loginMember.getMyPage().getId().equals(myPage.getId());
 	    model.addAttribute("isOwner", isOwner); // isOwner 변수를 모델에 추가
 	    
-	    Pageable pageable = PageRequest.of(page, 6, Sort.by(sort).descending());
+	    //리뷰탭 페이징
+	    Pageable reviewPageable = PageRequest.of(page, 6, Sort.by(sort).descending());
 
 	    Page<Review> reviews;
 	    if ("visitDate".equals(sort)) {
-	        reviews = reviewRepository.findByBeeMemberOrderByVisitDateDesc(myPage.getBeeMember(), pageable);
+	        reviews = reviewRepository.findByBeeMemberOrderByVisitDateDesc(myPage.getBeeMember(), reviewPageable);
 	    } else {
-	        reviews = reviewRepository.findByBeeMemberOrderByCreateDateDesc(myPage.getBeeMember(), pageable);
+	        reviews = reviewRepository.findByBeeMemberOrderByCreateDateDesc(myPage.getBeeMember(), reviewPageable);
 	    }
 	    model.addAttribute("reviews", reviews);
-	    model.addAttribute("currentSort", sort); 
+	    model.addAttribute("currentSort", sort);
+
+	    // 레스토랑탭 페이징
+	    Pageable restaurantPageable = PageRequest.of(rtPage, 10);
+
+	    // 사용자가 좋아요한 레스토랑 목록 가져오기 (새로운 로직)
+	    Page<Restaurant> pagedLikedRestaurants = likeRtRepository.findLikedRestaurantsByMember(myPage.getBeeMember(), restaurantPageable);
+	    model.addAttribute("pagedLikedRestaurants", pagedLikedRestaurants); // 페이지네이션된 좋아요 레스토랑
+	    model.addAttribute("restaurants", pagedLikedRestaurants); // 페이지네이션 용
+	    
+	    
+	    
 	    //평균 별점
 	    List<Review> allMemberReviews = reviewRepository.findByBeeMember(myPage.getBeeMember());
 	    double averageRating = allMemberReviews.stream()
@@ -206,6 +223,7 @@ public class MyPageController {
 
 	    model.addAttribute("averageRating", averageRating); 
 	    
+	    //레스토랑리스트 좋아요많이받은순
 	    List<RtLike> likedRts = likeRtRepository.findByBeeMember(myPage.getBeeMember()); // myPage.getBeeMember() 사용
 	    List<Restaurant> likedRestaurants = likedRts.stream()
 	            .map(RtLike::getRestaurant)
@@ -215,8 +233,24 @@ public class MyPageController {
 		
 	    List<Restaurant> mostLikedRestaurants = restaurantRepository.findAll(PageRequest.of(0, 4, Sort.by("likeCount").descending())).getContent();
 	    model.addAttribute("mostLikedRestaurants", mostLikedRestaurants);
+	   
+	    //리뷰리스트 좋아요 많이받은순
+	    List<ReviewLike> reviewLikes = reviewLikeRepository.findByBeeMember(myPage.getBeeMember()); // 로그인한 사용자가 좋아요한 리뷰
+	    List<Review> likedReviews = reviewLikes.stream()
+	            .map(ReviewLike::getReview)
+	            .collect(Collectors.toList());
+
+	    model.addAttribute("likedReviews", likedReviews); // 좋아요한 리뷰들을 모델에 추가
+
+	    List<Review> mostLikedReviews = reviewRepository.findAll(PageRequest.of(0, 4, Sort.by("likeCount").descending())).getContent();
+	    model.addAttribute("mostLikedReviews", mostLikedReviews);
 	    
 	}
+	
+	
+	
+	
+	
 	//랜덤 리뷰
 	@GetMapping("randomReviews")
     @ResponseBody
@@ -307,7 +341,8 @@ public class MyPageController {
 		MyPage myPage = null; // MyPage 객체를 가져옵니다.
 		myPage = myPageRepository.findMyPageWithVisitsByMemberId(loginMember.getMember_id());
 
-
+//		System.out.println("확인용");
+//		System.out.println(myPage.getMainImage().getSaved_filename());
 		model.addAttribute("myPage", myPage); // myPage를 모델에 추가합니다.
 		model.addAttribute("loginMember", loginMember);
 
@@ -321,7 +356,7 @@ public class MyPageController {
 	    }
 	    model.addAttribute("reviews", reviews);
 	    model.addAttribute("currentSort", sort);
-		handleMyPageAccess(myPage, loginMember, sort, page, model); // "createDate" 또는 원하는 sort 값 전달
+		handleMyPageAccess(myPage, loginMember, sort, page,  page, model); // "createDate" 또는 원하는 sort 값 전달
 		 return "member/updateMyPage";
 	}
 

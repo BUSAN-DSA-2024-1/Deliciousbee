@@ -50,6 +50,8 @@ import com.example.deliciousBee.service.menu.MenuService;
 import com.example.deliciousBee.service.restaurant.RestaurantService;
 import com.example.deliciousBee.service.review.ReviewService;
 import com.example.deliciousBee.util.FileService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.Blob;
@@ -264,7 +266,6 @@ public class ReviewController {
 	public ResponseEntity<Map<String, Object>> postUpdateReview(@ModelAttribute ReviewUpdateForm reviewUpdateForm,
 			@RequestPart(name = "updateReviewAttachedFile", required = false) MultipartFile[] updateReviewAttachedFile) {
 
-		log.info("****************************** reviewUpdateForm:{}", reviewUpdateForm);
 		Review findReview = ReviewConverter.reviewUpdateFormToReview(reviewUpdateForm);
 
 		// 첨부파일 처리
@@ -306,26 +307,18 @@ public class ReviewController {
 		}
 
 		findReview.setReviewMenuList(reviewMenus);
-		
-		// 키워드 비우기
-		List<Long> deleteReviewKeywordsIds = reviewUpdateForm.getReviewKeywordsIds();
-		if (deleteReviewKeywordsIds != null) {
-//			deleteReviewKeywordsIds.clear(); 
-			reviewKeyWordService.deleteReviewKeywordsByIds(deleteReviewKeywordsIds);
-		}
 
-		// 키워드 처리
-		List<ReviewKeyWord> reviewkeywords = new ArrayList<>();
-		List<Long> updateReviewKeywordsIds = reviewUpdateForm.getReviewKeywordsIds();
-		if (updateReviewKeywordsIds != null) {
-			reviewkeywords.addAll(updateReviewKeywordsIds.stream().map(keywordsId -> {
+		
+		// 키워드 수정 처리
+		List<ReviewKeyWord> reviewKeywords = new ArrayList<>();
+		List<Long> reviewKeywordsIds = reviewUpdateForm.getReviewKeywordsIds();
+		if (reviewKeywordsIds != null && !reviewKeywordsIds.isEmpty()) {
+			reviewKeywords.addAll(reviewKeywordsIds.stream().map(keywordsId -> {
 				KeyWord keyWord = reviewKeyWordService.findById(keywordsId);
-				ReviewKeyWord reviewKeyWord = new ReviewKeyWord(findReview, keyWord, null);
-				return reviewKeyWord;
+				return new ReviewKeyWord(findReview, keyWord, null);
 			}).collect(Collectors.toList()));
 		}
-		log.info("*************** reviewkeywords:{}", reviewkeywords);
-		findReview.setKeywords(reviewkeywords);
+		findReview.setKeywords(reviewKeywords);
 
 		// 커스텀 키워드 처리
 		if (reviewUpdateForm.getCustomKeywordName() != null && !reviewUpdateForm.getCustomKeywordName().isEmpty()) {
@@ -335,6 +328,7 @@ public class ReviewController {
 			existingKeywords.add(reviewKeyWord);
 			findReview.setKeywords(existingKeywords);
 		}
+		
 
 		reviewService.updateReview(findReview, attachedFiles);
 		Map<String, Object> response = new HashMap<>();
