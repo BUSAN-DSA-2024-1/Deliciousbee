@@ -2,8 +2,8 @@
         .like-button {
             display: inline-flex;
             align-items: center;
-            background-color: #ff6b6b;
-            color: #fff;
+            background-color: #ff6b6b !important;
+            color: black;
             border: none;
             border-radius: 50px;
             padding: 0.5rem 1rem;
