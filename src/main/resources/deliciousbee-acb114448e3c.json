@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "deliciousbee",
+  "private_key_id": "acb114448e3c576eb0f6558b613136968517e4e4",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDanbcg8IYYPXgO\n4bidU63AX2cIeGdtvyjMuQpCWuotPdCTHdsUeTaHgFB6CrfbFq7mRqqhIKiAXw9S\nWZM/DrTeiQyRgo/GWEWObl5Yad4YOec4XAJNf1Lri+yDBXXGwTyNsR8X1qJouLf8\nxISM5fUqzCVeSXjw7ShX8X1HLBYHWzta//0rF+vCpfa29jbTqtM8lj/KB5frnlc2\nkrlfUAE07tH1jVn65cbMpaXn+hI8rb3L9PQkHVQgiMVpUbhKGqJCF7V5Hmkqvu3v\nCmVOMVr9c64PYCvnadY2k4NTBD/OnfHVjdPU91A/IPanmQNNRr98p/Dt3dGjowOt\n8PRoiCGTAgMBAAECggEAaWe6qKSfmudkUBSQDTcP4t180Y4wHC+bbd3X7vdjym1v\n98bg3wW0f2+kHbu2Oum8aWXwFiEnbUGoIwXyY2hlV5iPmUbwqGreGpbnYUymG1sr\nuzZNm+0EX3KHFgMXbr2zwwN/4OAJTWGmwDZGTKMBauGkMMpPCCbomUJjq2G7u05i\n8mQKfibGSpnNDe9HsW8URKqi9L+WoQNj4R3/6BhWA14wl24oT6nZ+5YbEDmcWsjX\nsU/qHjrlNvP8FRpcVaQGCS73Y5VM6iJWJkSWN5cXuj/YjRmN1h5DCEAD9qLuZVFo\n/RVtjAGoC4oWWIcSDAUPuvOpK3HyKbtwvtXjXBxKQQKBgQDvgTOcz2xICHrKpIG7\nc3ymzbNzoCuSYIbpiirQS9ONiMJlKrk3M91XatbO228wPJdUZizrUD06bM5CjDAa\nXNq9ciVAjUp2j/3piestzx3pvFSeALtzh2zgKMjlX5CHN+QgA0T0nrwwcCleUtB6\nFLlEjjzMwD9M5D6djSNi1retQQKBgQDprDfzeGiuDLtYBIBSS2fQrxvFePScdLwf\nqaDFjbzyvcGre12bU9J18Nur/XbECYhQIJWWCMAuKwYUPCwXxHiYh48PoDjG2ysM\nnQBMBT6vujyCgW9TqXUHytbLzRE4jm5sVQSCVs9iUDYzlABOoxvWGV3CrZNj2n3K\nKTk87G4V0wKBgQCzRIP7VY55BE/Uqfmo8zJUMBen7jVu5O1WlOKi8n6wq7LFworL\n9Pgx3HhYcQrykge7Vpc8styBhLuGOCQxN1tK/ctAXAFmaTTmvyLXMPX049B6S5YD\nTVSDHEPy2+r0KzOHeqr8Zmv53Zo5TcdZ+XULCWQc5bD7vsPXbbMU4h6tgQKBgQDA\nOFpCXx+FZZXLHtDMYZlB0no+5HQcK+8BANHvENyItk4VmUL0Xmy3dm3OOo+zTcAj\nYdqLdCFbGStEBAeleYpWttSZXwy1kF8GXjR7VKkvdz0FgiIpKTHLOjGdrtBmvMvb\nM8iky3KHhkJABZSHG6fvZCh717tyHa7yWRzrn/Yi3wKBgGRLMH9ljAVRNthXEHml\nCorkX2b9GkiiBRYtMtiwt0wafv4l7NmTl0sro887j9VzEhFF8nAUvILmq+kHzU4v\nnTWWTn8tDmHeESmCENqI8kRvaEpZLoWCpJ870RkSJcPidD/eplkn7/2iPSopPDlb\n2/16MbUqxQt9fy6S6bWbnHDa\n-----END PRIVATE KEY-----\n",
+  "client_email": "deliciousbeeadmin@deliciousbee.iam.gserviceaccount.com",
+  "client_id": "109030285751057875154",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/deliciousbeeadmin%40deliciousbee.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
