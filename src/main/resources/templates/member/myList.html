@@ -48,11 +48,7 @@
 					<ul class="pagination">
 
 						<!-- 첫 페이지가 아닌 경우에만 << 버튼 표시 (5페이지 앞으로 이동) -->
-						<li th:if="${currentPage > 5}" class="page-item"><a
-							class="page-link" th:href="@{/member/myList(page=1)}">
-								&laquo; <!-- HTML entity for << -->
-						</a></li>
-						<li th:if="${currentPage <= 5}" class="page-item"><a
+						<li th:if="${currentPage > 1}" class="page-item"><a
 							class="page-link" th:href="@{/member/myList(page=1)}">
 								&laquo; <!-- HTML entity for << -->
 						</a></li>
@@ -76,12 +72,11 @@
 						</a></li>
 
 						<!-- 마지막 페이지가 넘지 않는 범위에서 >> 버튼 표시 (5페이지 앞으로 이동) -->
-						<li th:if="${currentPage < totalPages - 1}" class="page-item">
-							<a class="page-link"
+						<li th:if="${currentPage > 1 && currentPage < totalPages - 1}"
+							class="page-item"><a class="page-link"
 							th:href="@{/member/myList(page=${currentPage + (currentPage + 5 <= totalPages ? 5 : totalPages - currentPage)})}">
 								&raquo; <!-- HTML entity for >> -->
-						</a>
-						</li>
+						</a></li>
 					</ul>
 				</div>
 
