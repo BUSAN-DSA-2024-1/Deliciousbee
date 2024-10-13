@@ -5,24 +5,24 @@
 <link rel="stylesheet" href="/css/delete.css">
 <title>회원 탈퇴</title>
 <script>
-function showModal(event) {
-    event.preventDefault(); 
-    document.getElementById('deleteModal').style.display = 'flex'; 
-}
+    function showModal(event) {
+        event.preventDefault(); 
+        document.getElementById('deleteModal').style.display = 'flex'; 
+    }
 
-function confirmDelete() {
-    var audio = document.getElementById('dungiAudio');
-    audio.play();
-    
-    setTimeout(function() {
-        document.getElementById('deleteForm').submit(); 
-    }, 2000);
-}
+    function confirmDelete() {
+        var audio = document.getElementById('dungiAudio');
+        audio.play();
+        
+        setTimeout(function() {
+            document.getElementById('deleteForm').submit(); 
+        }, 2000);
+    }
 
-function closeModal() {
-    document.getElementById('deleteModal').style.display = 'none'; 
-}
-    </script>
+    function closeModal() {
+        document.getElementById('deleteModal').style.display = 'none'; 
+    }
+</script>
 </head>
 <body>
     <div class="header">
@@ -47,7 +47,9 @@ function closeModal() {
                 <div class="info">
                     <input type="password" name="password" placeholder="비밀번호를 입력하세요"
                         required style="padding: 15px; font-size: 16px; height: 40px; width: 200px;">
-                    <div th:if="${errorMessage}" style="color: red;">
+                    
+                    <!-- 오류 메시지와 함께 오디오 재생 -->
+                    <div th:if="${errorMessage}" class="error-message" style="color: red;">
                         <p th:text="${errorMessage}"></p>
                     </div>
                 </div>
@@ -72,5 +74,16 @@ function closeModal() {
             </div>
         </div>
     </div>
+
+    <script>
+      // 페이지 로드 시 errorMessage가 있으면 오디오 재생
+      window.onload = function() {
+          const errorMessage = document.querySelector('.error-message');
+          if (errorMessage) {
+              const errorAudio = document.getElementById('errorAudio');
+              errorAudio.play();
+          }
+      };
+    </script>
 </body>
 </html>
