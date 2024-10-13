@@ -82,15 +82,15 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/admin/**","/restaurant/rtedit/**").hasRole("ADMIN")
                         .requestMatchers("/restaurant/rtwrite", "/comments/save").hasRole("USER")
-                        .requestMatchers("/","/member/checkNickname", "/api/restaurants/**", "/member/login", "/member/deleteMember", "/member/mailSend", "/member/mailCheck","/member/join", "/css/**", "images/**", "/js/**", "/login/**", "/logout/**", "/posts/**", "/comments/**", "/follow/**", "/unfollow/**", "/restaurant/display/**", "/image/**", "/restaurant/search", "/api/restaurants/search", "/restaurant/rtread/**","/member/api/check-auth", "/oauth2/**","/review/**","/restaurant/**" , "/restaurant/rtread/report/**").permitAll() // 인증 없이 접근 가능
+                        .requestMatchers("/","/member/checkNickname", "/api/restaurants/**", "/member/login", "/member/deleteMember", "/member/mailSend", "/member/mailCheck","/member/join", "/css/**", "images/**", "/js/**", "/login/**", "/logout/**", "/posts/**", "/comments/**", "/follow/**", "/unfollow/**", "/restaurant/display/**", "/image/**", "/restaurant/search", "/api/restaurants/search", "/restaurant/rtread/**","/member/api/check-auth", "/oauth2/**","/review/**","/restaurant/**" , "/restaurant/rtread/report/**", "/restaurant/rtread/**").permitAll() // 인증 없이 접근 가능
                         .anyRequest().authenticated() // 그 외의 요청은 인증 필요
                 )
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint((request, response, authException) -> {
-                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                            response.sendRedirect("/error/500");
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
+                            response.sendRedirect("/error/500");
                         })
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 설정 변경
@@ -102,6 +102,7 @@ public class SecurityConfig {
                             System.out.println("OAuth2 Authentication failed: " + exception.getMessage());
                             exception.printStackTrace(); // 스택 트레이스 출력
                             response.sendRedirect("/member/login?error");
+
                         })
                 )
                 .logout(logout -> logout
