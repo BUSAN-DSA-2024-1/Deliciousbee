@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -14,6 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.deliciousBee.model.file.MyPageAttachedFile;
+import com.example.deliciousBee.model.mypage.MyPage;
+import com.example.deliciousBee.repository.MemberFileRepository;
+import com.example.deliciousBee.repository.MyPageFileRepository;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobInfo;
@@ -27,6 +31,7 @@ public class MyPageFileService {
     private String bucketName;
 
     private final ResourceLoader resourceLoader;
+    
 
     public MyPageFileService(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
@@ -86,6 +91,11 @@ public class MyPageFileService {
             return false;
         }
     }
+    @Autowired
+    private MyPageFileRepository myPageFileRepository;
+	public MyPageAttachedFile findFileByMyPageId(MyPage myPage) {
+		return myPageFileRepository.findByMyPage(myPage);
+	}
     
 }
 

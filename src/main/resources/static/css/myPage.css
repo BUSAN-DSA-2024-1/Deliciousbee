@@ -542,7 +542,6 @@ body {
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 추가 */
 	backdrop-filter: blur(5px); /* 배경 blur 효과 추가 (지원 브라우저에서만 적용) */
 }
-
 .image-modal-content {
 	position: absolute;
 	top: 50%;
@@ -741,8 +740,7 @@ body {
 }
 
 .no-login-follow {
-	margin-top: 15px;
-	font-size: 14px;
+	margin-top: 6px;
 }
 
 .follow-list {
@@ -982,12 +980,8 @@ border-radius: 10px;
 	background-color: white;;
 	width: 97%;
 	max-height: 270px;
-	 transition: transform 0.3s ease-in-out;
 }
 
-.review-box:hover {
-	transform: scale(1.05);
-}
 
 .restaurant_name_head {
 	background-color: #FAFAFA;

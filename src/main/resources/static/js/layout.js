@@ -1,3 +1,13 @@
+function validateSearch() {
+    var searchInput = document.getElementById('searchText').value.trim();
+    console.log("확인용")
+    if (searchInput === "") {
+        alert("검색어를 입력해주세요");
+        return false;
+    }
+    return true;
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     console.log("페이지 로드 완료");
 
@@ -23,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // 로그아웃 버튼에 이벤트 리스너 추가
     var logoutButton = document.getElementById('logoutButton');
     if (logoutButton) {
-        logoutButton.addEventListener('click', function(event) {
+        logoutButton.addEventListener('click', function (event) {
             event.preventDefault();
             logout();
         });
@@ -54,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (myPageLink) {
         myPageLink.addEventListener('click', function (event) {
             event.preventDefault();
-                fetch('/member/api/check-auth', {
+            fetch('/member/api/check-auth', {
                 method: 'GET',
                 credentials: 'include'  // 쿠키 포함
             })
@@ -87,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
             };
             fetch('/member/login', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(loginData),
                 credentials: 'include'  // 쿠키 포함
             })
@@ -120,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // 모달 외부를 클릭하면 모달 닫기
-    window.addEventListener('click', function(event) {
+    window.addEventListener('click', function (event) {
         const modal = document.getElementById('loginModal');
         if (event.target == modal) {
             closeModal();
@@ -165,4 +175,6 @@ document.addEventListener('DOMContentLoaded', function () {
     //             document.querySelector('.admin-page').style.display = 'none';
     //         });
     // }
+
+
 });

@@ -1,6 +1,7 @@
 package com.example.deliciousBee.controller.member;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,11 +18,16 @@ import org.springframework.util.StringUtils;
 import com.example.deliciousBee.security.jwt.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -57,6 +63,10 @@ import com.example.deliciousBee.util.MemberFileService;
 import com.example.deliciousBee.util.MyPageFileService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -69,8 +79,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("member")
 public class MyPageController {
 
-	@Value("${file.upload.path}") // 폴더를 찾아서 uploadPath한테 줌
-	private String uploadPath; // c드라이브 어디에저장할지 지정
+	@Value("${spring.cloud.gcp.storage.bucket}")
+	private String bucketName;
 
 	  private final ObjectMapper objectMapper; 
 	private final MyPageRepository myPageRepository;
@@ -409,9 +419,67 @@ public class MyPageController {
 		// 리뷰 순 정리
 		List<MyPage> reviewCount = myPageRepository.findMyPagesOrderByReviewCountDesc(); // MyPageRepository를 직접 사용
 		model.addAttribute("reviewCount", reviewCount);
-		return "member/MyPageList";
+		return "member/myPageList";
 
 	}
 	
+	//이미지 출력
+		@GetMapping("/myPageDisplay")
+		@ResponseBody
+		public ResponseEntity<Resource> display(@RequestParam("filename") String filename) {
+		    try {
+		        // Google Cloud Storage 키 파일 설정
+		        String keyFileName = "deliciousbee-acb114448e3c.json"; // GCP 서비스 계정 키 파일명
+		        InputStream keyFile = getClass().getResourceAsStream("/" + keyFileName);
 
+		        // Google Cloud Storage 클라이언트 생성
+		        Storage storage = StorageOptions.newBuilder().setCredentials(GoogleCredentials.fromStream(keyFile)).build()
+		                .getService();
+
+		        // 파일을 GCS에서 가져오기
+		        Blob blob = storage.get(bucketName, filename);
+
+		        if (blob == null || !blob.exists()) {
+		            // 파일을 찾을 수 없는 경우 기본 이미지를 반환하도록 수정
+		            InputStream defaultImageStream = getClass().getResourceAsStream("/myPageImage/no-profil.png"); 
+		            if (defaultImageStream != null) {
+		                Resource defaultResource = new ByteArrayResource(defaultImageStream.readAllBytes());
+		                HttpHeaders defaultHeaders = new HttpHeaders();
+		                defaultHeaders.add("Content-Type", "image/png"); // 기본 이미지의 Content-Type에 맞게 수정
+		                return new ResponseEntity<>(defaultResource, defaultHeaders, HttpStatus.OK);
+		            } else {
+		                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		            }
+		        }
+
+		        // Blob의 데이터를 ByteArrayResource로 변환
+		        Resource resource = new ByteArrayResource(blob.getContent());
+
+		        // 헤더 설정
+		        HttpHeaders headers = new HttpHeaders();
+		        headers.add("Content-Type", blob.getContentType());
+
+		        return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+
+		    } catch (IOException e) {
+		        e.printStackTrace();
+		        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		    }
+		}
+		
+		//레스토랑 좋아요 리스트
+//		@GetMapping("/likedRestaurants")
+//		public String likedRestaurants(@AuthenticationPrincipal BeeMember loginMember, Model model) {
+//		    if (loginMember == null) {
+//		        return "redirect:/member/login"; // 또는 다른 적절한 처리
+//		    }
+//
+//		    List<RtLike> likedRts = likeRtRepository.findByBeeMember(loginMember);
+//		    List<Restaurant> likedRestaurants = likedRts.stream()
+//		            .map(RtLike::getRestaurant) // LikeRt에서 Restaurant 객체 추출
+//		            .collect(Collectors.toList());
+//
+//		    model.addAttribute("likedRestaurants", likedRestaurants);
+//		    return "member/likedRestaurants"; // 좋아요한 레스토랑 목록을 표시할 뷰 이름
+//		}
 }
