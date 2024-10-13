@@ -67,26 +67,22 @@ public class MyPageService implements UserDetailsService {
     public void updateMyPage(String introduce, boolean isFileRemoved, MultipartFile file, BeeMember loginMember) throws IOException {
         MyPage myPage = loginMember.getMyPage();
         myPage.setIntroduce(introduce);
-        log.info("확인용: {}", myPage);
         if (isFileRemoved) {
             if (myPage.getMainImage() != null) {
                 myPageFileService.deleteFile(myPage.getMainImage().getSaved_filename());
                 myPageFileRepository.delete(myPage.getMainImage());
-                myPage.setMainImage(null);
+                myPage.setMainImage(null); // 메인 이미지를 null로 설정
             }
-        }
-
-        if (file != null && !file.isEmpty()) {
-            // 기존 파일 삭제
-            if (myPage.getMainImage() != null) {
-                myPageFileService.deleteFile(myPage.getMainImage().getSaved_filename());
-                myPageFileRepository.delete(myPage.getMainImage());
+        } else {
+            // 파일이 제공된 경우 새로운 파일 저장 로직
+            if (file != null && file.getSize() > 0) {
+                try {
+                    MyPageAttachedFile newSaveFile = myPageFileService.saveFile(file);
+                    myPage.setMainImage(newSaveFile);
+                } catch (IOException e) {
+                    log.error("파일 저장 실패: ", e);
+                }
             }
-            MyPageAttachedFile newFile = myPageFileService.saveFile(file);
-            myPage.setMainImage(newFile);
-            newFile.setMyPage(myPage);
-            log.info("확인용: {}", myPage);
-            log.info("확인용: {}", newFile);
         }
 
         myPageRepository.save(myPage);

@@ -419,7 +419,7 @@ public class MyPageController {
 		// 리뷰 순 정리
 		List<MyPage> reviewCount = myPageRepository.findMyPagesOrderByReviewCountDesc(); // MyPageRepository를 직접 사용
 		model.addAttribute("reviewCount", reviewCount);
-		return "member/MyPageList";
+		return "member/myPageList";
 
 	}
 	
