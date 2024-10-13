@@ -60,7 +60,7 @@
         <div class="content">
             <div class="search-section">
                 <p class="main-title">DeliciousBee</p>
-                <form action="restaurant/search" method="get" class="search-container">
+                <form action="restaurant/search" method="get" class="search-container" onsubmit="return validateSearch2()" >
                     <svg class="search-icon" aria-hidden="true" viewBox="0 0 24 24">
                         <g>
                             <path
@@ -69,7 +69,7 @@
                         </g>
                     </svg>
                     <input type="text" name="keyword" placeholder="Search" class="search-input">
-                    <button type="submit" style="display: none;">검색</button>
+                    <button type="submit" style="display: none;" >검색</button>
                 </form>
                 <p class="search-intro">당신이 찾는 모든 맛</p>
             </div>
@@ -183,6 +183,14 @@
                     alert("메시지 전송에 실패했습니다.");
                 }
             });
+        }
+        function validateSearch2() {
+            var keyword = document.getElementsByName("keyword")[0].value;
+            if (keyword.trim() === "") {
+                alert("검색어를 입력해주세요.");
+                return false; // 폼 제출 막기
+            }
+            return true; // 폼 제출 허용
         }
     </script>
     <script th:src="@{/js/layout.js}"></script>

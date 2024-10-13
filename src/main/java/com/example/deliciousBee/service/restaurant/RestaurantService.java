@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.example.deliciousBee.model.report.RestaurantReport;
+import com.example.deliciousBee.repository.*;
+import com.example.deliciousBee.service.report.RestaurantReportService;
+import com.example.deliciousBee.service.review.ReviewService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,11 +23,6 @@ import com.example.deliciousBee.model.like.ReviewLike;
 import com.example.deliciousBee.model.like.RtLike;
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.review.Review;
-import com.example.deliciousBee.repository.BeeMemberRepository;
-import com.example.deliciousBee.repository.LikeRtRepository;
-import com.example.deliciousBee.repository.MenuRepository;
-import com.example.deliciousBee.repository.RestaurantRepository;
-import com.example.deliciousBee.repository.RtFileRepository;
 import com.example.deliciousBee.util.RestaurantFileService;
 
 import io.jsonwebtoken.io.IOException;
@@ -42,6 +41,10 @@ public class RestaurantService {
 	private final MenuRepository menuRepository;
 	private final LikeRtRepository likeRtRepository;
 	private final BeeMemberRepository beeMemberRepository;
+	private final ReviewRepository reviewRepository;
+	private final ReviewService reviewService;
+	private final RestaurantReportService restaurantReportService;
+
 
 	public void saveRestaurant(Restaurant restaurant, List<RestaurantAttachedFile> attachedFile) {
 		if (attachedFile != null) {
@@ -124,21 +127,35 @@ public class RestaurantService {
 
 		// 레스토랑 ID로 연관된 파일 목록 조회
 		List<RestaurantAttachedFile> attachedFiles = fileRepository.findFilesByRestaurantId(id);
+		System.out.println("확인용1");
+
+		List<Review> reviews = reviewRepository.findByRestaurant(restaurant);
+		System.out.println("확인용2");
+
+		for (Review review : reviews) {
+			Long reviewId = review.getId();  // Review 객체의 id 값 가져오기
+			reviewService.deleteReview(reviewId);  // id로 리뷰 삭제
+			System.out.println("확인용3");
+
+		}
 
 		// GCS에서 파일 삭제
-		for (RestaurantAttachedFile attachedFile : attachedFiles) {
-			try {
-				// FileService의 deleteFile 메서드를 이용해 GCS에서 파일 삭제
-				boolean deleted = fileService.deleteFile(attachedFile.getSaved_filename());
-				if (!deleted) {
-					throw new RuntimeException("Failed to delete file from GCS: " + attachedFile.getSaved_filename());
-				}
-			} catch (IOException e) {
-				// 파일 삭제 실패 시 예외 처리
-				e.printStackTrace();
-				throw new RuntimeException("Failed to delete file from GCS: " + attachedFile.getSaved_filename(), e);
-			}
-		}
+//		for (RestaurantAttachedFile attachedFile : attachedFiles) {
+//			try {
+//				// FileService의 deleteFile 메서드를 이용해 GCS에서 파일 삭제
+//				boolean deleted = fileService.deleteFile(attachedFile.getSaved_filename());
+//				if (!deleted) {
+//					throw new RuntimeException("Failed to delete file from GCS: " + attachedFile.getSaved_filename());
+//				}
+//			} catch (IOException e) {
+//				// 파일 삭제 실패 시 예외 처리
+//				e.printStackTrace();
+//				throw new RuntimeException("Failed to delete file from GCS: " + attachedFile.getSaved_filename(), e);
+//			}
+//		}
+
+
+		restaurantReportService.deleteReportall(restaurant);
 
 		// 데이터베이스에서 파일 기록 삭제
 		fileRepository.deleteAll(attachedFiles);

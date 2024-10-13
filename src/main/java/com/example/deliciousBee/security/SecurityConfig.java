@@ -77,30 +77,22 @@ public class SecurityConfig {
         JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtTokenProvider, beeMemberService);
 
         http
-                .csrf(csrf -> csrf.disable()) // CSRF 비활성화
-                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable())) // 헤더 설정
+                .csrf(csrf -> csrf.disable())
+                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()))
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/admin/**","/restaurant/rtedit/**").hasRole("ADMIN")
                         .requestMatchers("/restaurant/rtwrite", "/comments/save").hasRole("USER")
                         .requestMatchers("/","/member/checkNickname", "/api/restaurants/**", "/member/login", "/member/myPageList", "/member/myPage", "/member/deleteMember", "/member/mailSend", "/member/mailCheck","/member/join", "/css/**", "images/**", "/js/**", "/login/**", "/logout/**", "/posts/**", "/comments/**", "/follow/**", "/unfollow/**", "/restaurant/display/**", "/image/**", "/restaurant/search", "/api/restaurants/search", "/restaurant/rtread/**","/member/api/check-auth", "/oauth2/**","/review/**","/restaurant/**" , "/restaurant/rtread/report/**", "/myPageImage/**",  "/member/display/**").permitAll() // 인증 없이 접근 가능
                         .anyRequest().authenticated() // 그 외의 요청은 인증 필요
                 )
-                .exceptionHandling(exceptions -> exceptions
-                        .authenticationEntryPoint((request, response, authException) -> {
-                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-                        })
-                        .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
-                        })
-                )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 설정 변경
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/member/login")
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                         .successHandler(new JwtOAuth2AuthenticationSuccessHandler(jwtTokenProvider, beeMemberService , socialLoginService))
                         .failureHandler((request, response, exception) -> {
                             System.out.println("OAuth2 Authentication failed: " + exception.getMessage());
-                            exception.printStackTrace(); // 스택 트레이스 출력
+                            exception.printStackTrace();
                             response.sendRedirect("/member/login?error");
                         })
                 )
