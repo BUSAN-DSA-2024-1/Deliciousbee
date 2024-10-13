@@ -1,23 +1,59 @@
 /* 미슐랭 스타일 적용 */
-        .like-button {
-            display: inline-flex;
-            align-items: center;
-            background-color: #ff6b6b !important;
-            color: black;
-            border: none;
-            border-radius: 50px;
-            padding: 0.5rem 1rem;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
 
-        .like-button:hover {
-            background-color: #ff4c4c;
-            transform: scale(1.05);
-        }
+button.btn.google {
+	width: 120px;
+	border: 1px solid gray;
+	height: 46px;
+}
+button.btn.Line {
+	width: 120px;
+	border: 1px solid gray;
+}
 
-        .like-button .like-icon {
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.flex-row > div > label {
+  font-size: 14px;
+  color: black;
+  font-weight: 400;
+}
+.divider {
+  display: flex;
+  align-items: center; /* 세로 가운데 정렬 */
+  text-align: center; 
+  margin: 0px; /* 위아래 여백 */
+}
+
+.divider span {
+  padding: 0 15px; /* or 좌우 여백 */
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex-grow: 1; /* 양쪽 선이 균등하게 늘어나도록 */
+  height: 1px;
+  background-color: black;
+}
+
+        .like-buttons {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+        .like-buttons .like-icon {
             margin-right: 0.5rem;
             font-size: 1.2rem;
         }
@@ -30,6 +66,10 @@
         .like-desc {
         	    display: flex;
 		    justify-content: space-between;
+        }
+        
+        .like-icon {
+        color: #b38b00;
         }
 body {
     font-family: 'Noto Sans KR', sans-serif;

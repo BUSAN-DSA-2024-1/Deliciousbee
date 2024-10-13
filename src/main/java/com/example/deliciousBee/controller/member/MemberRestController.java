@@ -95,6 +95,7 @@ public class MemberRestController {
 
     @GetMapping("/api/check-auth")
     public ResponseEntity<?> checkAuth(@CookieValue(name = "Authorization", required = false) String token) {
+    	log.info("여기 오니 친구야?");
         if (token == null) {
             System.out.println("Authorization 쿠키가 없음");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인되지 않았습니다.");
