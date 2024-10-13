@@ -13,7 +13,7 @@
             display: flex;
             justify-content: center; /* 수평 가운데 정렬 */
             align-items: center; /* 수직 가운데 정렬 */
-            background-color: #f0f0f0; /* 배경색 추가 */
+            background-color: white; /* 배경색 추가 */
             font-family: Arial, sans-serif;
         }
 
@@ -28,12 +28,29 @@
             text-align: center;
             margin-top: 20px;
         }
+
+        button {
+            margin-left: 42%;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: grey; /* 버튼 배경색 */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049; /* 버튼 호버 시 배경색 */
+        }
     </style>
 </head>
 <body>
 <div>
-    <img src="/image/bee401.jpg" alt="Error Image">
-    <h1>Error 401: 권한이 없어요~</h1>
+    <img src="/image/errorbee.png" alt="Error Image">
+    <h1>Error 40x: 권한이 없어요~</h1>
+    <button onclick="window.location.href='/'">홈페이지로 돌아가기</button>
 </div>
 
 </body>

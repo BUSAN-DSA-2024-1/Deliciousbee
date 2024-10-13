@@ -302,7 +302,6 @@ public class ReportController {
 		Long restaurantId = report.get().getRestaurant().getId();
 		restaurantService.deleteRestaurant(restaurantId);
 		System.out.println("확인용4");
-		restaurantReportService.deleteReport(reportId);
 
 
 		return ResponseEntity.ok(response);
