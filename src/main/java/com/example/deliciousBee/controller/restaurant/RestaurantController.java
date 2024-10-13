@@ -220,9 +220,9 @@ public class RestaurantController {
 			@RequestParam(name = "sortBy", defaultValue = "modifiedAt") String sortBy,
 			@RequestParam(name = "page", defaultValue = "0") int page) { // 페이징 처리를 위한 page 파라미터 추가
 
-		if (loginMember == null) {
-			return "redirect:/member/login";
-		}
+		//if (loginMember == null) {
+		//	return "redirect:/member/login";
+		//}
 
 		// 레스토랑 정보 가져오기
 		Restaurant restaurant = restaurantService.findRestaurant(restaurant_id);
@@ -230,15 +230,26 @@ public class RestaurantController {
 			return "redirect:/shop/index";
 		}
 		model.addAttribute("restaurant", restaurant);
+		
+		// 로그인 여부 확인
+	    boolean isLoggedIn = loginMember != null;
+	    model.addAttribute("isLoggedIn", isLoggedIn);
 
-		// 리뷰 정보 가져오기
-		String memberId = loginMember.getMember_id();
-		Sort sort = Sort.by(Sort.Direction.DESC, sortBy);
-		Pageable pageable = PageRequest.of(page, 5, sort);
-		Page<Review> reviewsByRestaurant = reviewService.sortReview(restaurant_id, memberId, pageable, sortBy);
-		model.addAttribute("reviewsByRestaurant", reviewsByRestaurant.getContent());
-		model.addAttribute("currentPage", page);
-		model.addAttribute("totalPages", reviewsByRestaurant.getTotalPages());
+	    // 사용자가 해당 레스토랑을 좋아요 했는지 여부 확인
+	    boolean isLiked = false;
+	    if (isLoggedIn) {
+	        isLiked = restaurantService.isRestaurantLikedByUser(loginMember, restaurant_id);
+	    }
+	    model.addAttribute("isLiked", isLiked);
+	    
+//		// 리뷰 정보 가져오기
+//		String memberId = loginMember.getMember_id();
+//		Sort sort = Sort.by(Sort.Direction.DESC, sortBy);
+//		Pageable pageable = PageRequest.of(page, 5, sort);
+//		Page<Review> reviewsByRestaurant = reviewService.sortReview(restaurant_id, memberId, pageable, sortBy);
+//		model.addAttribute("reviewsByRestaurant", reviewsByRestaurant.getContent());
+//		model.addAttribute("currentPage", page);
+//		model.addAttribute("totalPages", reviewsByRestaurant.getTotalPages());
 
 		// 카테고리 가져오기
 		Map<KeywordCategory, List<KeyWord>> keywordsByCategory = reviewKeyWordService.getKeywordsByCategory();
