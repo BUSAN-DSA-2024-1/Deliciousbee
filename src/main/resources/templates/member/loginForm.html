@@ -136,6 +136,44 @@
 		</div>
 	</form>
 </div>
+<script>
+
+	var loginForm = document.querySelector('.login-main');
+	if (loginForm) {
+		loginForm.addEventListener('submit', function (event) {
+			event.preventDefault();
+			var formData = new FormData(loginForm);
+			var loginData = {
+				member_id: formData.get('member_id'),
+				password: formData.get('password')
+			};
+			fetch('/member/login', {
+				method: 'POST',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify(loginData),
+				credentials: 'include'  // 쿠키 포함
+			})
+					.then(response => {
+						if (response.ok) return response.json(); // 서버에서 JSON 응답
+						throw new Error('로그인 실패');
+					})
+					.then(data => {
+						alert(data.message); // 성공 메시지
+						// 로그인 성공 후, 관리자 권한 여부에 따라 페이지 리다이렉트
+						if (data.isAdmin) {
+							window.location.href = '/admin'; // 관리자 페이지로 리디렉트
+						} else {
+							window.location.href = '/'; // 일반 사용자는 홈으로 리디렉트
+						}
+					})
+					.catch(error => {
+						console.error('로그인 오류 발생:', error);
+						alert('로그인에 실패했습니다.');
+					});
+		});
+	}
+</script>
+<script th:src="@{/js/layout.js}"></script>
 
 </body>
 </html>

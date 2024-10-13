@@ -877,7 +877,30 @@
     let radius = 1500; // 기본값 1500m 설정
     let selectedButton = $('#distance1500'); // 기본 선택 버튼 설정
     let initialLoad = true; // 초기 로드 여부
+    // 지도 확대/축소 및 중심 조정 함수
+    function adjustMap(radius) {
+        if (!map || !userLatitude || !userLongitude) return;
 
+        // 사용자의 위치를 지도 중심으로 설정
+        map.setCenter({ lat: userLatitude, lng: userLongitude });
+
+        // 반경에 따라 적절한 줌 레벨 계산 (예시 값입니다. 필요에 따라 조정하세요.)
+        let zoomLevel;
+        if (radius <= 500) {
+            zoomLevel = 15;
+        } else if (radius <= 1500) {
+            zoomLevel = 14;
+        } else if (radius <= 3000) {
+            zoomLevel = 13;
+        } else if (radius <= 5000) {
+            zoomLevel = 12;
+        } else {
+            zoomLevel = 11;
+        }
+
+        // 지도 줌 레벨 설정
+        map.setZoom(zoomLevel);
+    }
     // 이미 표시된 레스토랑과 마커의 ID를 저장하는 Set
     let displayedRestaurantIds = new Set();
     let displayedMarkerIds = new Set();
@@ -1223,6 +1246,7 @@ function renderRestaurants(restaurants, append = false) {
         updateButtonStyles();
         resetData();
         loadRestaurants(false);
+        adjustMap(radius);
     });
 
     $('#distance1500').click(function() {
@@ -1231,6 +1255,7 @@ function renderRestaurants(restaurants, append = false) {
         updateButtonStyles();
         resetData();
         loadRestaurants(false);
+        adjustMap(radius);
     });
 
     $('#distance3000').click(function() {
@@ -1239,6 +1264,8 @@ function renderRestaurants(restaurants, append = false) {
         updateButtonStyles();
         resetData();
         loadRestaurants(false);
+        adjustMap(radius);
+
     });
 
     $('#distance5000').click(function() {
@@ -1247,6 +1274,8 @@ function renderRestaurants(restaurants, append = false) {
         updateButtonStyles();
         resetData();
         loadRestaurants(false);
+        adjustMap(radius);
+
     });
 
     $('#distance10000').click(function() {
@@ -1255,6 +1284,8 @@ function renderRestaurants(restaurants, append = false) {
         updateButtonStyles();
         resetData();
         loadRestaurants(false);
+        adjustMap(radius);
+
     });
 
     // 초기 로드 시 1.5km 버튼 선택 효과 적용

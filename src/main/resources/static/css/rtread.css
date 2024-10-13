@@ -40,7 +40,7 @@ a {
 }
 
 .navbar {
-	height: 50px;
+    height: 50px;
 }
 
 .card-body {
@@ -107,14 +107,18 @@ a {
 
 .card-img-top2 {
     height: 300px;
-    width: 100%; /* 너비를 100%로 설정 */
-    object-fit: fill; /* 이미지 비율을 무시하고 영역을 채움 */
+    width: 100%;
+    /* 너비를 100%로 설정 */
+    object-fit: fill;
+    /* 이미지 비율을 무시하고 영역을 채움 */
 }
 
 .imagination {
     height: 300px;
-    width: 100%; /* 너비를 100%로 설정 */
-    object-fit: fill; /* 이미지 비율을 무시하고 영역을 채움 */
+    width: 100%;
+    /* 너비를 100%로 설정 */
+    object-fit: fill;
+    /* 이미지 비율을 무시하고 영역을 채움 */
 }
 
 
@@ -152,8 +156,10 @@ a {
 
 .gallery-item {
     height: 300px;
-    width: 100%; /* 너비를 100%로 설정 */
-    object-fit: fill; /* 이미지 비율을 무시하고 영역을 채움 */
+    width: 100%;
+    /* 너비를 100%로 설정 */
+    object-fit: fill;
+    /* 이미지 비율을 무시하고 영역을 채움 */
 }
 
 .gallery-item img {
@@ -168,7 +174,7 @@ a {
 }
 
 .image-wrapper .hidden-image {
-  display: none;
+    display: none;
 }
 
 .image-wrapper .show-more-main {
@@ -177,20 +183,23 @@ a {
     height: 30px;
     color: white;
     background-color: gray;
-  	opacity: 0.4;
+    opacity: 0.4;
     border: none;
     cursor: pointer;
     font-size: 16px;
-    line-height: 30px; /* 텍스트 세로 중앙 정렬 */
+    line-height: 30px;
+    /* 텍스트 세로 중앙 정렬 */
     text-align: center;
-      position: absolute;
-  top: 10px; /* 상단 여백 */
-  right: 10px; /* 오른쪽 여백 */
-    
+    position: absolute;
+    top: 10px;
+    /* 상단 여백 */
+    right: 10px;
+    /* 오른쪽 여백 */
+
 }
 
 .show-more-main {
-	z-index: 500;
+    z-index: 500;
 }
 
 .hidden-image {
@@ -198,13 +207,19 @@ a {
 }
 
 .modal.fade2 .modal-dialog {
-  width: 90%; /* 창 너비 (화면의 90%) */
-  max-width: 1200px; /* 최대 너비 */
-  height: auto; /* 높이 자동 조정 */
-  margin: 10vh auto; /* 상하 여백 10vh, 가운데 정렬 */
-  transform: none; /* 초기 위치 변경 */
-  transition: opacity .3s ease-out, transform .3s ease-out; /* 부드러운 전환 */
-  opacity: 0;
+    width: 90%;
+    /* 창 너비 (화면의 90%) */
+    max-width: 1200px;
+    /* 최대 너비 */
+    height: auto;
+    /* 높이 자동 조정 */
+    margin: 10vh auto;
+    /* 상하 여백 10vh, 가운데 정렬 */
+    transform: none;
+    /* 초기 위치 변경 */
+    transition: opacity .3s ease-out, transform .3s ease-out;
+    /* 부드러운 전환 */
+    opacity: 0;
 }
 
 .modal.show .modal-dialog {
@@ -212,13 +227,20 @@ a {
     transform: scale(1);
 
 }
+
 .modal.fade2 .modal-content {
-  height: auto; /* 높이 자동 조정 */
-  border: 1px solid #ddd; /* 테두리 추가 */
-  border-radius: 5px;  /* 둥근 모서리 */
-  background-color: #fff; /* 흰색 배경 */
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* 그림자 */
-  overflow-y: auto; /* 필요시 스크롤바 추가 */
+    height: auto;
+    /* 높이 자동 조정 */
+    border: 1px solid #ddd;
+    /* 테두리 추가 */
+    border-radius: 5px;
+    /* 둥근 모서리 */
+    background-color: #fff;
+    /* 흰색 배경 */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    /* 그림자 */
+    overflow-y: auto;
+    /* 필요시 스크롤바 추가 */
 }
 
 .modal-content {
@@ -251,29 +273,41 @@ a {
 
 /* 모달 body 스타일 변경 */
 .modal-body2 {
-    display: grid; /* Grid 레이아웃 사용 */
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* 반응형 그리드 */
-    gap: 10px; /* 이미지 간격 */
-    justify-content: center; /* 가운데 정렬 */
-    align-content: center; /* 수직 가운데 정렬 */
-    height: 90%; /* 높이 조정 */
+    display: grid;
+    /* Grid 레이아웃 사용 */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    /* 반응형 그리드 */
+    gap: 10px;
+    /* 이미지 간격 */
+    justify-content: center;
+    /* 가운데 정렬 */
+    align-content: center;
+    /* 수직 가운데 정렬 */
+    height: 90%;
+    /* 높이 조정 */
     padding: 20px;
 }
 
 
 /* 이미지 스타일 */
 .modal-image {
-    display: block; /* 모든 이미지 표시 */
+    display: block;
+    /* 모든 이미지 표시 */
     text-align: center;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* 그림자 효과 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    /* 그림자 효과 */
     border-radius: 5px;
-    overflow: hidden; /* 이미지 잘림 방지 */
+    overflow: hidden;
+    /* 이미지 잘림 방지 */
 }
 
 .modal-image img {
- 	width: 100%;  /* 이미지 너비 100% */
- 	height: 100%; /* 이미지 높이 100% */
-  	object-fit: cover; /* 이미지 비율 유지하며 채우기 */
+    width: 100%;
+    /* 이미지 너비 100% */
+    height: 100%;
+    /* 이미지 높이 100% */
+    object-fit: cover;
+    /* 이미지 비율 유지하며 채우기 */
     flex-wrap: wrap;
     /* 여러 줄로 배치 */
     justify-content: center;
@@ -676,7 +710,15 @@ a {
 }
 
 .nav-review-paging ul {
-	display: flex;
-	justify-content: center; /* flexbox를 사용한 정렬 */
-  }
-  
+    display: flex;
+    justify-content: center;
+    /* flexbox를 사용한 정렬 */
+}
+
+.restaurnat-menu {
+    display: inline-block;
+    /* 또는 block, flex 등 원하는 방식으로 설정 */
+    margin-right: 10px;
+    /* 간격 조정 */
+
+}

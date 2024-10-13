@@ -8,8 +8,10 @@ import java.util.List;
 import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.file.AttachedFile;
 import com.example.deliciousBee.model.keyWord.ReviewKeyWord;
+import com.example.deliciousBee.model.like.ReviewLike;
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.menu.ReviewMenu;
+import com.example.deliciousBee.model.report.Report;
 import com.example.deliciousBee.model.report.ReportReason;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -95,7 +97,12 @@ public class Review {
 	@OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
     private List<ReviewKeyWord> keywords = new ArrayList<>();
-	
+
+	@OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference
+	private List<Report> reports = new ArrayList<>();
+
+
 	@ManyToOne
 	@JsonIgnore
 	@JoinColumn(name = "bee_member_id")
@@ -105,7 +112,7 @@ public class Review {
 	@JsonIgnore
 	@JoinColumn(name = "restaurant_id")
 	private Restaurant restaurant;
-	
+		
 	@Override
     public int hashCode() {
         final int prime = 31;

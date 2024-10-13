@@ -353,9 +353,8 @@ public class ReviewController {
 			@AuthenticationPrincipal BeeMember loginMember,
 			@RequestParam(name = "page", required = false, defaultValue = "0") int page) {
 		try {
-			String memberId = loginMember.getMember_id();
 			PageRequest pageble = PageRequest.of(page - 1, 5);
-			Page<Review> reviews = reviewService.sortReview(restaurant_id, memberId, pageble, sortBy);
+			Page<Review> reviews = reviewService.sortReview(restaurant_id, loginMember, pageble, sortBy);
 			Map<String, Object> response = new HashMap<>();
 			response.put("reviews", reviews.getContent());
 			response.put("currentPage", reviews.getNumber() + 1);
