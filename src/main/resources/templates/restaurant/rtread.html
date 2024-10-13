@@ -1002,11 +1002,11 @@
           withCredentials: true
         },
         success: function (response) {
+          console.log(response);
           const reviewsContainer = $('.restaurantCard');
           reviewsContainer.empty();
           window.totalPages = response.totalPages;
           window.currentPage = response.currentPage;
-
           if (Array.isArray(response.reviews)) {
             response.reviews.forEach(function (review) {
               let attachedFileHTML = '<div class="image-gallery">';
@@ -1123,7 +1123,7 @@
                 </div>
                   ${attachedFileHTML}
                 <div class="card-body">
-                  <div class="I-am-ironMan">${review.createDate}</div>
+                  <div class="I-am-ironMan">${review.visitDate}</div>
                   <div class="button-container">${reviewKeywordHTML}</div>
                   <h2 class="card-title">${review.reviewContents}</h2>
                   <div class="star-menu">
