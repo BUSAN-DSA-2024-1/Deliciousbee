@@ -11,7 +11,6 @@
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="/css/rtread.css">
@@ -55,13 +54,22 @@
               </button>
             </div>
             <h2 class="card-title" th:text="${restaurant.name}">Featured Post Title</h2>
-            <div class="like-desc">
+    					<div class="like-desc">
             <p class="card-text" th:text="${restaurant.description}"></p>
-                <button type="button" class="btn like-button" th:onclick="likeRt(this)" th:data-restaurant-id="${restaurant.id}">
-        <i class="fas fa-heart like-icon"></i>
-        <span class="like-count">[[${restaurant.likeCount}]]</span>
-    </button>
-    </div>
+                        <div class="con-like">
+                      <button class="like-button" th:classappend="${isLiked} ? ' liked' : ''" th:onclick="likeRt(this)" th:data-restaurant-id="${restaurant.id}">
+                        <div class="checkmark">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="outline" viewBox="0 0 24 24">
+                        <path d="M17.5,1.917a6.4,6.4,0,0,0-5.5,3.3,6.4,6.4,0,0,0-5.5-3.3A6.8,6.8,0,0,0,0,8.967c0,4.547,4.786,9.513,8.8,12.88a4.974,4.974,0,0,0,6.4,0C19.214,18.48,24,13.514,24,8.967A6.8,6.8,0,0,0,17.5,1.917Zm-3.585,18.4a2.973,2.973,0,0,1-3.83,0C4.947,16.006,2,11.87,2,8.967a4.8,4.8,0,0,1,4.5-5.05A4.8,4.8,0,0,1,11,8.967a1,1,0,0,0,2,0,4.8,4.8,0,0,1,4.5-5.05A4.8,4.8,0,0,1,22,8.967C22,11.87,19.053,16.006,13.915,20.313Z"></path>
+                      </svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="filled" viewBox="0 0 24 24">
+                        <path d="M17.5,1.917a6.4,6.4,0,0,0-5.5,3.3,6.4,6.4,0,0,0-5.5-3.3A6.8,6.8,0,0,0,0,8.967c0,4.547,4.786,9.513,8.8,12.88a4.974,4.974,0,0,0,6.4,0C19.214,18.48,24,13.514,24,8.967A6.8,6.8,0,0,0,17.5,1.917Z"></path>
+                      </svg>
+                        </div>
+                        <span class="like-count">[[${restaurant.likeCount}]]</span>
+                      </button>
+                    </div>
+                    </div>	
             <button class="show-more" style="display: none;" onclick="showMoreImages(this)">더보기</button>
           </div>
         </div>
@@ -1142,15 +1150,12 @@
                     ${review.tasteRating === null || review.tasteRating === undefined ? '평점 없음' : ''}
                     </div>
                     <div class="con-like">
-                      <button class="like-button" onclick="likeReview(this)" data-review-id="${review.id}">
-                        <div class="checkmark">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="outline" viewBox="0 0 24 24">
-                        <path d="M17.5,1.917a6.4,6.4,0,0,0-5.5,3.3,6.4,6.4,0,0,0-5.5-3.3A6.8,6.8,0,0,0,0,8.967c0,4.547,4.786,9.513,8.8,12.88a4.974,4.974,0,0,0,6.4,0C19.214,18.48,24,13.514,24,8.967A6.8,6.8,0,0,0,17.5,1.917Zm-3.585,18.4a2.973,2.973,0,0,1-3.83,0C4.947,16.006,2,11.87,2,8.967a4.8,4.8,0,0,1,4.5-5.05A4.8,4.8,0,0,1,11,8.967a1,1,0,0,0,2,0,4.8,4.8,0,0,1,4.5-5.05A4.8,4.8,0,0,1,22,8.967C22,11.87,19.053,16.006,13.915,20.313Z"></path>
-                      </svg>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="filled" viewBox="0 0 24 24">
-                        <path d="M17.5,1.917a6.4,6.4,0,0,0-5.5,3.3,6.4,6.4,0,0,0-5.5-3.3A6.8,6.8,0,0,0,0,8.967c0,4.547,4.786,9.513,8.8,12.88a4.974,4.974,0,0,0,6.4,0C19.214,18.48,24,13.514,24,8.967A6.8,6.8,0,0,0,17.5,1.917Z"></path>
-                      </svg>
-                        </div>
+                    <button class="like-button" onclick="likeReview(this)" data-review-id="${review.id}">
+                      <div class="checkmark">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="yellow" width="24px" height="24px">
+                          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                      </div>
                         <span class="like-count">${review.likeCount}</span>
                       </button>
                     </div>
@@ -1406,30 +1411,39 @@
     });
 
   //레스토랑 좋아요 기능(황)
-    function likeRt(button) {
-        const restaurantId = $(button).data('restaurant-id');
-        const isLiked = $(button).hasClass('liked'); // 좋아요 상태 확인
-        console.log(restaurantId);
-        console.log(isLiked);
-        $.ajax({
-          url: isLiked ? "/restaurant/" + restaurantId + "/unlike" : "/restaurant/" + restaurantId + "/like",
-          type: "POST",
-          contentType: "application/json",
-          data: JSON.stringify({ "restaurantId": restaurantId }),
-          success: function (data) {
+function likeRt(button) {
+    if (!isLoggedIn) {
+        alert('로그인이 필요한 작업입니다.');
+        return;
+    }
+    const restaurantId = $(button).data('restaurant-id');
+    const isLiked = $(button).hasClass('liked');
+
+    $.ajax({
+        url: isLiked ? "/restaurant/" + restaurantId + "/unlike" : "/restaurant/" + restaurantId + "/like",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ "restaurantId": restaurantId }),
+        success: function (data) {
             if (data.success) {
-              const likeCountElement = button.querySelector('.like-count');
-              likeCountElement.textContent = data.likeCount;
-              $(button).toggleClass('liked');
+                const likeCountElement = button.querySelector('.like-count');
+                likeCountElement.textContent = data.likeCount;
+                $(button).toggleClass('liked');
             } else {
-              alert('좋아요 처리에 실패했습니다.');
+                alert('좋아요 처리에 실패했습니다.');
             }
-          },
-          error: function (xhr) {
-            console.error('AJAX 요청 실패:', xhr);
-          }
-        });
-      }
+        },
+        error: function (xhr) {
+            if (xhr.status === 401) {
+                alert('로그인이 필요한 작업입니다.');
+            } else {
+                console.error('AJAX 요청 실패:', xhr);
+            }
+        }
+    });
+}
+
+    var isLoggedIn = /*[[${isLoggedIn}]]*/ false;
 
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=initMap"

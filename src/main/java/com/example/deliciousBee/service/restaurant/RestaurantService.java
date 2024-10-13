@@ -354,5 +354,14 @@ public class RestaurantService {
 	public List<Restaurant> findAllRestaurants() {
 		return restaurantRepository.findAll();
 	}
+	
+	public boolean isRestaurantLikedByUser(BeeMember beeMember, Long restaurantId) {
+	    Restaurant restaurant = restaurantRepository.findById(restaurantId).orElse(null);
+	    if (restaurant == null || beeMember == null) {
+	        return false;
+	    }
+	    return likeRtRepository.existsByBeeMemberAndRestaurant(beeMember, restaurant);
+	}
+
 
 }

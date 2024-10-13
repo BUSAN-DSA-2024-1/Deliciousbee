@@ -227,6 +227,25 @@ public class RestaurantController {
 		}
 		model.addAttribute("restaurant", restaurant);
 		
+		// 로그인 여부 확인
+	    boolean isLoggedIn = loginMember != null;
+	    model.addAttribute("isLoggedIn", isLoggedIn);
+
+	    // 사용자가 해당 레스토랑을 좋아요 했는지 여부 확인
+	    boolean isLiked = false;
+	    if (isLoggedIn) {
+	        isLiked = restaurantService.isRestaurantLikedByUser(loginMember, restaurant_id);
+	    }
+	    model.addAttribute("isLiked", isLiked);
+	    
+//		// 리뷰 정보 가져오기
+//		String memberId = loginMember.getMember_id();
+//		Sort sort = Sort.by(Sort.Direction.DESC, sortBy);
+//		Pageable pageable = PageRequest.of(page, 5, sort);
+//		Page<Review> reviewsByRestaurant = reviewService.sortReview(restaurant_id, memberId, pageable, sortBy);
+//		model.addAttribute("reviewsByRestaurant", reviewsByRestaurant.getContent());
+//		model.addAttribute("currentPage", page);
+//		model.addAttribute("totalPages", reviewsByRestaurant.getTotalPages());
 		// 리뷰 정보 가져오기
 		Sort sort = Sort.by(Sort.Direction.DESC, sortBy);
 		Pageable pageable = PageRequest.of(page, 5, sort);
