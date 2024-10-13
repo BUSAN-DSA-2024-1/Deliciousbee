@@ -234,8 +234,7 @@ public class MemberController {
 	// **************로그인 페이지 이동
 
 	@GetMapping("login")
-	public String loginForm(Model model) { // 빈객체를 담아 Model에 보냄
-		model.addAttribute("loginForm", new BeeLoginForm()); // LoginForm()의 빈객체를 담아 보내줌, 필드를 활용하려고
+	public String loginForm() { // 빈객체를 담아 Model에 보냄
 		return "member/loginForm";
 	}
 

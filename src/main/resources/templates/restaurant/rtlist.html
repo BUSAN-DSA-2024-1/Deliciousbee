@@ -602,7 +602,14 @@
     padding: 20px 30px;
     margin: 15% auto;
 }
-
+    .full-text {
+        display: none;
+    }
+    .read-more {
+        color: blue;
+        cursor: pointer;
+        text-decoration: underline;
+    }
 .title {
     text-align: center;
     font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
@@ -1133,25 +1140,30 @@ function loadRestaurants(append = false) {
         }
     }
 
-    // 레스토랑 렌더링 함수 수정
-function renderRestaurants(restaurants, append = false) {
-    let html = '';
+    function renderRestaurants(restaurants, append = false) {
+        let html = '';
 
-    restaurants.forEach(function(restaurant) {
-        // 이미 표시된 레스토랑인지 확인
-        if (displayedRestaurantIds.has(restaurant.id)) {
-            return; // 이미 표시된 경우 건너뜁니다.
-        }
+        restaurants.forEach(function(restaurant) {
+            if (displayedRestaurantIds.has(restaurant.id)) {
+                return;
+            }
 
-        // 레스토랑 ID를 Set에 추가
-        displayedRestaurantIds.add(restaurant.id);
+            displayedRestaurantIds.add(restaurant.id);
+            restaurantCount++;
+            let imageUrl = restaurant.imageUrls && restaurant.imageUrls.length > 0
+                ? `/restaurant/display?filename=${restaurant.imageUrls[0]}`
+                : 'default_image_url.jpg';
 
-        restaurantCount++; // 정렬 순서 번호 증가
-        let imageUrl = restaurant.imageUrls && restaurant.imageUrls.length > 0
-            ? `/restaurant/display?filename=${restaurant.imageUrls[0]}`
-            : 'default_image_url.jpg';
+            let description = restaurant.description || '';
+            let truncatedDescription = description;
+            let needsReadMore = false;
 
-        html += `
+            if (description.length > 100) {
+                truncatedDescription = description.substring(0, 200);
+                needsReadMore = true;
+            }
+
+            html += `
         <div class="col-12 mb-4">
             <div class="card" data-latitude="${restaurant.latitude}" data-longitude="${restaurant.longitude}" data-maincategory="${restaurant.mainCategory}">
                 <a href="/restaurant/rtread/${restaurant.id}">
@@ -1163,9 +1175,13 @@ function renderRestaurants(restaurants, append = false) {
                     </a>
                     <h5 class="badge bg-primary"> # ${restaurant.categories} </h5>
                     <h4 class="text">${restaurant.address}</h4>
-                    <small class="text-muted">${restaurant.description}</small>
+                    <small class="text-muted description">
+                        <span class="truncated">${truncatedDescription}${needsReadMore ? '...' : ''}</span>
+                        ${needsReadMore ? `<a href="#" class="read-more">더보기</a>` : ''}
+                        ${needsReadMore ? `<span class="full-text">${description.substring(100)}</span>` : ''}
+                    </small>
                     <div class="card-footer">
-                        <h3 class="card-text">★${restaurant.average_rating} 
+                        <h3 class="card-text">★${restaurant.average_rating}
                         <div class="review-count">(${restaurant.review_count})</div></h3>
                         <h3 class="card-text">현 위치에서 ${formatDistance(restaurant.distance)}</h3>
                     </div>
@@ -1174,17 +1190,30 @@ function renderRestaurants(restaurants, append = false) {
         </div>
         `;
 
-        // 지도에 마커 추가
-        addMarker(restaurant, restaurantCount);
-    });
+            addMarker(restaurant, restaurantCount);
+        });
 
-    if(append) {
-        $('#restaurantList').append(html);
-    } else {
-        $('#restaurantList').html(html);
+        if(append) {
+            $('#restaurantList').append(html);
+        } else {
+            $('#restaurantList').html(html);
+        }
+
+        // "더보기" 클릭 이벤트 핸들러 추가
+        $('.read-more').off('click').on('click', function(e) {
+            e.preventDefault();
+            let $this = $(this);
+            let $fullText = $this.siblings('.full-text');
+
+            if ($fullText.is(':visible')) {
+                $fullText.hide();
+                $this.text('더보기');
+            } else {
+                $fullText.show();
+                $this.text('접기');
+            }
+        });
     }
-}
-
 
     // 마커 추가 함수 수정
     function addMarker(restaurant, count) {

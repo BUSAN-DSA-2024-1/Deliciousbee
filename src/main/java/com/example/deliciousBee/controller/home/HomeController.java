@@ -94,4 +94,12 @@ public class HomeController {
 
 	@GetMapping("/message")
 	public String messagePage() {return "shop/message";}
+
+
+	@GetMapping("login")
+	public String loginForm() {
+		return "member/loginForm";
+	}
+
+
 }
