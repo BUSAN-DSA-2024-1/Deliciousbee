@@ -56,12 +56,13 @@
             </div>
             <h2 class="card-title" th:text="${restaurant.name}">Featured Post Title</h2>
             <div class="like-desc">
-            <p class="card-text" th:text="${restaurant.description}"></p>
-                <button type="button" class="btn like-button" th:onclick="likeRt(this)" th:data-restaurant-id="${restaurant.id}">
-        <i class="fas fa-heart like-icon"></i>
-        <span class="like-count">[[${restaurant.likeCount}]]</span>
-    </button>
-    </div>
+              <p class="card-text" th:text="${restaurant.description}"></p>
+              <button type="button" class="btn like-button" th:onclick="likeRt(this)"
+                th:data-restaurant-id="${restaurant.id}">
+                <i class="fas fa-heart like-icon"></i>
+                <span class="like-count">[[${restaurant.likeCount}]]</span>
+              </button>
+            </div>
             <button class="show-more" style="display: none;" onclick="showMoreImages(this)">더보기</button>
           </div>
         </div>
@@ -964,15 +965,6 @@
 
     });
 
-
-
-
-
-
-
-
-
-
     // 정렬 및 페이징 기능
     function latestList(sortBy, page) {
       const restaurantId = /*[[${restaurant.id}]]*/ '';
@@ -998,7 +990,6 @@
             response.reviews.forEach(function (review) {
               let attachedFileHTML = '<div class="image-gallery">';
               let modalHTML = '';
-
               if (review.attachedFile && review.attachedFile.length > 0) {
                 review.attachedFile.forEach(function (file, index) {
                   attachedFileHTML += `
@@ -1039,7 +1030,7 @@
               } else {
                 attachedFileHTML += `
               <div class="image-container">
-                <img src="/image/nothing.png" alt="Review Image" class="cardking">
+                <img src="/image/notReviewPhoto.png" alt="Review Image" class="cardking">
               </div>
             `;
                 attachedFileHTML += '</div>';
@@ -1402,39 +1393,39 @@
 
     });
 
-  //레스토랑 좋아요 기능(황)
+    //레스토랑 좋아요 기능(황)
     function likeRt(button) {
-        const restaurantId = $(button).data('restaurant-id');
-        const isLiked = $(button).hasClass('liked'); // 좋아요 상태 확인
-        console.log(restaurantId);
-        console.log(isLiked);
-        $.ajax({
-          url: isLiked ? "/restaurant/" + restaurantId + "/unlike" : "/restaurant/" + restaurantId + "/like",
-          type: "POST",
-          contentType: "application/json",
-          data: JSON.stringify({ "restaurantId": restaurantId }),
-          success: function (data) {
-            if (data.success) {
-              const likeCountElement = button.querySelector('.like-count');
-              likeCountElement.textContent = data.likeCount;
-              $(button).toggleClass('liked');
-            } else {
-              alert('좋아요 처리에 실패했습니다.');
-            }
-          },
-          error: function (xhr) {
-            console.error('AJAX 요청 실패:', xhr);
+      const restaurantId = $(button).data('restaurant-id');
+      const isLiked = $(button).hasClass('liked'); // 좋아요 상태 확인
+      console.log(restaurantId);
+      console.log(isLiked);
+      $.ajax({
+        url: isLiked ? "/restaurant/" + restaurantId + "/unlike" : "/restaurant/" + restaurantId + "/like",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ "restaurantId": restaurantId }),
+        success: function (data) {
+          if (data.success) {
+            const likeCountElement = button.querySelector('.like-count');
+            likeCountElement.textContent = data.likeCount;
+            $(button).toggleClass('liked');
+          } else {
+            alert('좋아요 처리에 실패했습니다.');
           }
-        });
-      }
+        },
+        error: function (xhr) {
+          console.error('AJAX 요청 실패:', xhr);
+        }
+      });
+    }
 
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=initMap"
     async defer></script>
-<<<<<<< HEAD
-<script th:src="@{/js/layout.js}"></script>
-=======
->>>>>>> 414c70d62f50905434e0885445af4e298a8eb301
+  <<<<<<< HEAD <script th:src="@{/js/layout.js}">
+    </script>
+    =======
+    >>>>>>> 414c70d62f50905434e0885445af4e298a8eb301
 </body>
 
 </html>
