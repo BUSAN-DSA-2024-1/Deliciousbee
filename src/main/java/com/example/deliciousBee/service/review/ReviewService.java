@@ -143,6 +143,8 @@ public class ReviewService {
 	// 리뷰 삭제
 	@Transactional
 	public boolean deleteReview(Long reviewId) {
+
+
 		try {
 			reviewLikeRepository.deleteByReviewId(reviewId); 
 			

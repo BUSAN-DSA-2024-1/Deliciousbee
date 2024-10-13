@@ -8,7 +8,7 @@ body {
 }
 
 .main {
-	background-color: #fff9c4;
+	background-color: white;
 }
 
 .home-image {
@@ -82,8 +82,8 @@ body {
 	margin-top: auto;
 	margin-bottom: 3px;
 	border-radius: 5px;
-	padding: 20px;
 	box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+	padding: 20px;
 	text-align: center;
 }
 
@@ -169,7 +169,7 @@ body {
 	border-radius: 20px; /* 값을 조정하여 둥글기를 조절 */
 	padding: 10px 15px; /* 패딩 추가 */
 	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-/
+	/
 }
 
 .owner-stats span:hover {
@@ -229,7 +229,7 @@ body {
 	cursor: pointer;
 	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 	transition: background-color 0.3s ease, border-color 0.3s ease,
-	transform 0.2s ease;
+		transform 0.2s ease;
 	border: 2px solid #F8D573; /* 테두리 색상 (꿀벌 느낌) */
 	background-color: #FFF8DC; /* 배경색 (꿀벌 느낌) */
 	color: #333; /* 글자 색상 */
@@ -252,7 +252,6 @@ body {
 .select-list {
 	display: flex;
 	flex-direction: row;
-	background-color: #fff9c4;
 	margin-top: 20px;
 	height: 70px;
 }
@@ -394,8 +393,8 @@ body {
 	padding: 20px;
 	background-color: white;
 	max-height: 570px; /* 랭킹 박스 높이 조절 */
-	border-radius: 10px;
-	box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2);
+	border-radius: 10px; /* 모서리 둥글게 */ 
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5); 
 	display: block;
 }
 
@@ -438,10 +437,9 @@ body {
 .random-review {
 	margin-top: 20px;
 	padding: 5px;
-	border: 1px solid #ddd; /* Border around the review section */
-	border-radius: 8px; /* Rounded corners */
-	background-color: #f9f9f9; /* Light background color */
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow effect */
+	border-radius: 10px; /* 모서리 둥글게 */ 
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5); 
+	background-color: #f9f9f9;
 }
 
 .random-review h3 {
@@ -815,137 +813,155 @@ body {
 
 /* 모달 공통 스타일 */
 .list-modal {
-	display: none;
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background-color: rgba(255, 220, 150, 0.8); /* 주황색 계열 배경, 투명도 조절 */
-	z-index: 100;
-	overflow-y: auto;
-	backdrop-filter: blur(5px); /* 배경 blur 효과 (지원 브라우저에서만 적용) */
-	animation: fadeIn 0.5s ease-in-out; /* 나타날 때 애니메이션 */
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 220, 150, 0.8);
+    z-index: 100;
+    overflow-y: auto;
+    backdrop-filter: blur(5px); /* 배경 blur 효과 (지원 브라우저에서만 적용) */
+    animation: fadeIn 0.5s ease-in-out; /* 나타날 때 애니메이션 */
 }
 
 @keyframes fadeIn {
-	from { opacity: 0; transform: translateY(-20px); } /* 위에서 나타나도록 */
-	to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(-20px); } /* 위에서 나타나도록 */
+    to { opacity: 1; transform: translateY(0); }
 }
 
 
 .follow-modal-content, .visit-modal-content {
-	background-color: #fff9e6; /* 아이보리색 배경 */
-	border-radius: 25px; /* 더 둥근 모서리 */
-	padding: 40px;
-	box-shadow: 0 5px 15px rgba(255, 165, 0, 0.4);  /* 주황색 그림자 */
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 500px;
-	max-height: 80%;
-	overflow-y: auto;
-	animation: popIn 0.4s ease-in-out; /* 나타날 때 팝업 애니메이션 */
+    background-color: #fff9e6; /* 아이보리색 배경 */
+    border-radius: 25px; /* 더 둥근 모서리 */
+    padding: 40px;
+    box-shadow: 0 5px 15px rgba(255, 165, 0, 0.4);  /* 주황색 그림자 */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    max-height: 80%;
+    overflow-y: auto;
+    animation: popIn 0.4s ease-in-out; /* 나타날 때 팝업 애니메이션 */
+}
+.follow-modal-content ul, .visit-modal-content ul {
+    max-height: 300px; 
+    overflow-y: auto; 
+    padding: 0;
+    margin: 0;
+    list-style: none;
 }
 
-
 @keyframes popIn {
-	from { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
-	to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    from { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+    to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
 }
 
 .follow-modal-content h3, .visit-modal-content h3 {
-	text-align: center;
-	margin-bottom: 25px;
-	color: #e67300; /* 진한 주황색 */
-	font-size: 2.2rem; /* 폰트 크기 증가 */
-	font-family: 'Fredoka One', cursive; /* 귀여운 폰트 */
-	text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-	animation: slideInDown 0.5s ease-in-out; /* 위에서 아래로 슬라이드 애니메이션 */
+    text-align: center;
+    margin-bottom: 25px;
+    color: #e67300; /* 진한 주황색 */
+    font-size: 2.2rem; /* 폰트 크기 증가 */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    animation: slideInDown 0.5s ease-in-out; /* 위에서 아래로 슬라이드 애니메이션 */
 
 }
 @keyframes slideInDown {
-	from { transform: translateY(-30px); opacity: 0; }
-	to { transform: translateY(0); opacity: 1; }
+    from { transform: translateY(-30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
 .follow-modal-content p, .visit-modal-content p {
-	text-align: center;
-	margin-bottom: 20px;
-	color: #8b5a2b; /* 갈색 */
-	font-size: 1.3rem;
-	animation: fadeInUp 0.5s ease-in-out 0.2s backwards; /* 아래에서 위로 나타나도록, 딜레이 추가 */
+    text-align: center;
+    margin-bottom: 20px;
+    color: #8b5a2b; /* 갈색 */
+    font-size: 1.3rem;
+    animation: fadeInUp 0.5s ease-in-out 0.2s backwards; /* 아래에서 위로 나타나도록, 딜레이 추가 */
 }
 
 
 @keyframes fadeInUp {
-	from {
-		opacity: 0;
-		transform: translateY(20px);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .follow-modal-content ul, .visit-modal-content ul {
-	list-style-type: none;
-	padding: 0;
+    list-style-type: none;
+    padding: 0;
 }
 
 .follow-modal-content li, .visit-modal-content li {
-	padding: 12px 0;
-	margin-bottom: 12px;
-	border-bottom: 1px dashed #ffcc80; /* 연한 주황색 점선 */
-	font-size: 1.1rem;
-	display: flex;
-	align-items: center;
-	animation: zoomIn 0.3s ease-in-out 0.3s backwards;  /* 줌인 애니메이션, 딜레이 추가 */
+    padding: 12px 0;
+    margin-bottom: 12px;
+    border-bottom: 1px dashed #ffcc80; /* 연한 주황색 점선 */
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    animation: zoomIn 0.3s ease-in-out 0.3s backwards;  /* 줌인 애니메이션, 딜레이 추가 */
 
 }
 
 @keyframes zoomIn {
-	from {
-		opacity: 0;
-		transform: scale(0.8);
-	}
-	to {
-		opacity: 1;
-		transform: scale(1);
-	}
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-/* ... (나머지 스타일) */
 
-
-.follow-modal-content li::before, .visit-modal-content li::before {
-	content: "🍯"; /* 꿀 모양 */
-	margin-right: 15px;
-	font-size: 1.3em;
-	animation: rotate 2s linear infinite; /* 회전 애니메이션 */
-}
 
 @keyframes rotate {
-	from { transform: rotate(0deg); }
-	to { transform: rotate(360deg); }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 
 .close-modal {
-	color: #e67300; /* 진한 주황색 */
-	font-size: 32px;
-	font-weight: bold;
-	transition: transform 0.3s, color 0.3s, text-shadow 0.3s; /* text-shadow 추가 */
+    color: #e67300; /* 진한 주황색 */
+    font-size: 32px;
+    font-weight: bold;
+    transition: transform 0.3s, color 0.3s, text-shadow 0.3s; /* text-shadow 추가 */
 }
 
 .close-modal:hover {
-	filter: drop-shadow(0 0 5px #ff9933); /* 그림자 효과 */
-	/* 또는 */
-	font-size: 36px; /* 폰트 크기 증가 */
+   filter: drop-shadow(0 0 5px #ff9933); /* 그림자 효과 */
+    /* 또는 */
+    font-size: 36px; /* 폰트 크기 증가 */
 }
 
+.profile-thumbnail {
+    width: 35px;          /* 이미지 너비 */
+    height: 35px;         /* 이미지 높이 */
+    border-radius: 50%;   /* 완전한 원형 */
+    object-fit: cover;   /* 이미지 비율 유지하며 채우기 */
+    margin-right: 10px;  /* 닉네임과의 간격 */
+    border: 2px solid #e67300; /* 테두리 추가 (선택사항) */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* 그림자 효과 추가 (선택사항) */
+}
+
+.follow-modal-content a, .visit-modal-content a {
+    font-size: 1.3rem; /* 닉네임 크기 */
+    color: #333; /* 기본 닉네임 색상 */
+    font-weight: bold; /* 두꺼운 텍스트 */
+    transition: color 0.3s ease, transform 0.3s ease; /* 부드러운 전환 효과 */
+}
+
+.follow-modal-content a:hover, .visit-modal-content a:hover {
+    color: #fdd835; /* 마우스 올렸을 때 색상 변경 (진한 노란색) */
+    transform: scale(1.1); /* 크기 살짝 확대 */
+}
 
 /*    리뷰    */
 .myPageReview {
@@ -961,11 +977,16 @@ body {
 .review-box {
 	padding: 8px;
 	margin-bottom: 10px;
-	border-radius: 8px;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+border-radius: 10px; 
+ box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5); 
 	background-color: white;;
 	width: 97%;
 	max-height: 270px;
+	 transition: transform 0.3s ease-in-out;
+}
+
+.review-box:hover {
+	transform: scale(1.05);
 }
 
 .restaurant_name_head {
@@ -1355,7 +1376,7 @@ a {
 .title {
 	text-align: center;
 	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-	"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 	margin: 10px 0 30px 0;
 	font-size: 28px;
 	font-weight: 800;
@@ -1388,7 +1409,7 @@ a {
 .page-link-label {
 	cursor: pointer;
 	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-	"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 	font-size: 9px;
 	font-weight: 700;
 }
@@ -1400,7 +1421,7 @@ a {
 .form-btn {
 	padding: 10px 15px;
 	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-	"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 	border-radius: 20px;
 	border: 0 !important;
 	outline: 0 !important;
@@ -1419,7 +1440,7 @@ a {
 	font-size: 10px;
 	color: #747474;
 	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-	"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 	text-align: center;
 	margin-top: 5%;
 }
@@ -1433,7 +1454,7 @@ a {
 	cursor: pointer;
 	font-weight: 800;
 	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-	"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 }
 
 .buttons-container {
@@ -1470,13 +1491,13 @@ a {
 	box-sizing: border-box;
 	padding: 10px 15px;
 	box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06)
-	0px 0px 0px 1px;
+		0px 0px 0px 1px;
 	cursor: pointer;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-	"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+		"Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 	font-size: 11px;
 	gap: 5px;
 	border: 2px solid #747474;
@@ -1542,7 +1563,7 @@ a {
 	display: flex;
     justify-content: space-between;
     margin-top: 25px;
-    background-color: #fff9c4;
+    background-color: white;
 }
 
 
@@ -1552,69 +1573,65 @@ a {
     top: 20px; /* Adjust as needed */
     align-self: flex-start;
     padding: 5px;
-    border: 1px solid white;
-    border-radius: 8px;
+    border-radius: 10px; /* 모서리 둥글게 */ 
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5); 
     background-color: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     height: 650px;
     margin-left: 25px;
     margin-right: 200px; /* 오른쪽 여백 200px 추가 */
-
-/* 	width: 283px; */
 }
 .top-liked-restaurants {
-	width: 90%; /* 너비 줄이기 */
-	border-collapse: collapse;
-	margin: 10px auto; /* 가운데 정렬, 여백 줄이기 */
-	font-family: 'Arial Rounded MT Bold', sans-serif;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 효과 줄이기 */
-	font-size: 0.9em; /* 전체적인 폰트 크기 줄이기 */
+  width: 90%; /* 너비 줄이기 */
+  border-collapse: collapse;
+  margin: 10px auto; /* 가운데 정렬, 여백 줄이기 */
+  font-family: 'Arial Rounded MT Bold', sans-serif;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 효과 줄이기 */
+  font-size: 0.9em; /* 전체적인 폰트 크기 줄이기 */
 }
 
 .ranking-title { /* .ranking h2 스타일을 .ranking-title로 변경 */
-	color: #8B4513; /* 제목 색상 변경 */
-	text-align: center;
-	margin-bottom: 15px;
-	font-size: 1.8em;       /* 폰트 크기 */
-	font-weight: bold;     /* 폰트 두께 */
-	text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* 그림자 추가 */
-	animation: pulse 1.5s infinite; /* 맥박 애니메이션 추가 (아래 @keyframes 참고) */
+  color: #8B4513; /* 제목 색상 변경 */
+  text-align: center;
+  margin-bottom: 15px;  
+  font-size: 1.8em;       /* 폰트 크기 */
+  font-weight: bold;     /* 폰트 두께 */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* 그림자 추가 */
+  animation: pulse 1.5s infinite; /* 맥박 애니메이션 추가 (아래 @keyframes 참고) */
 }
 
 .ranking-title .fa-crown { /* 왕관 아이콘 스타일 */
-	color: gold;
-	animation: rotate 2s linear infinite; /* 왕관 회전 애니메이션 (아래 @keyframes 참고) */
-	margin: 0 5px;
+  color: gold;
+  animation: rotate 2s linear infinite; /* 왕관 회전 애니메이션 (아래 @keyframes 참고) */
+  margin: 0 5px;
 }
 
 
 @keyframes pulse { /* 맥박 애니메이션 */
-	0% { transform: scale(1); }
-	50% { transform: scale(1.05); }
-	100% { transform: scale(1); }
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
 }
 
 @keyframes rotate { /* 회전 애니메이션 */
-	from { transform: rotate(0deg); }
-	to { transform: rotate(360deg); }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .top-liked-restaurants th {
-	padding: 8px; /* 패딩 줄이기 */
-	border-bottom: 1px solid #F5DEB3; /* 아래쪽 경계선 두께 줄이기 */
+  padding: 8px; /* 패딩 줄이기 */
+  border-bottom: 1px solid #F5DEB3; /* 아래쪽 경계선 두께 줄이기 */
 }
 
 .top-liked-restaurants td {
-	padding: 6px; /* 패딩 줄이기 */
+  padding: 6px; /* 패딩 줄이기 */
 }
 
 .top-liked-restaurants td span { /* 이모티콘 크기 줄이기 */
-	font-size: 1em;
-	margin-left: 3px;
+  font-size: 1em;
+  margin-left: 3px;
 }
 
 .restaurant-name-link {
-
   text-decoration: none;
   color:#E1B94B; 
   font-weight: bold;
@@ -1624,7 +1641,6 @@ a {
 .restaurant-name-link:hover {
   color: #A76D35; 
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-
 }
 
 
@@ -1632,10 +1648,9 @@ a {
 .restaurant-random-container {
 	margin: 20px;
 	padding: 5px;
-	border: 1px solid #ddd; /* Border around the review section */
-	border-radius: 8px; /* Rounded corners */
-	background-color: #f9f9f9; /* Light background color */
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow effect */
+	border-radius: 10px; /* 모서리 둥글게 */
+	 box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5); 
+	
 }
 
 
@@ -1643,37 +1658,40 @@ a {
 	text-align: center;
 }
 .random-restaurant-like {
-	display: inline-block;
+    display: inline-block;
 }
 
 .heart-icon {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	position: relative;
-	width: 60px; /* 하트 크기 증가 */
-	height: 60px; /* 하트 크기 증가 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 60px; 
+  height: 60px; 
+  
 }
 
 .heart-icon::before {
-	content: '\2665';
-	font-size: 54px; /* 하트 크기 증가 */
-	color: lightgreen;
-	position: absolute;
+  content: '\2665';
+  font-size: 54px; /* 하트 크기 증가 */
+  color: lightgreen;
+  position: absolute;
 }
 
 .heart-icon .like-count {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	font-size: 18px; /* 숫자 크기 조정 (선택사항) */
-	color: white;
-	font-weight: bold;
-	z-index: 1;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 18px; /* 숫자 크기 조정 (선택사항) */
+  color: white;
+  font-weight: bold;
+  z-index: 1;
 }
 
-
+.like-count {
+    cursor: default; 
+}
 .random-restaurant-image {
 	text-align: center; /* Center align the image */
 }
@@ -1690,11 +1708,10 @@ a {
 	margin-left: 40px;
 	font-size: 15px;
 	
-
 }
 .restaurant-info-wrapper {
-	display: flex;
-	align-items: center; /* 수직 중앙 정렬 */
+  display: flex;
+  align-items: center; /* 수직 중앙 정렬 */
 }
 
 .random-restaurant-content:hover {
@@ -1712,9 +1729,6 @@ a {
 	cursor: pointer; 
 	transition: background-color 0.3s; 
 }
-.myRestaurantContent {
-	background-color: #fff9c4;
-}
 
 .restaurant-list {
 	 flex: 8; 
@@ -1730,8 +1744,8 @@ a {
     max-width: calc(50% - 10px);
     box-sizing: border-box;
     padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+   border-radius: 10px; /* 모서리 둥글게 */ 
+   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5); 
     background-color: white;
     transition: transform 0.3s ease;
     height: 400px;
@@ -1764,14 +1778,65 @@ a {
 }
 
 .restaurant-info {
+	position: relative;
 	text-align: center; /* 텍스트 가운데 정렬 */
-	background-color: #FFF5E1; /* 연한 꿀색 배경 */
+	background-color: #FFFDF8 ; 
 	border-radius: 10px; /* 둥근 모서리 */
 	padding: 15px; /* 내부 여백 추가 */
-	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 효과 */
+	border-radius: 10px; 
+	 box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5); 
 	transition: background-color 0.3s ease; /* 배경색 변화 애니메이션 */
 }
 
+.like-button {
+    position: relative;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    
+}
+
+.btn-success {
+    background-color: transparent; /* 배경색 투명 */
+    box-shadow: none; /* 그림자 제거 */
+     border: none;
+    outline: none;
+}
+.like-button:hover {
+    background-color: transparent;
+     border: none;
+    outline: none;
+}
+
+.like-button-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    margin-top: -10px;
+}
+
+.like-button:hover::after {
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    transform: translateY(-50%);
+    margin-left: 10px;
+    background-color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    white-space: nowrap;
+    visibility: hidden;
+}
+
+.like-button:hover::after {
+    visibility: visible;
+}
+
+.like-button i {
+    font-size: 24px;
+}
 .restaurant-info h3 {
 	margin-top: 0;
 	font-size: 20px; /* 폰트 크기 증가 */
@@ -1779,6 +1844,7 @@ a {
 	font-weight: bold;
 	text-shadow: 1px 1px 2px #ffcc80; /* 부드러운 그림자 추가 */
 	height: 23px;
+	
 }
 
 .restaurant-info p {
@@ -1799,88 +1865,33 @@ a {
 	vertical-align: middle; /* 수직 정렬 */
 }
 
-.myRestaurantContent > p {
-    font-style: italic;
-    color: #4d4d00; /* 어두운 올리브색 텍스트 */
+.no-rt-like {
+    color: #4d4d00; 
     text-align: center;
     margin-top: 20px;
     font-size: 20px;
-    margin-left: 200px; /* 왼쪽 마진 */
-    margin-right: 200px; /* 오른쪽 마진 */
-    background-color: #fff9cc; /* 밝은 노란색 배경색 */
-    border: 1px solid #fdd835; /* 더 진한 노란색 테두리 */
-    border-radius: 10px; /* 모서리 둥글게 */
+    background-color: white; 
+    border-radius: 10px; /* 모서리 둥글게 */ 
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5); 
     padding: 20px; /* 내부 여백 추가 */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 추가 */
+    margin-left: 200px;
+    margin-bottom: 50px;
+    width: 750px;
+    height: 50px;
 }
 
-.myRestaurantContent > p:hover {
+.no-rt-like:hover {
     transform: scale(1.05); /* 마우스 오버 시 크기 확대 */
     transition: transform 0.2s ease-in-out; /* 애니메이션 효과 */
-    background-color: #ffeeba; /* 마우스 오버 시 연한 노란색으로 변경 */
     border-color: #ffb300; /* 마우스 오버 시 테두리 색상 변경 */
 }
-.rtrt2 {
-	display: flex;
-	flex-direction: row;
-	gap: 10px;
-}
 
-.ranking-rt2{
-	flex: 5;
-    top: 20px;
-    align-self: flex-start;
-    padding: 15px;  /* 패딩 추가 */
-    border-radius: 8px;
-    background-color: white; /* 배경색 흰색으로 변경 */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    margin-left: 200px; /* 왼쪽 여백 추가 */
-    margin-bottom: 50px; /* 아래쪽 여백 추가 */
-    overflow: hidden; /* 넘치는 내용 숨김 */
-}
-
-.ranking2 {
-	flex: 5;
-    top: 20px;
-    align-self: flex-start;
-    padding: 15px;  /* 패딩 추가 */
-    border-radius: 8px;
-    background-color: white; /* 배경색 흰색으로 변경 */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    margin-right: 200px;
-    margin-bottom: 50px; /* 아래쪽 여백 추가 */
-    overflow: hidden; /* 넘치는 내용 숨김 */
-}
-
-.ranking h2 {
-	color: #8B4513; /* 제목 색상 변경 */
-	text-align: center;
-	margin-bottom: 15px;
-}
-
-.ranking2 table {
-	width: 100%;
-	border-collapse: collapse; /* 테두리 간격 없애기 */
-}
-
-.ranking2 th {
-	background-color: #61686c; /* 헤더 배경색 변경 */
-	color: white;
-	padding: 10px;
-	text-align: center; /* 헤더 텍스트 가운데 정렬 */
-}
-
-.ranking2 td {
-	padding: 8px;
-	text-align: center;
-	border-bottom: 1px solid #ddd; /* 셀 아래쪽 경계선 추가 */
-}
 .menu-modal {
 	display: none; /* 맨 처음에는 숨김 상태로 */
-	text-align:
-			left;
+	text-align: 
+	left;
 	overflow: auto;
-	max-height: 150px;
+	 max-height: 150px;
 }
 
 .menu-button {

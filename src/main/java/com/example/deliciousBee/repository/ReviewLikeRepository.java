@@ -19,4 +19,6 @@ public interface ReviewLikeRepository extends JpaRepository<ReviewLike, Long>{
 	
 	// 리뷰 아이디 통해서 삭제
 	void deleteByReviewId(Long reviewId);
+
+	List<ReviewLike> findByReview(Review review);
 }
