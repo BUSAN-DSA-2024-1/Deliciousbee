@@ -22,7 +22,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"attachedFile", "menuList", "reports", "rtLikes"})
 @Entity
 public class Restaurant {
 
@@ -45,10 +45,10 @@ public class Restaurant {
     //레스토랑 좋아요(황)
     @Column(name = "like_count", nullable = false)
 	private Integer likeCount = 0;
-	
-    
-    
-	@ManyToOne
+
+
+
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private BeeMember member;
 	private String address;
@@ -85,12 +85,12 @@ public class Restaurant {
 	@Column(nullable = false)
 	private VerificationStatus verificationStatus; // 인증 상태 추가
 
-	@OneToMany(mappedBy = "restaurant")
+	@OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Menu> menuList;
+
+	@OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<RestaurantAttachedFile> attachedFile;
 
-	// 메뉴리스트 추가
-	@OneToMany(mappedBy =  "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Menu> menuList;
 
 
 	// 레스토랑과 관련된 신고

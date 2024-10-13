@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import com.example.deliciousBee.model.member.BeeLoginForm;
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.member.Role;
 import com.example.deliciousBee.security.jwt.JwtTokenProvider;
@@ -96,10 +97,11 @@ public class HomeController {
 	public String messagePage() {return "shop/message";}
 
 
+
 	@GetMapping("login")
-	public String loginForm() {
+	public String loginForm(Model model){ // 빈객체를 담아 Model에 보냄
+		model.addAttribute("loginForm", new BeeLoginForm()); // loginForm 객체를 모델에 추가
 		return "member/loginForm";
 	}
-
 
 }

@@ -14,6 +14,16 @@ header {
     padding: 20px;
 }
 
+.description {
+    display: -webkit-box;
+    -webkit-line-clamp: 1; /* 1줄로 제한 */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; /* 텍스트를 한 줄로 표시 */
+    width: 200px; /* 원하는 너비로 설정 */
+    text-align: center; /* 텍스트를 가운데 정렬 */
+}
 .logo {
     display: flex;
     align-items: center;

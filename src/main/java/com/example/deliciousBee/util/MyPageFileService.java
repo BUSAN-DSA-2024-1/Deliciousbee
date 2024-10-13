@@ -43,7 +43,7 @@ public class MyPageFileService {
         }
 
         // Google Cloud Storage 키 파일 설정
-        String keyFileName = "deliciousbee-acb114448e3c.json";  // GCP 서비스 계정 키 파일명
+        String keyFileName = "deliciousbee-8dc8626d1aad.json";  // GCP 서비스 계정 키 파일명
         Resource resource = resourceLoader.getResource("classpath:" + keyFileName);
         InputStream keyFile = resource.getInputStream();
 
@@ -73,7 +73,7 @@ public class MyPageFileService {
     public boolean deleteFile(String savedFilename) {
         try {
             // Google Cloud Storage 클라이언트 생성 (같은 방식으로 생성)
-            String keyFileName = "deliciousbee-acb114448e3c.json";  // GCP 서비스 계정 키 파일명
+            String keyFileName = "deliciousbee-8dc8626d1aad.json";  // GCP 서비스 계정 키 파일명
             Resource resource = resourceLoader.getResource("classpath:" + keyFileName);
             InputStream keyFile = resource.getInputStream();
 

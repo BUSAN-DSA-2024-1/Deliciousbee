@@ -234,7 +234,8 @@ public class MemberController {
 	// **************로그인 페이지 이동
 
 	@GetMapping("login")
-	public String loginForm() { // 빈객체를 담아 Model에 보냄
+	public String loginForm(Model model){ // 빈객체를 담아 Model에 보냄
+		model.addAttribute("loginForm", new BeeLoginForm()); // loginForm 객체를 모델에 추가
 		return "member/loginForm";
 	}
 
@@ -435,7 +436,7 @@ public class MemberController {
 	public ResponseEntity<Resource> display(@RequestParam("filename") String filename) {
 	    try {
 	        // Google Cloud Storage 키 파일 설정
-	        String keyFileName = "deliciousbee-acb114448e3c.json"; // GCP 서비스 계정 키 파일명
+	        String keyFileName = "deliciousbee-8dc8626d1aad.json"; // GCP 서비스 계정 키 파일명
 	        InputStream keyFile = getClass().getResourceAsStream("/" + keyFileName);
 
 	        // Google Cloud Storage 클라이언트 생성
