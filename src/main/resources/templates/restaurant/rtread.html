@@ -78,8 +78,26 @@
       <a class="card-text no-style-link" th:href="@{${restaurant.homepage_url}}" th:text="'웹사이트 방문'"
         target="_blank"></a>
       <p class="card-text" th:text="${restaurant.address}"></p>
-      <!-- restaurant-photo -->
       <hr>
+
+      <H3><span class="restaurant-name">[[${restaurant.name}]]</span> of Menu</H3>
+      <table>
+        <th:block th:each="menu, iterStat : ${restaurant.menuList}">
+          <tr th:if="${iterStat.index % 2 == 0}">
+            <td>
+              <label class="restaurant-menu" th:text="${menu.name}"></label>
+              <span th:text="${menu.price} +'원'"></span>
+            </td>
+            <td th:if="${iterStat.index + 1 < restaurant.menuList.size()}">
+              <label class="restaurant-menu" th:text="${restaurant.menuList[iterStat.index + 1].name}"></label>
+              <span th:text="${restaurant.menuList[iterStat.index + 1].price} +'원'"></span>
+            </td>
+          </tr>
+        </th:block>
+      </table>
+      <hr>
+
+      <!-- restaurant-photo -->
       <h3><span class="restaurant-name">[[${restaurant.name}]]</span> of Photo</h3>
       <div class="col-lg-12">
         <div class="restaurant-photos">

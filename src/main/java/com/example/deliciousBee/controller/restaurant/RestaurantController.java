@@ -2,15 +2,12 @@ package com.example.deliciousBee.controller.restaurant;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import com.example.deliciousBee.model.file.RestaurantAttachedFile;
-import com.example.deliciousBee.model.member.Role;
-import com.example.deliciousBee.security.jwt.JwtTokenProvider;
-import com.example.deliciousBee.service.member.BeeMemberService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -26,9 +23,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,18 +35,24 @@ import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.keyWord.KeyWord;
 import com.example.deliciousBee.model.keyWord.KeywordCategory;
 import com.example.deliciousBee.model.member.BeeMember;
+import com.example.deliciousBee.model.member.Role;
 import com.example.deliciousBee.model.review.Review;
+import com.example.deliciousBee.security.jwt.JwtTokenProvider;
 import com.example.deliciousBee.service.keyWord.ReviewKeyWordService;
+import com.example.deliciousBee.service.member.BeeMemberService;
 import com.example.deliciousBee.service.restaurant.RestaurantService;
 import com.example.deliciousBee.service.review.ReviewService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Slf4j
 @Controller
@@ -230,7 +230,6 @@ public class RestaurantController {
 			return "redirect:/shop/index";
 		}
 		model.addAttribute("restaurant", restaurant);
-
 		// 리뷰 정보 가져오기
 		String memberId = loginMember.getMember_id();
 		Sort sort = Sort.by(Sort.Direction.DESC, sortBy);

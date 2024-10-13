@@ -8,6 +8,7 @@ import java.util.List;
 import com.example.deliciousBee.model.board.Restaurant;
 import com.example.deliciousBee.model.file.AttachedFile;
 import com.example.deliciousBee.model.keyWord.ReviewKeyWord;
+import com.example.deliciousBee.model.like.ReviewLike;
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.menu.ReviewMenu;
 import com.example.deliciousBee.model.report.ReportReason;
@@ -105,7 +106,7 @@ public class Review {
 	@JsonIgnore
 	@JoinColumn(name = "restaurant_id")
 	private Restaurant restaurant;
-	
+		
 	@Override
     public int hashCode() {
         final int prime = 31;

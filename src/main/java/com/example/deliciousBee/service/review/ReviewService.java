@@ -56,6 +56,7 @@ public class ReviewService {
 	private final RestaurantRepository restaurantRepository;
 	private final ReviewMenuRepository reviewMenuRepository;
 	private final ReviewKeyWordService reviewKeyWordService;
+	private final ReviewLikeRepository reviewLikeRepository;
 
 	public void saveReview(Review review, List<AttachedFile> attachedFiles) {
 		if (attachedFiles != null) {
@@ -139,9 +140,12 @@ public class ReviewService {
 		return review.getLikeCount();
 	}
 
+	// 리뷰 삭제
 	@Transactional
 	public boolean deleteReview(Long reviewId) {
 		try {
+			reviewLikeRepository.deleteByReviewId(reviewId); 
+			
 			if (reportRepository.existsById(reviewId)) {
 				reportRepository.deleteById(reviewId);
 			}
