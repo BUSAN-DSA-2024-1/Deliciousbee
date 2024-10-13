@@ -8,13 +8,8 @@
 <link rel="stylesheet" href="/css/myPage.css">
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-<<<<<<< HEAD
-	
-    <link rel="stylesheet" href="/css/nav.css">
-=======
 
 
->>>>>>> 414c70d62f50905434e0885445af4e298a8eb301
 <title>마이페이지</title>
 </head>
 <body>
@@ -34,8 +29,8 @@
 			src="/myPageImage/no-main-image.png" alt="기본 이미지"
 			class="default-main-image"> <img
 			th:unless="${myPage.mainImage == null}"
-			th:src="@{'/loginMember/display?filename=' + ${loginMember.Image.saved_filename}}"
-			alt="메인 이미지">
+			th:src="@{'/member/display?filename=' + ${myPage.mainImage.saved_filename}}"
+			alt="메인 이미지" class="main-image-img">
 		<!-- 프로필 이미지 -->
 		<div class="profile-image">
 			<img th:if="${myPage.beeMember.profileImage == null}"
@@ -67,7 +62,10 @@
 						</button>
 						<div class="no-login-follow">
 							<a th:if="${loginMember == null}" th:href="@{login}"
-								onclick="return showLoginAlert()" class="nofollow">팔로우</a>
+								onclick="return showLoginAlert()" class="nofollow"> <img
+								th:src="@{/myPageImage/follow.png}" alt="팔로우"
+								style="max-width: 100%; height: auto;">
+							</a>
 						</div>
 						<!-- 팔로워/팔로잉 목록 버튼 -->
 					</div>
@@ -104,13 +102,15 @@
 					팔로워수: <span th:text="${myPage.beeMember.followerList.size()}"></span>
 				</p>
 				<ul>
-					<li th:each="follower : ${myPage.beeMember.followerList}">
-						 <img th:if="${follower.follower.profileImage != null}" th:src="@{'/member/display?filename=' + ${follower.follower.profileImage.saved_filename}}" alt="프로필 사진" class="profile-thumbnail">
-               			 <img th:unless="${follower.follower.profileImage != null}" src="/myPageImage/no-profil.png" alt="기본 이미지" class="profile-thumbnail">
-						<a th:href="@{/member/myPage(id=${follower.follower.myPage.id})}"
-						th:text="${follower.follower.nickname}">
-						</a>
-					</li>
+					<li th:each="follower : ${myPage.beeMember.followerList}"><img
+						th:if="${follower.follower.profileImage != null}"
+						th:src="@{'/member/display?filename=' + ${follower.follower.profileImage.saved_filename}}"
+						alt="프로필 사진" class="profile-thumbnail"> <img
+						th:unless="${follower.follower.profileImage != null}"
+						src="/myPageImage/no-profil.png" alt="기본 이미지"
+						class="profile-thumbnail"> <a
+						th:href="@{/member/myPage(id=${follower.follower.myPage.id})}"
+						th:text="${follower.follower.nickname}"> </a></li>
 				</ul>
 			</div>
 		</div>
@@ -124,13 +124,15 @@
 					팔로워수: <span th:text="${myPage.beeMember.followingList.size()}"></span>
 				</p>
 				<ul>
-					<li th:each="following : ${myPage.beeMember.followingList}">
-					<img th:if="${following.following.profileImage != null}" th:src="@{'/member/display?filename=' + ${following.following.profileImage.saved_filename}}" alt="프로필 사진" class="profile-thumbnail">
-               			 <img th:unless="${following.following.profileImage != null}" src="/myPageImage/no-profil.png" alt="기본 이미지" class="profile-thumbnail">
-					<a
+					<li th:each="following : ${myPage.beeMember.followingList}"><img
+						th:if="${following.following.profileImage != null}"
+						th:src="@{'/member/display?filename=' + ${following.following.profileImage.saved_filename}}"
+						alt="프로필 사진" class="profile-thumbnail"> <img
+						th:unless="${following.following.profileImage != null}"
+						src="/myPageImage/no-profil.png" alt="기본 이미지"
+						class="profile-thumbnail"> <a
 						th:href="@{/member/myPage(id=${following.following.myPage.id})}"
-						th:text="${following.following.nickname}"></a>
-					</li>
+						th:text="${following.following.nickname}"></a></li>
 				</ul>
 			</div>
 		</div>
@@ -150,20 +152,15 @@
 				<span class="close-modal" onclick="closeVisitorsModal()">×</span>
 				<h3>오늘의 방문자</h3>
 				<ul>
-					<li th:each="visit : ${visitors}">
-						<img th:if="${visit.visitor.profileImage != null}" 
-                     th:src="@{'/member/display?filename=' + ${visit.visitor.profileImage.saved_filename}}" 
-                     alt="프로필 사진" 
-                     class="profile-thumbnail">
-                     
-                <img th:unless="${visit.visitor.profileImage != null}" 
-                     src="/myPageImage/no-profil.png" 
-                     alt="기본 이미지" 
-                     class="profile-thumbnail">
-						<a
+					<li th:each="visit : ${visitors}"><img
+						th:if="${visit.visitor.profileImage != null}"
+						th:src="@{'/member/display?filename=' + ${visit.visitor.profileImage.saved_filename}}"
+						alt="프로필 사진" class="profile-thumbnail"> <img
+						th:unless="${visit.visitor.profileImage != null}"
+						src="/myPageImage/no-profil.png" alt="기본 이미지"
+						class="profile-thumbnail"> <a
 						th:href="@{/member/myPage(id=${visit.visitor.myPage.id})}"
-						th:text="${visit.visitor.nickname}"></a>
-					</li>
+						th:text="${visit.visitor.nickname}"></a></li>
 				</ul>
 			</div>
 		</div>
@@ -207,19 +204,22 @@
 						src="/myPageImage/no-review-img.jpg" alt="No Restaurant Image"
 						class="restaurant-image">
 					<div class="restaurant-info">
-						<div class="like-button-container"> <!-- 좋아요 버튼을 감싸는 div 추가 -->
-               			<button type="button" class="btn btn-success like-button" th:data-restaurant-id="${restaurant.id}">
-    <i class="fas fa-heart" style="color: red;" onclick="likeRt(this.parentElement); event.stopPropagation();"></i> 
-    <span class="like-count">[[${restaurant.likeCount}]]</span>
-</button>
-           				 </div>
+						<div class="like-button-container">
+							<!-- 좋아요 버튼을 감싸는 div 추가 -->
+							<button type="button" class="btn btn-success like-button"
+								th:data-restaurant-id="${restaurant.id}">
+								<i class="fas fa-heart" style="color: red;"
+									onclick="likeRt(this.parentElement); event.stopPropagation();"></i>
+								<span class="like-count">[[${restaurant.likeCount}]]</span>
+							</button>
+						</div>
 						<a th:href="@{/restaurant/rtread/{id}(id=${restaurant.id})}"
 							title="식당 정보로 이동">
 							<h3 th:text="${restaurant.name}" class="restaurant_name"
 								style="text-decoration: none;"></h3>
 						</a>
-						
-						
+
+
 						<p>
 							⭐ 평균 평점: <span th:text="${restaurant.average_rating}"></span>
 						</p>
@@ -247,14 +247,14 @@
 					</div>
 				</div>
 			</div>
-			
+
 			<div class="no-rt-like"
-			th:unless="${pagedLikedRestaurants.content != null and !pagedLikedRestaurants.content.isEmpty()}">
-			좋아요한 식당이 없음
-			<div>
-				<a href="/">식당 보러가기</a> 👉
+				th:unless="${pagedLikedRestaurants.content != null and !pagedLikedRestaurants.content.isEmpty()}">
+				좋아요한 식당이 없음
+				<div>
+					<a href="/">식당 보러가기</a> 👉
 				</div>
-			</div>	
+			</div>
 
 			<!-- 좋아요 왕 👑 테이블은 항상 표시 -->
 			<div class="ranking-rt">
@@ -300,7 +300,7 @@
 			</div>
 		</div>
 		<!-- 좋아요한 레스토랑이 없을 때 보여줄 메시지 -->
-		
+
 	</div>
 	<div class="main">
 		<div class="myPageMain">
@@ -777,46 +777,49 @@ function sortReviews() {
         })
         .catch(error => console.error('Error:', error));
 }
+
+//이미지 모달
 //이미지 모달 닫기 함수 (showImageModal 외부로 이동)
- function closeImageModal(reviewId) {
-   document.getElementById('imageModal' + reviewId).style.display = 'none';
-   window.removeEventListener('click', handleImageModalOutsideClick);  // 리스너 제거
- }
+function closeImageModal(reviewId) {
+  document.getElementById('imageModal' + reviewId).style.display = 'none';
+  window.removeEventListener('click', handleImageModalOutsideClick);  // 리스너 제거
+}
 
- // 이미지 모달 열기 함수
- function showImageModal(reviewId) {
-   const modal = document.getElementById('imageModal' + reviewId);
-   modal.style.display = 'block';
+// 이미지 모달 열기 함수
+function showImageModal(reviewId) {
+  const modal = document.getElementById('imageModal' + reviewId);
+  modal.style.display = 'block';
 
-   // 이미지 모달 외부 클릭 시 닫기 (클로저 함수 사용)
-   function handleImageModalOutsideClick(event) {
-     if (event.target == modal) {
-       closeImageModal(reviewId); // 이제 외부에서 정의된 closeImageModal 함수를 호출합니다.
-     }
-   }
-   window.addEventListener('click', handleImageModalOutsideClick);
- }
+  // 이미지 모달 외부 클릭 시 닫기 (클로저 함수 사용)
+  function handleImageModalOutsideClick(event) {
+    if (event.target == modal) {
+      closeImageModal(reviewId); // 이제 외부에서 정의된 closeImageModal 함수를 호출합니다.
+    }
+  }
+  window.addEventListener('click', handleImageModalOutsideClick);
+}
 
 //큰 이미지 모달 닫기 함수 (showLargeImageModal 외부로 이동)
- function closeLargeImageModal() {
-   document.getElementById('largeImageModal').style.display = 'none';
-   window.removeEventListener('click', handleLargeImageModalOutsideClick); // 리스너 제거
- }
+function closeLargeImageModal() {
+  document.getElementById('largeImageModal').style.display = 'none';
+  window.removeEventListener('click', handleLargeImageModalOutsideClick); // 리스너 제거
+}
 
- // 큰 이미지 모달 열기 함수
- function showLargeImageModal(imageUrl) {
-   const modal = document.getElementById('largeImageModal');
-   document.getElementById('largeImage').src = imageUrl;
-   modal.style.display = 'block';
+// 큰 이미지 모달 열기 함수
+function showLargeImageModal(imageUrl) {
+  const modal = document.getElementById('largeImageModal');
+  document.getElementById('largeImage').src = imageUrl;
+  modal.style.display = 'block';
 
-   // 큰 이미지 모달 외부 클릭 시 닫기 (클로저 함수 사용)
-   function handleLargeImageModalOutsideClick(event) {
-     if (event.target == modal) {
-       closeLargeImageModal(); // 이제 외부에서 정의된 closeLargeImageModal 함수를 호출합니다.
-     }
-   }
-   window.addEventListener('click', handleLargeImageModalOutsideClick);
- }
+  // 큰 이미지 모달 외부 클릭 시 닫기 (클로저 함수 사용)
+  function handleLargeImageModalOutsideClick(event) {
+    if (event.target == modal) {
+      closeLargeImageModal(); // 이제 외부에서 정의된 closeLargeImageModal 함수를 호출합니다.
+    }
+  }
+  window.addEventListener('click', handleLargeImageModalOutsideClick);
+}
+
  
  
  //랜덤 리뷰

@@ -82,7 +82,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/admin/**","/restaurant/rtedit/**").hasRole("ADMIN")
                         .requestMatchers("/restaurant/rtwrite", "/comments/save").hasRole("USER")
-                        .requestMatchers("/","/member/checkNickname", "/api/restaurants/**", "/member/login", "/member/deleteMember", "/member/mailSend", "/member/mailCheck","/member/join", "/css/**", "images/**", "/js/**", "/login/**", "/logout/**", "/posts/**", "/comments/**", "/follow/**", "/unfollow/**", "/restaurant/display/**", "/image/**", "/restaurant/search", "/api/restaurants/search", "/restaurant/rtread/**","/member/api/check-auth", "/oauth2/**","/review/**","/restaurant/**" , "/restaurant/rtread/report/**", "/restaurant/rtread/**", "/error/**").permitAll()
+                        .requestMatchers("/","/member/myPageList","/member/myPage", "/member/display/**", "/member/checkNickname", "/api/restaurants/**", "/member/login", "/member/deleteMember", "/member/mailSend", "/member/mailCheck","/member/join", "/css/**", "images/**", "/js/**", "/login/**", "/logout/**", "/posts/**", "/comments/**", "/follow/**", "/unfollow/**", "/restaurant/display/**", "/image/**", "/restaurant/search", "/api/restaurants/search", "/restaurant/rtread/**","/member/api/check-auth", "/oauth2/**","/review/**","/restaurant/**" , "/restaurant/rtread/report/**", "/restaurant/rtread/**", "/error/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
