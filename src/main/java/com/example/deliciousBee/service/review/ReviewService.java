@@ -56,6 +56,7 @@ public class ReviewService {
 	private final RestaurantRepository restaurantRepository;
 	private final ReviewMenuRepository reviewMenuRepository;
 	private final ReviewKeyWordService reviewKeyWordService;
+	private final ReviewLikeRepository reviewLikeRepository;
 
 	public void saveReview(Review review, List<AttachedFile> attachedFiles) {
 		if (attachedFiles != null) {
@@ -92,14 +93,21 @@ public class ReviewService {
 		restaurantRepository.save(restaurant);
 	}
 
-	public Page<Review> getReviewsByRestaurantIdWithFiles(Long restaurantId, String memberId, Pageable pageable,
+	public Page<Review> getReviewsByRestaurantIdWithFiles(Long restaurantId, BeeMember loginMember, Pageable pageable,
 			String sortBy) {
 
 		Sort sort = Sort.by(Sort.Direction.DESC, sortBy);
 		Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
 
 		Page<Review> reviews = reviewRepository.findByRestaurantId(restaurantId, sortedPageable);
-		List<Long> reportedReviewIds = reportRepository.findReportedReviewId(memberId);
+		List<Long> reportedReviewIds;
+		if(loginMember != null) {
+			reportedReviewIds = reportRepository.findReportedReviewId(loginMember.getMember_id());
+		}
+		else {
+			reportedReviewIds = new ArrayList<>();
+		}
+		
 
 		List<Review> filteredReviews = reviews.stream().filter(review -> !reportedReviewIds.contains(review.getId()))
 				.collect(Collectors.toList());
@@ -139,11 +147,13 @@ public class ReviewService {
 		return review.getLikeCount();
 	}
 
+	// 리뷰 삭제
 	@Transactional
 	public boolean deleteReview(Long reviewId) {
 
-
 		try {
+			reviewLikeRepository.deleteByReviewId(reviewId);
+
 			if (reportRepository.existsById(reviewId)) {
 				reportRepository.deleteById(reviewId);
 			}
@@ -177,9 +187,9 @@ public class ReviewService {
 		updateReview.setUserName(findReview.getUserName());
 		updateReview.setRestaurant(findReview.getRestaurant());
 		updateReview.setBeeMember(findReview.getBeeMember());
-		
+
 		reviewRepository.save(updateReview);
-		
+
 		// 첨부파일 처리
 		if (attachedFiles != null) {
 			for (AttachedFile attachedFile : attachedFiles) {
@@ -211,14 +221,21 @@ public class ReviewService {
 	}
 
 	// 리뷰 정렬 로직
-	public Page<Review> sortReview(Long restaurantId, String memberId, Pageable pageable, String sortBy) {
-		List<Long> reportedReviewIds = reportRepository.findReportedReviewId(memberId);
+	public Page<Review> sortReview(Long restaurantId, BeeMember loginMember, Pageable pageable, String sortBy) {
+		 List<Long> reportedReviewIds;
+		if (loginMember != null) {
+			reportedReviewIds = reportRepository.findReportedReviewId(loginMember.getMember_id());
+		}
+		else {
+			reportedReviewIds = new ArrayList<>();
+		}
+
 		Page<Review> reviews = switch (sortBy) {
 		case "rating" -> reviewRepository.findAllByRestaurant_IdOrderByRatingDesc(restaurantId, pageable); // 특정 식당 ID로
 		// 필터링
 		case "visitDate" -> reviewRepository.findAllByRestaurant_IdOrderByVisitDateDesc(restaurantId, pageable);
 		case "likeCount" -> reviewRepository.findAllByRestaurant_IdOrderByLikeCountDesc(restaurantId, pageable);
-		default -> getReviewsByRestaurantIdWithFiles(restaurantId, memberId, pageable, sortBy);
+		default -> getReviewsByRestaurantIdWithFiles(restaurantId, loginMember, pageable, sortBy);
 		};
 
 		List<Review> filteredReviews = reviews.stream().filter(review -> !reportedReviewIds.contains(review.getId()))
@@ -226,7 +243,8 @@ public class ReviewService {
 
 		for (Review review : filteredReviews) {
 			review.setAttachedFile(fileRepository.findAllByReview(review));
-			review.setCanEdit(memberId.equals(review.getBeeMember().getMember_id()));
+			review.setCanEdit(
+					loginMember != null && loginMember.getMember_id().equals(review.getBeeMember().getMember_id()));
 		}
 
 		Page<Review> pageFilteredReviews = new PageImpl<>(filteredReviews, pageable, reviews.getTotalElements());
