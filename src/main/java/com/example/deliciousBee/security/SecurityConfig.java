@@ -87,10 +87,10 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint((request, response, authException) -> {
-                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                            response.sendRedirect("/error/500");
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
+                            response.sendRedirect("/error/500");
                         })
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 설정 변경
@@ -102,6 +102,7 @@ public class SecurityConfig {
                             System.out.println("OAuth2 Authentication failed: " + exception.getMessage());
                             exception.printStackTrace(); // 스택 트레이스 출력
                             response.sendRedirect("/member/login?error");
+
                         })
                 )
                 .logout(logout -> logout

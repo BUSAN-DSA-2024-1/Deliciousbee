@@ -87,7 +87,7 @@ public class Restaurant {
 	private List<RestaurantAttachedFile> attachedFile;
 
 	// 메뉴리스트 추가
-	@OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy =  "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Menu> menuList;
 
 
