@@ -764,6 +764,8 @@
       $('#reportModal').modal('show');
     }
 
+
+
     // 신고기능 구현
     function submitReport() {
       const reviewId = $('#reportModal').data('review-id');
@@ -1308,7 +1310,12 @@
 
       //
       const restaurantReportModal = document.getElementById("restaurantReportModal");
-      restaurantReportModal.style.display = "block";
+
+      if (isAuthenticated) {
+        restaurantReportModal.style.display = "block";
+      } else {
+        alert('로그인이 필요합니다'); // "You need to log in"
+      }
     }
 
     // 레스토랑 신고 모달 닫기

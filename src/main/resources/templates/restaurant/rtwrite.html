@@ -28,7 +28,7 @@
 					if (menuItems.length > 3) {
 						menuItems[menuItems.length - 1].remove();
 					} else {
-						alert("최소한 하나의 메뉴와 가격대를 입력해야 합니다.");
+						alert("제거할 수 없습니다.");
 					}
 				}
 			});
@@ -102,6 +102,22 @@
 		        return;
 		    }
 
+		    // 메뉴와 가격 필드가 비어 있지 않은 것들만 FormData에 추가
+		    const menuNames = document.querySelectorAll('input[name="menu_name[]"]');
+		    const priceRanges = document.querySelectorAll('input[name="price_range[]"]');
+		    
+		    let validMenuCount = 0; // 유효한 메뉴 개수 카운트
+
+		    menuNames.forEach((menuName, index) => {
+		        const priceRange = priceRanges[index];
+		        // 메뉴 이름과 가격이 모두 입력된 경우만 추가
+		        if (menuName.value.trim() && priceRange.value.trim()) {
+		            formData.append('menu_name[]', menuName.value);
+		            formData.append('price_range[]', priceRange.value);
+		            validMenuCount++;
+		        }
+		    });
+		    
 			// 선택된 상세 카테고리들을 배열로 저장
 			const selectedCategories = [];
 			const checkboxes = document.querySelectorAll('input[name="category[]"]:checked');
@@ -506,7 +522,8 @@ form::after {
 		</div>
 		<div class="form-group">
 			<label for="description">설명</label>
-			<textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+			<small id="charCount">0/200</small>
+			<textarea class="form-control" id="description" name="description" rows="3" maxlength="200" required></textarea>
 		</div>
 	</div>
 
@@ -553,6 +570,18 @@ form::after {
 			checkboxContainer.appendChild(label);
 		});
 	}
+	
+	 const description = document.getElementById('description');
+	    const charCount = document.getElementById('charCount');
+
+	    description.addEventListener('input', function () {
+	        const currentLength = description.value.length;
+	        charCount.textContent = `${currentLength}/200`;
+
+	        if (currentLength > 199) {
+	            description.value = description.value.substring(0, 199); // 200자 초과시 잘라내기
+	        }
+	    });
 </script>
 <!-- 부트스트랩 JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

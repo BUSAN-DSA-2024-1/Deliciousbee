@@ -392,7 +392,8 @@ body {
 	margin-left: 5px;
 	padding: 20px;
 	background-color: white;
-	max-height: 570px; /* 랭킹 박스 높이 조절 */
+	height: 600px;
+	max-height: 650px; /* 랭킹 박스 높이 조절 */
 	border-radius: 10px; /* 모서리 둥글게 */ 
 	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5); 
 	display: block;
@@ -418,6 +419,7 @@ body {
 }
 
 .ranking td {
+	font-size: 14px;
 	padding: 8px;
 	text-align: center;
 	border-bottom: 1px solid #ddd; /* 셀 아래쪽 경계선 추가 */
@@ -1060,7 +1062,7 @@ a {
 	margin-bottom: 400px;
 	background-color: white;
 	border-radius: 10px;
-	box-shadow: 0 20px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5); 
 	font-size: 20px;
 	font-style: italic;
 	height: 400px;
@@ -1571,6 +1573,7 @@ a {
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5); 
     background-color: white;
     height: 650px;
+    max-height:700px;
     margin-left: 25px;
     margin-right: 200px; /* 오른쪽 여백 200px 추가 */
 }

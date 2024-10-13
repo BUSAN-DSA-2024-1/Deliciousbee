@@ -6,7 +6,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="/css/index.css">
 <link rel="stylesheet" href="/css/myPage.css">
+<link rel="stylesheet" href="/css/nav.css">
 <link rel="stylesheet"
+
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 
@@ -336,7 +338,7 @@
 								<img
 									th:src="@{'/review/display?filename='+${review.attachedFile[0].saved_filename}}"
 									alt="Review Image"
-									style="width: 160px; height: 160px; object-fit: cover;">
+									style="width: 160px; height: 160px; object-fit: cover;" >
 								<button class="image-more-button"
 									th:onclick="|showImageModal(${review.id})|">
 									사진 더보기 <span th:text="|+${review.attachedFile.size() - 1}|"></span>
@@ -420,7 +422,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="no-review"
+			<div class="no-review" id="noReviewMessage" 
 				th:unless="${!myPage.beeMember.review.isEmpty()}">
 				<div class="no-review-info">
 					작성된 리뷰가 없습니다ㅠ
@@ -442,7 +444,7 @@
 					</thead>
 					<tbody>
 						<tr th:each="myPage, status : ${reviewCount}"
-							th:if="${status.index} < 4">
+							th:if="${status.index} < 4" >
 							<td class="center" th:if="${status.index} == 0">🥇</td>
 							<td class="center" th:if="${status.index} == 1">🥈</td>
 							<td class="center" th:if="${status.index} == 2">🥉</td>
@@ -991,6 +993,7 @@ function showTab(tab) {
     const reviewSort = document.getElementById('reviewSort');
     const reviewPaginationContainer = document.getElementById('reviewPaginationContainer');
     const restaurantPaginationContainer = document.getElementById('restaurantPaginationContainer');
+    const noReviewMessage = document.getElementById('noReviewMessage'); // Get the no review message element
 
     document.querySelectorAll('.myPageNav button').forEach(button => {
         button.classList.remove('active');
@@ -998,19 +1001,21 @@ function showTab(tab) {
     document.querySelector(`.myPageNav button[data-tab="${tab}"]`).classList.add('active');
 
     if (tab === 'myReview') {
-        reviewListContainer.style.display = 'block';
-        myRestaurantContent.style.display = 'none';
-        rankingElement.style.display = 'block';
-        reviewSort.style.display = 'block';
-        reviewPaginationContainer.style.display = 'block';
-        restaurantPaginationContainer.style.display = 'none';
+        if (reviewListContainer) reviewListContainer.style.display = 'block';
+        if (myRestaurantContent) myRestaurantContent.style.display = 'none';
+        if (rankingElement) rankingElement.style.display = 'block';
+        if (reviewSort) reviewSort.style.display = 'block';
+        if (reviewPaginationContainer) reviewPaginationContainer.style.display = 'block';
+        if (restaurantPaginationContainer) restaurantPaginationContainer.style.display = 'none';
+        if (noReviewMessage) noReviewMessage.style.display = 'block'; // Show the no review message if needed
     } else if (tab === 'myRestaurant') {
-        reviewListContainer.style.display = 'none';
-        myRestaurantContent.style.display = 'block';
-        rankingElement.style.display = 'none';
-        reviewSort.style.display = 'none';
-        reviewPaginationContainer.style.display = 'none';
-        restaurantPaginationContainer.style.display = 'block';
+        if (reviewListContainer) reviewListContainer.style.display = 'none';
+        if (myRestaurantContent) myRestaurantContent.style.display = 'block';
+        if (rankingElement) rankingElement.style.display = 'none';
+        if (reviewSort) reviewSort.style.display = 'none';
+        if (reviewPaginationContainer) reviewPaginationContainer.style.display = 'none';
+        if (restaurantPaginationContainer) restaurantPaginationContainer.style.display = 'block';
+        if (noReviewMessage) noReviewMessage.style.display = 'none'; // Hide the no review message
     }
 
     // URL 업데이트
