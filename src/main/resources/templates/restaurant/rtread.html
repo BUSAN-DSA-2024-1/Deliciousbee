@@ -764,6 +764,8 @@
       $('#reportModal').modal('show');
     }
 
+
+
     // 신고기능 구현
     function submitReport() {
       const reviewId = $('#reportModal').data('review-id');
@@ -986,15 +988,6 @@
 
     });
 
-
-
-
-
-
-
-
-
-
     // 정렬 및 페이징 기능
     function latestList(sortBy, page) {
       const restaurantId = /*[[${restaurant.id}]]*/ '';
@@ -1020,7 +1013,6 @@
             response.reviews.forEach(function (review) {
               let attachedFileHTML = '<div class="image-gallery">';
               let modalHTML = '';
-
               if (review.attachedFile && review.attachedFile.length > 0) {
                 review.attachedFile.forEach(function (file, index) {
                   attachedFileHTML += `
@@ -1061,7 +1053,7 @@
               } else {
                 attachedFileHTML += `
               <div class="image-container">
-                <img src="/image/nothing.png" alt="Review Image" class="cardking">
+                <img src="/image/notReviewPhoto.png" alt="Review Image" class="cardking">
               </div>
             `;
                 attachedFileHTML += '</div>';
@@ -1318,7 +1310,12 @@
 
       //
       const restaurantReportModal = document.getElementById("restaurantReportModal");
-      restaurantReportModal.style.display = "block";
+
+      if (isAuthenticated) {
+        restaurantReportModal.style.display = "block";
+      } else {
+        alert('로그인이 필요합니다'); // "You need to log in"
+      }
     }
 
     // 레스토랑 신고 모달 닫기
@@ -1421,7 +1418,7 @@
 
     });
 
-  //레스토랑 좋아요 기능(황)
+    //레스토랑 좋아요 기능(황)
     function likeRt(button) {
       if (!isAuthenticated) {
         alert('로그인이 필요합니다.'); // 로그인 필요 알림

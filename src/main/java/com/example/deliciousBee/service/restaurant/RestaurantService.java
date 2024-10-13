@@ -2,6 +2,7 @@ package com.example.deliciousBee.service.restaurant;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -220,12 +221,18 @@ public class RestaurantService {
 						userLongitude, radius, pageable);
 			}
 		}
+		String allrt = "전체";
+		if(Objects.equals(keyword, allrt)){
+			restaurants = restaurantRepository.findAll(pageable);
 
+		}
 		// 결과가 없을 경우 빈 페이지 반환
 		if (restaurants == null || restaurants.getContent().isEmpty()) {
 			log.info("검색 결과가 없습니다.");
 			return Page.empty(pageable);
 		}
+
+
 
 		return restaurants.map(restaurant -> {
 			RestaurantDto dto = new RestaurantDto(restaurant);
