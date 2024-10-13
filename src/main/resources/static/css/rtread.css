@@ -1,4 +1,47 @@
 /* 미슐랭 스타일 적용 */
+
+button.btn.google {
+	width: 120px;
+	border: 1px solid gray;
+	height: 46px;
+}
+button.btn.Line {
+	width: 120px;
+	border: 1px solid gray;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.flex-row > div > label {
+  font-size: 14px;
+  color: black;
+  font-weight: 400;
+}
+.divider {
+  display: flex;
+  align-items: center; /* 세로 가운데 정렬 */
+  text-align: center; 
+  margin: 0px; /* 위아래 여백 */
+}
+
+.divider span {
+  padding: 0 15px; /* or 좌우 여백 */
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex-grow: 1; /* 양쪽 선이 균등하게 늘어나도록 */
+  height: 1px;
+  background-color: black;
+}
+
         .like-buttons {
     background: none;
     border: none;
