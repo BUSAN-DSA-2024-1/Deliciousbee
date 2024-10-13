@@ -292,11 +292,16 @@ public class ReportController {
 		response.put("success", true);
 		response.put("message", "레스토랑 신고가 성공적으로 삭제되었습니다.");
 		//리포트 상대에게 메세지 전송
-		Restaurant restaurant = restaurantService.findRestaurant(reportId);
 
-		Long restaurantId = restaurant.getId();
+		Optional <RestaurantReport> report = restaurantReportService.getReport(reportId);
 
+
+
+
+
+		Long restaurantId = report.get().getRestaurant().getId();
 		restaurantService.deleteRestaurant(restaurantId);
+		System.out.println("확인용4");
 		restaurantReportService.deleteReport(reportId);
 
 

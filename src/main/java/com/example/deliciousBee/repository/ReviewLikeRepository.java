@@ -16,4 +16,6 @@ public interface ReviewLikeRepository extends JpaRepository<ReviewLike, Long>{
 	void deleteByBeeMemberAndReview(BeeMember beeMember, Review review);
 	
 	List<ReviewLike> findByBeeMember(BeeMember member);
+
+	List<ReviewLike> findByReview(Review review);
 }

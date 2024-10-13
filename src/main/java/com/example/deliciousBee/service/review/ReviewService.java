@@ -141,6 +141,8 @@ public class ReviewService {
 
 	@Transactional
 	public boolean deleteReview(Long reviewId) {
+
+
 		try {
 			if (reportRepository.existsById(reviewId)) {
 				reportRepository.deleteById(reviewId);
