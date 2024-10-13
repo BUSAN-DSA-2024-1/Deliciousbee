@@ -94,7 +94,6 @@ public class ReportService {
 	// 리뷰 삭제 시 연관된 모든 리포트도 함께 삭제
 	@Transactional
 	public void deleteReview(Long reviewId) throws Exception {
-		Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new Exception("리뷰를 찾을 수 없습니다."));
 
 		// 해당 리뷰와 연관된 모든 리포트 조회
 		List<Report> reports = reportRepository.findByReviewId(reviewId);
@@ -108,7 +107,7 @@ public class ReportService {
 				reportRepository.deleteById(reviewId);
 			}
 			fileRepository.deleteByReviewId(reviewId);
-			reviewRepository.deleteById(reviewId);
+
 
 		} catch (Exception e) {
 			log.error("Error deleting review with id: " + reviewId, e);

@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.Set;
 
 import com.example.deliciousBee.model.file.RestaurantAttachedFile;
+import com.example.deliciousBee.model.like.RtLike;
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.menu.Menu;
 
 import com.example.deliciousBee.model.report.RestaurantReport;
+import com.example.deliciousBee.model.review.Review;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -95,6 +97,10 @@ public class Restaurant {
 	@OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference // 순환 참조 방지
 	private List<RestaurantReport> reports;
+
+	@OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference
+	private List<RtLike> rtLikes;
 
 	@PrePersist
 	protected void onCreate() {
