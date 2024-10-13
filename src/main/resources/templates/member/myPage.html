@@ -29,7 +29,7 @@
 			src="/myPageImage/no-main-image.png" alt="기본 이미지"
 			class="default-main-image"> <img
 			th:unless="${myPage.mainImage == null}"
-			th:src="@{'/loginMember/display?filename=' + ${loginMember.Image.saved_filename}}"
+			 th:src="@{'/myPageDisplay?filename=' + ${myPage.mainImage.saved_filename}}"
 			alt="메인 이미지">
 		<!-- 프로필 이미지 -->
 		<div class="profile-image">
