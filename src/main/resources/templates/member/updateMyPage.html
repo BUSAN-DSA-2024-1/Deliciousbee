@@ -12,29 +12,37 @@
 <title>마이페이지 수정하기</title>
 </head>
 <body>
-<!--	&lt;!&ndash; 네비게이션 바 삽입 &ndash;&gt;-->
-<!--	<th:block th:replace="~{fragments/navbar-login :: navbar}"></th:block>-->
-<!--	&lt;!&ndash; 로그인 모달 삽입 &ndash;&gt;-->
-<!--	<th:block th:replace="~{fragments/navbar-login :: loginModal}"></th:block>-->
+	<!--	&lt;!&ndash; 네비게이션 바 삽입 &ndash;&gt;-->
+	<th:block th:replace="~{fragments/navbar-login :: navbar}"></th:block>
+	<!--	&lt;!&ndash; 로그인 모달 삽입 &ndash;&gt;-->
+	<th:block th:replace="~{fragments/navbar-login :: loginModal}"></th:block>
 
 
 
-	<form action="member/updateMyPage" onsubmit="return formCheck()" method="POST" enctype="multipart/form-data">
+	<form action="member/updateMyPage" onsubmit="return formCheck()"
+		method="POST" enctype="multipart/form-data">
 		<div class="main-image">
 			<!-- 메인 이미지 -->
-			<img th:if="${myPage.mainImage == null}"
-				 src="/myPageImage/no-main-image.png" alt="기본 이미지"
-				 class="default-main-image">
-			<img
-					th:unless="${myPage.mainImage == null}"
-					th:src="@{'/member/display?filename=' + ${myPage.mainImage.saved_filename}}"
-					alt="메인 이미지">
+			<img th:if="${myPage.mainImage == null}" 
+     src="/myPageImage/no-main-image.png" 
+     alt="기본 이미지" 
+     class="default-main-image" 
+     id="imagePreview"> 
+
+<img th:unless="${myPage.mainImage == null}" 
+     th:src="@{'/member/display?filename=' + ${myPage.mainImage.saved_filename}}" 
+     class="main-image-img" 
+     alt="메인 이미지" 
+     id="imagePreview"> 
+				
 
 			<div class="image-upload-container">
 				<label for="mainImageInput" class="image-upload-button"> <img
 					src="/myPageImage/image-upload-icon.png" alt="업로드 아이콘">
-				</label><input type="file" id="mainImageInput" name="file" accept="image/*" style="display: none;">
-
+				</label> <input type="file" id="mainImageInput" name="file" accept="image/*"
+					style="display: none;" onchange="previewImage(event)">
+				   <img src="/myPageImage/delete-mainImage.png" alt="삭제 아이콘" class="image-delete-button" onclick="confirmDeleteMainImage()"> <input type="hidden" name="isFileRemoved" id="isFileRemoved" value="false">
+				
 			</div>
 
 			<!-- 프로필 이미지 -->
@@ -101,121 +109,120 @@
 
 		<div class="myPageMain">
 			<div id="reviewListContainer" th:if="${!reviews.isEmpty()}"
-			class="myPageReview">
-			<div th:each="review, status : ${reviews}" class="review-box"
-				th:id="'reviewBox' + ${status.index}">
-				<div class="restaurant_name_head">
-					<span><img src="/image/bee.jpg" alt="벌 이미지"
-						style="width: 35px; height: 35px; object-fit: cover;"></span> <a
-						th:href="@{/restaurant/rtread(id=${review.restaurant.id})}"
-						title="식당 정보로 이동"> <span th:text="${review.restaurant.name}"
-						class="restaurant_name" style="text-decoration: none;"></span>
-					</a>
-					<div class="rating-stars">
-						<span th:each="i : ${#numbers.sequence(1, 5)}"> <img
-							th:if="${review.rating >= i}" src="/myPageImage/full_star.png"
-							alt="꽉 찬 별"> <img th:unless="${review.rating >= i}"
-							src="/myPageImage/empty_star.png" alt="빈 별">
+				class="myPageReview">
+				<div th:each="review, status : ${reviews}" class="review-box"
+					th:id="'reviewBox' + ${status.index}">
+					<div class="restaurant_name_head">
+						<span><img src="/image/bee.jpg" alt="벌 이미지"
+							style="width: 35px; height: 35px; object-fit: cover;"></span> <a
+							th:href="@{/restaurant/rtread(id=${review.restaurant.id})}"
+							title="식당 정보로 이동"> <span th:text="${review.restaurant.name}"
+							class="restaurant_name" style="text-decoration: none;"></span>
+						</a>
+						<div class="rating-stars">
+							<span th:each="i : ${#numbers.sequence(1, 5)}"> <img
+								th:if="${review.rating >= i}" src="/myPageImage/full_star.png"
+								alt="꽉 찬 별"> <img th:unless="${review.rating >= i}"
+								src="/myPageImage/empty_star.png" alt="빈 별">
+							</span>
+						</div>
+						<span class="review-date"
+							th:text="'방문 날짜 :   ' + ${review.visitDate}"></span> <span
+							class="go-review"> <a
+							th:href="@{/restaurant/rtread/{restaurantId}(restaurantId=${review.restaurant.id}, reviewId=${review.id})}">리뷰보러
+								가기</a>
 						</span>
 					</div>
-					<span class="review-date"
-						th:text="'방문 날짜 :   ' + ${review.visitDate}"></span> <span
-						class="go-review"> <a
-						th:href="@{/restaurant/rtread/{restaurantId}(restaurantId=${review.restaurant.id}, reviewId=${review.id})}">리뷰보러
-							가기</a>
-					</span>
-				</div>
-				<div class="img-and-review">
-					<div class="image-box"
-						th:if="${review.attachedFile != null and !review.attachedFile.isEmpty()}">
-						<div th:if="${review.attachedFile.size() > 1}">
-							<img
-								th:src="@{'/review/display?filename='+${review.attachedFile[0].saved_filename}}"
-								alt="Review Image"
-								style="width: 160px; height: 160px; object-fit: cover;">
-							<div class="image-more-button"
-								th:onclick="|showImageModal(${review.id})|">
-								사진 더보기 <span th:text="|+${review.attachedFile.size() - 1}|"></span>
-							</div>
-							<div class="image-modal" th:id="'imageModal' + ${review.id}">
-								<div class="image-modal-content">
-									<span class="close-modal"
-										th:onclick="|closeImageModal(${review.id})|">×</span>
-									<div th:each="file : ${review.attachedFile}">
-										<img
-											th:src="@{'/review/display?filename='+${file.saved_filename}}"
-											alt="Review Image"
-											th:onclick="|showLargeImageModal('@{'/review/display?filename='+${file.saved_filename}}', ${review.id})|">
+					<div class="img-and-review">
+						<div class="image-box"
+							th:if="${review.attachedFile != null and !review.attachedFile.isEmpty()}">
+							<div th:if="${review.attachedFile.size() > 1}">
+								<img
+									th:src="@{'/review/display?filename='+${review.attachedFile[0].saved_filename}}"
+									alt="Review Image"
+									style="width: 160px; height: 160px; object-fit: cover;">
+								<div class="image-more-button"
+									th:onclick="|showImageModal(${review.id})|">
+									사진 더보기 <span th:text="|+${review.attachedFile.size() - 1}|"></span>
+								</div>
+								<div class="image-modal" th:id="'imageModal' + ${review.id}">
+									<div class="image-modal-content">
+										<span class="close-modal"
+											th:onclick="|closeImageModal(${review.id})|">×</span>
+										<div th:each="file : ${review.attachedFile}">
+											<img
+												th:src="@{'/review/display?filename='+${file.saved_filename}}"
+												alt="Review Image"
+												th:onclick="|showLargeImageModal('@{'/review/display?filename='+${file.saved_filename}}', ${review.id})|">
+										</div>
+									</div>
+								</div>
+
+								<!-- largeImageModal을 imageModal과 같은 레벨로 이동 -->
+								<div id="largeImageModal" class="modal">
+									<div class="large-image-modal-content">
+										<span class="close-modal" onclick="closeLargeImageModal()">×</span>
+										<img id="largeImage" src="" alt="Large Image">
 									</div>
 								</div>
 							</div>
-
-							<!-- largeImageModal을 imageModal과 같은 레벨로 이동 -->
-							<div id="largeImageModal" class="modal">
-								<div class="large-image-modal-content">
-									<span class="close-modal" onclick="closeLargeImageModal()">×</span>
-									<img id="largeImage" src="" alt="Large Image">
-								</div>
+							<div th:unless="${review.attachedFile.size() > 1}">
+								<img
+									th:src="@{'/review/display?filename='+${review.attachedFile[0].saved_filename}}"
+									alt="Review Image"
+									style="width: 160px; height: 160px; object-fit: cover;"
+									th:onclick="|showLargeImageModal('@{'/review/display?filename='+${review.attachedFile[0].saved_filename}}')|">
 							</div>
 						</div>
-						<div th:unless="${review.attachedFile.size() > 1}">
-							<img
-								th:src="@{'/review/display?filename='+${review.attachedFile[0].saved_filename}}"
-								alt="Review Image"
-								style="width: 160px; height: 160px; object-fit: cover;"
-								th:onclick="|showLargeImageModal('@{'/review/display?filename='+${review.attachedFile[0].saved_filename}}')|">
+						<div class="image-box"
+							th:unless="${review.attachedFile != null and !review.attachedFile.isEmpty()}">
+							<img src="/myPageImage/no-review-img.jpg" alt="No Review Image"
+								style="width: 160px; height: 160px; object-fit: cover;">
 						</div>
-					</div>
-					<div class="image-box"
-						th:unless="${review.attachedFile != null and !review.attachedFile.isEmpty()}">
-						<img src="/myPageImage/no-review-img.jpg" alt="No Review Image"
-							style="width: 160px; height: 160px; object-fit: cover;">
-					</div>
-					<div class="review-main">
-						<div class="review-rating">
-							<p>
-								친절 포인트: <span class="gauge-container"> <span
-									class="gauge"
-									th:style="'width:' + ${review.kindRating * 33.33} + '%; background-color:' + (${review.kindRating == 1 ? '#ff4c4c' : (review.kindRating == 2 ? '#ffc107' : '#4caf50')})"></span>
-								</span> 맛 포인트: <span class="gauge-container"> <span
-									class="gauge"
-									th:style="'width:' + ${review.tasteRating * 33.33} + '%; background-color:' + (${review.tasteRating == 1 ? '#ff4c4c' : (review.tasteRating == 2 ? '#ffc107' : '#4caf50')})"></span>
-								</span> 가격 포인트: <span class="gauge-container"> <span
-									class="gauge"
-									th:style="'width:' + ${review.priceRating * 33.33} + '%; background-color:' + (${review.priceRating == 1 ? '#ff4c4c' : (review.priceRating == 2 ? '#ffc107' : '#4caf50')})"></span>
-								</span>
-							</p>
-						</div>
-						<div class="review-comment">
-							<div class="recommendItems">
-								<span>추천 메뉴: </span> <span
-									th:each="reviewMenu, iterStat : ${review.reviewMenuList}"
-									th:text="${reviewMenu?.menu?.name 
+						<div class="review-main">
+							<div class="review-rating">
+								<p>
+									친절 포인트: <span class="gauge-container"> <span
+										class="gauge"
+										th:style="'width:' + ${review.kindRating * 33.33} + '%; background-color:' + (${review.kindRating == 1 ? '#ff4c4c' : (review.kindRating == 2 ? '#ffc107' : '#4caf50')})"></span>
+									</span> 맛 포인트: <span class="gauge-container"> <span
+										class="gauge"
+										th:style="'width:' + ${review.tasteRating * 33.33} + '%; background-color:' + (${review.tasteRating == 1 ? '#ff4c4c' : (review.tasteRating == 2 ? '#ffc107' : '#4caf50')})"></span>
+									</span> 가격 포인트: <span class="gauge-container"> <span
+										class="gauge"
+										th:style="'width:' + ${review.priceRating * 33.33} + '%; background-color:' + (${review.priceRating == 1 ? '#ff4c4c' : (review.priceRating == 2 ? '#ffc107' : '#4caf50')})"></span>
+									</span>
+								</p>
+							</div>
+							<div class="review-comment">
+								<div class="recommendItems">
+									<span>추천 메뉴: </span> <span
+										th:each="reviewMenu, iterStat : ${review.reviewMenuList}"
+										th:text="${reviewMenu?.menu?.name 
                 ?: reviewMenu?.customMenuName 
                 ?: ''} + ${!iterStat.last ? ', ' : ''}"></span>
-							</div>
-							<div class="review_content"
-								th:id="'reviewContent' + ${review.id}"
-								th:data-short-content="${review.reviewContents.length() > 100 ? review.reviewContents.substring(0, 100) : review.reviewContents}"
-								th:data-full-content="${review.reviewContents}">
+								</div>
+								<div class="review_content"
+									th:id="'reviewContent' + ${review.id}"
+									th:data-short-content="${review.reviewContents.length() > 100 ? review.reviewContents.substring(0, 100) : review.reviewContents}"
+									th:data-full-content="${review.reviewContents}">
 
-								<span th:id="'shortContent' + ${review.id}"
-									th:text="${review.reviewContents.length() > 100 ? review.reviewContents.substring(0, 100) + '...' : review.reviewContents}">
-								</span> <span th:id="'fullContent' + ${review.id}"
-									th:text="${review.reviewContents}" style="display: none;"></span>
+									<span th:id="'shortContent' + ${review.id}"
+										th:text="${review.reviewContents.length() > 100 ? review.reviewContents.substring(0, 100) + '...' : review.reviewContents}">
+									</span> <span th:id="'fullContent' + ${review.id}"
+										th:text="${review.reviewContents}" style="display: none;"></span>
 
-								<a th:if="${review.reviewContents.length() > 100}"
-									th:id="'moreButton' + ${review.id}" class="more-button"
-									th:attr="onclick=|toggleReview(this, '${review.id}')|">더보기</a>
+									<a th:if="${review.reviewContents.length() > 100}"
+										th:id="'moreButton' + ${review.id}" class="more-button"
+										th:attr="onclick=|toggleReview(this, '${review.id}')|">더보기</a>
+								</div>
 							</div>
-						</div>
-						<div class="review-create-date"
-								th:text="'리뷰 작성 날짜 : '+ ${review.createDate}">
+							<div class="review-create-date"
+								th:text="'리뷰 작성 날짜 : '+ ${review.createDate}"></div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
 			<div class="no-review"
 				th:unless="${!myPage.beeMember.review.isEmpty()}">
 				<div class="no-review-info">
@@ -253,11 +260,11 @@
 						</tr>
 					</tbody>
 				</table>
-				
+
 			</div>
 		</div>
-		
-		
+
+
 	</form>
 	<!-- 위로가는 화살표 버튼 -->
 	<a onclick="scrollToTop()" id="scrollToTopButton"> <svg
@@ -276,140 +283,198 @@
 	</div>
 
 
-	 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script>
 		//팔로워**************
-		async function toggleFollow(button) {
-    const followingId = button.dataset.followingId;
-    const isFollowing = button.textContent === '언팔로우';
-    const url = isFollowing ? `/unfollow/${followingId}` : `/follow/${followingId}`;
+		async
+		function toggleFollow(button) {
+			const followingId = button.dataset.followingId;
+			const isFollowing = button.textContent === '언팔로우';
+			const url = isFollowing ? `/unfollow/${followingId}`
+					: `/follow/${followingId}`;
 
-    try {
-        const response = await fetch(url, { method: 'POST' });
-        const success = await response.json(); 
+			try {
+				const response = await
+				fetch(url, {
+					method : 'POST'
+				});
+				const success = await
+				response.json();
 
-        if (success) {
-            // 버튼 텍스트 및 클래스 변경
-            button.textContent = isFollowing ? '팔로우' : '언팔로우';
-            button.classList.toggle('follow-button', !isFollowing); // 언팔로우 시 btn-secondary 추가
-            button.classList.toggle('nofollow', isFollowing); // 팔로우 시 btn-primary 추가
-        } else {
-            alert('팔로우/언팔로우 요청에 실패했습니다.');
-        }
-   			 } catch (error) {
-        	console.error('팔로우/언팔로우 요청 중 오류 발생:', error);
-        	alert('팔로우/언팔로우 요청 중 오류가 발생했습니다.');
-   		  }
-		}		
+				if (success) {
+					// 버튼 텍스트 및 클래스 변경
+					button.textContent = isFollowing ? '팔로우' : '언팔로우';
+					button.classList.toggle('follow-button', !isFollowing); // 언팔로우 시 btn-secondary 추가
+					button.classList.toggle('nofollow', isFollowing); // 팔로우 시 btn-primary 추가
+				} else {
+					alert('팔로우/언팔로우 요청에 실패했습니다.');
+				}
+			} catch (error) {
+				console.error('팔로우/언팔로우 요청 중 오류 발생:', error);
+				alert('팔로우/언팔로우 요청 중 오류가 발생했습니다.');
+			}
+		}
+		
+		//소개글자수
+		function updateCharacterCount() {
+    const introduceInput = document.getElementById('introduceInput');
+    const charCount = document.getElementById('charCount');
+    const currentLength = introduceInput.value.length;
+    charCount.textContent = `${currentLength}/100 자`;
+
+    // 선택적: 100자 제한 강제
+    if (currentLength > 100) {
+        introduceInput.value = introduceInput.value.slice(0, 100);
+        charCount.textContent = '100/100 자';
+    }
+}
+
+// 페이지 로드 시 초기 글자수 설정
+document.addEventListener('DOMContentLoaded', function() {
+    updateCharacterCount();
+    
+    // 입력 필드에 이벤트 리스너 추가
+    const introduceInput = document.getElementById('introduceInput');
+    introduceInput.addEventListener('input', updateCharacterCount);
+});
 		//로그인안한사람 팔로워하려할때**************
 		function showLoginAlert() {
-	        alert("로그인이 필요한 서비스입니다.");
-	        return true; // 로그인 페이지로 이동
-	    }
-		
-
+			alert("로그인이 필요한 서비스입니다.");
+			return true; // 로그인 페이지로 이동
+		}
 
 		// 오늘의 방문자 목록 모달 열기 함수
 		function showVisitorsModal() {
-		    document.getElementById('visitorsModal').style.display = 'block';
+			document.getElementById('visitorsModal').style.display = 'block';
 
-		    // 모달 외부 클릭 시 닫기
-		    window.onclick = function (event) {
-		        if (event.target == document.getElementById('visitorsModal')) {
-		            closeVisitorsModal();
-		        }
-		    };
+			// 모달 외부 클릭 시 닫기
+			window.onclick = function(event) {
+				if (event.target == document.getElementById('visitorsModal')) {
+					closeVisitorsModal();
+				}
+			};
 		}
 
 		// 오늘의 방문자 목록 모달 닫기 함수
 		function closeVisitorsModal() {
-		    document.getElementById('visitorsModal').style.display = 'none';
-		    window.onclick = null; // 닫힐 때 이벤트 리스너 제거
+			document.getElementById('visitorsModal').style.display = 'none';
+			window.onclick = null; // 닫힐 때 이벤트 리스너 제거
 		}
-
-
 
 		//더보기 버튼
 		function toggleReview(button, reviewId) {
-		  var shortContent = document.getElementById('shortContent' + reviewId);
-		  var fullContent = document.getElementById('fullContent' + reviewId);
+			var shortContent = document.getElementById('shortContent'
+					+ reviewId);
+			var fullContent = document.getElementById('fullContent' + reviewId);
 
-		  if (button.textContent === '더보기') {
-		    shortContent.style.display = 'none'; // 짧은 내용 숨김
-		    fullContent.style.display = 'inline'; // 전체 내용 표시
-		    button.textContent = '접기'; // 버튼 텍스트 변경
-		  } else {
-		    shortContent.style.display = 'inline'; // 짧은 내용 표시
-		    fullContent.style.display = 'none'; // 전체 내용 숨김
-		    button.textContent = '더보기'; // 버튼 텍스트 변경
-		  }
+			if (button.textContent === '더보기') {
+				shortContent.style.display = 'none'; // 짧은 내용 숨김
+				fullContent.style.display = 'inline'; // 전체 내용 표시
+				button.textContent = '접기'; // 버튼 텍스트 변경
+			} else {
+				shortContent.style.display = 'inline'; // 짧은 내용 표시
+				fullContent.style.display = 'none'; // 전체 내용 숨김
+				button.textContent = '더보기'; // 버튼 텍스트 변경
+			}
 		}
 
-// 위로가는 화살표 버튼 클릭 이벤트
-function scrollToTop() {
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth' // 부드러운 스크롤 효과
-    });
-}
+		// 위로가는 화살표 버튼 클릭 이벤트
+		function scrollToTop() {
+			window.scrollTo({
+				top : 0,
+				behavior : 'smooth' // 부드러운 스크롤 효과
+			});
+		}
 
-//이미지 모달 닫기 함수 (showImageModal 외부로 이동)
-function closeImageModal(reviewId) {
-  document.getElementById('imageModal' + reviewId).style.display = 'none';
-  window.removeEventListener('click', handleImageModalOutsideClick);  // 리스너 제거
-}
+		//이미지 모달 닫기 함수 (showImageModal 외부로 이동)
+		function closeImageModal(reviewId) {
+			document.getElementById('imageModal' + reviewId).style.display = 'none';
+			window.removeEventListener('click', handleImageModalOutsideClick); // 리스너 제거
+		}
 
-// 이미지 모달 열기 함수
-function showImageModal(reviewId) {
-  const modal = document.getElementById('imageModal' + reviewId);
-  modal.style.display = 'block';
+		// 이미지 모달 열기 함수
+		function showImageModal(reviewId) {
+			const modal = document.getElementById('imageModal' + reviewId);
+			modal.style.display = 'block';
 
-  // 이미지 모달 외부 클릭 시 닫기 (클로저 함수 사용)
-  function handleImageModalOutsideClick(event) {
-    if (event.target == modal) {
-      closeImageModal(reviewId); // 이제 외부에서 정의된 closeImageModal 함수를 호출합니다.
-    }
-  }
-  window.addEventListener('click', handleImageModalOutsideClick);
-}
+			// 이미지 모달 외부 클릭 시 닫기 (클로저 함수 사용)
+			function handleImageModalOutsideClick(event) {
+				if (event.target == modal) {
+					closeImageModal(reviewId); // 이제 외부에서 정의된 closeImageModal 함수를 호출합니다.
+				}
+			}
+			window.addEventListener('click', handleImageModalOutsideClick);
+		}
 
-//큰 이미지 모달 닫기 함수 (showLargeImageModal 외부로 이동)
-function closeLargeImageModal() {
-  document.getElementById('largeImageModal').style.display = 'none';
-  window.removeEventListener('click', handleLargeImageModalOutsideClick); // 리스너 제거
-}
+		//큰 이미지 모달 닫기 함수 (showLargeImageModal 외부로 이동)
+		function closeLargeImageModal() {
+			document.getElementById('largeImageModal').style.display = 'none';
+			window.removeEventListener('click',
+					handleLargeImageModalOutsideClick); // 리스너 제거
+		}
 
-// 큰 이미지 모달 열기 함수
-function showLargeImageModal(imageUrl) {
-  const modal = document.getElementById('largeImageModal');
-  document.getElementById('largeImage').src = imageUrl;
-  modal.style.display = 'block';
+		// 큰 이미지 모달 열기 함수
+		function showLargeImageModal(imageUrl) {
+			const modal = document.getElementById('largeImageModal');
+			document.getElementById('largeImage').src = imageUrl;
+			modal.style.display = 'block';
 
-  // 큰 이미지 모달 외부 클릭 시 닫기 (클로저 함수 사용)
-  function handleLargeImageModalOutsideClick(event) {
-    if (event.target == modal) {
-      closeLargeImageModal(); // 이제 외부에서 정의된 closeLargeImageModal 함수를 호출합니다.
-    }
-  }
-  window.addEventListener('click', handleLargeImageModalOutsideClick);
-}
- 
-//이미지 미리보기
- const mainImageInput = document.getElementById('mainImageInput');
-           const mainImagePreview = document.getElementById('mainImagePreview');
+			// 큰 이미지 모달 외부 클릭 시 닫기 (클로저 함수 사용)
+			function handleLargeImageModalOutsideClick(event) {
+				if (event.target == modal) {
+					closeLargeImageModal(); // 이제 외부에서 정의된 closeLargeImageModal 함수를 호출합니다.
+				}
+			}
+			window.addEventListener('click', handleLargeImageModalOutsideClick);
+		}
 
-           mainImageInput.addEventListener('change', function(e) {
-               if (e.target.files && e.target.files[0]) {
-                   const reader = new FileReader();
-                   reader.onload = function(e) {
-                       mainImagePreview.src = e.target.result;
-                   }
-                   reader.readAsDataURL(e.target.files[0]);
-               }
-           });
-</script>
-<script th:src="@{/js/layout.js}"></script> 
+		// 이미지 미리보기 함수 수정
+		function previewImage(event) {
+		    const file = event.target.files[0];
+		    const preview = document.getElementById('imagePreview');
+		    const isFileRemovedInput = document.getElementById('isFileRemoved');
+
+		    if (file) {
+		        const reader = new FileReader();
+		        reader.onload = function(e) {
+		            preview.src = e.target.result;
+		            isFileRemovedInput.value = "false"; // 새 이미지가 선택되면 isFileRemoved를 false로 설정
+		        }
+		        reader.readAsDataURL(file);
+		    } else {
+		        preview.src = "/myPageImage/no-main-image.png";
+		    }
+		}
+
+		// 이미지 삭제 확인 함수 수정
+		function confirmDeleteMainImage() {
+		    if (confirm("메인 이미지를 삭제하시겠습니까?")) {
+		        document.getElementById('isFileRemoved').value = "true";
+		        const mainImagePreview = document.getElementById('imagePreview');
+		        const mainImageInput = document.getElementById('mainImageInput');
+		        if (mainImagePreview) {
+		            mainImagePreview.src = '/myPageImage/no-main-image.png';
+		        }
+		        if (mainImageInput) {
+		            mainImageInput.value = ''; // 파일 입력 필드 초기화
+		        }
+		    }
+		}
+
+		// 폼 제출 전 확인 함수
+		function formCheck() {
+		    const isFileRemoved = document.getElementById('isFileRemoved').value;
+		    const mainImageInput = document.getElementById('mainImageInput');
+
+		    if (isFileRemoved === "true" && mainImageInput.files.length === 0) {
+		        return confirm("메인 이미지가 삭제되었습니다. 저장하시겠습니까?");
+		    }
+		    return confirm("변경사항을 저장하시겠습니까?");
+		}
+	</script>
+	<script th:src="@{/js/layout.js}"></script>
 
 </body>
 

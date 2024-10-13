@@ -130,8 +130,8 @@
           <button id="sort-by-rating" class="btn btn-secondary btn-sm ml-2">Sort by Rating</button>
           <button id="sort-by-latest" class="btn btn-secondary btn-sm ml-2">Sort by Date</button>
           <button id="sort-by-likes" class="btn btn-secondary btn-sm ml-2">Sort by Likes</button>
-          <button type="button" class="btn btn-dark ml-2" data-toggle="modal" data-target="#reviewModal">Write
-            Review</button>
+          <button type="button" class="btn btn-dark ml-2" onclick="writeReview()">Write Review</button>
+
         </div>
       </div>
 
@@ -614,6 +614,13 @@
   <!-- JavaScript -->
   <script th:inline="javascript">
 
+    function writeReview() {
+      if (isAuthenticated) {
+        $('#reviewModal').modal('show');
+      } else {
+        alert('로그인이 필요합니다'); // "You need to log in"
+      }
+    }
 
 
     function initMap() {
@@ -703,10 +710,12 @@
     }
 
     function likeReview(button) {
+      if (!isAuthenticated) {
+        alert('로그인이 필요합니다.'); // 로그인 필요 알림
+        return;
+      }
       const reviewId = $(button).data('review-id');
       const isLiked = $(button).hasClass('liked'); // 좋아요 상태 확인
-      console.log(reviewId);
-      console.log(isLiked);
 
       $.ajax({
         url: isLiked ? "/review/" + reviewId + "/unlike" : "/review/" + reviewId + "/like",
@@ -727,6 +736,7 @@
         }
       });
     }
+
 
     function deleteReview(button) {
       const card = button.closest('.card');
@@ -1413,43 +1423,41 @@
 
   //레스토랑 좋아요 기능(황)
     function likeRt(button) {
-    if (!isLoggedIn) {
-        alert('로그인이 필요한 작업입니다.');
+      if (!isAuthenticated) {
+        alert('로그인이 필요합니다.'); // 로그인 필요 알림
         return;
-    }
-    const restaurantId = $(button).data('restaurant-id');
-    const isLiked = $(button).hasClass('liked');
+      }
+      const restaurantId = $(button).data('restaurant-id');
+      const isLiked = $(button).hasClass('liked'); // 좋아요 상태 확인
 
-    $.ajax({
+      $.ajax({
         url: isLiked ? "/restaurant/" + restaurantId + "/unlike" : "/restaurant/" + restaurantId + "/like",
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify({ "restaurantId": restaurantId }),
         success: function (data) {
-            if (data.success) {
-                const likeCountElement = button.querySelector('.like-count');
-                likeCountElement.textContent = data.likeCount;
-                $(button).toggleClass('liked');
-            } else {
-                alert('좋아요 처리에 실패했습니다.');
-            }
+          if (data.success) {
+            const likeCountElement = button.querySelector('.like-count');
+            likeCountElement.textContent = data.likeCount;
+            $(button).toggleClass('liked');
+          } else {
+            alert('좋아요 처리에 실패했습니다.');
+          }
         },
         error: function (xhr) {
-            if (xhr.status === 401) {
-                alert('로그인이 필요한 작업입니다.');
-            } else {
-                console.error('AJAX 요청 실패:', xhr);
-            }
+          console.error('AJAX 요청 실패:', xhr);
         }
-    });
-}
-
-    var isLoggedIn = /*[[${isLoggedIn}]]*/ false;
+      });
+    }
 
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOdV4e4cHX_sUnLTJAw6oi_zuyLOCAlU0&callback=initMap"
     async defer></script>
 <script th:src="@{/js/layout.js}"></script>
+
+  <script th:inline="javascript">
+    var isAuthenticated = /*[[${auth.isAuthenticated}]]*/ false;
+  </script>
 </body>
 
 </html>

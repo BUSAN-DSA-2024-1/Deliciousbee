@@ -36,7 +36,7 @@ body {
 	margin-left: 200px;
 	margin-right: 200px;
 	height: 350px;
-	position: relative; /* main-info를 기준으로 자식 요소 positioning */
+	position: relative; 
 }
 
 
@@ -120,6 +120,29 @@ body {
 .image-upload-button:hover::after {
   opacity: 1; /* 툴팁 표시 */
 }
+
+
+.image-delete-button {
+    display: block;
+    width: 34px; /* 이미지 크기 조절 */
+    height: 34px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer; /* 클릭 가능하도록 설정 */
+    padding: 0;
+    position: relative;
+    top: 55px; /* 업로드 버튼 아래에 위치 */
+    right: -10px;
+    z-index: 1;
+    margin-right: 10px;
+     transition: transform 0.2s;
+}
+
+.image-delete-button:hover {
+    transform: scale(1.2); /* 마우스를 올렸을 때 20% 확대 */
+}
+
+
 
 
 /* 마이페이지 소개 부분 */
