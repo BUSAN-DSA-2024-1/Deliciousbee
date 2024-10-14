@@ -184,14 +184,7 @@
                 }
             });
         }
-        function validateSearch2() {
-            var keyword = document.getElementsByName("keyword")[0].value;
-            if (keyword.trim() === "") {
-                alert("검색어를 입력해주세요.");
-                return false; // 폼 제출 막기
-            }
-            return true; // 폼 제출 허용
-        }
+
     </script>
     <script th:src="@{/js/layout.js}"></script>
 
