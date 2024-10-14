@@ -24,7 +24,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 1000;
-        }
+            align-items: center;        }
 
         /* 공통 타이틀 스타일 */
         .modal-title {
@@ -101,6 +101,7 @@
         }
 
         .modal-input {
+            text-align: center;
             border-radius: 20px;
             border: 1px solid #c0c0c0;
             outline: 0 !important;
@@ -152,6 +153,8 @@
         }
 
         .inputbox {
+
+            text-align: center;
             border-radius: 20px;
             border: 1px solid #c0c0c0;
             outline: 0 !important;
@@ -197,6 +200,28 @@
             opacity: 0.8;
             transition: opacity 0.3s;
         }
+        .modal-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .modal-input {
+            width: 100%; /* 입력 필드 너비를 100%로 설정 */
+            display: block;
+            margin: 0 auto; /* 수평 중앙 정렬 */
+            text-align: center; /* 텍스트 중앙 정렬 */
+        }
+
+        .inputbox {
+            width: 100%; /* 텍스트박스 너비를 100%로 설정 */
+            display: block;
+            margin: 0 auto; /* 수평 중앙 정렬 */
+            text-align: center; /* 텍스트 중앙 정렬 */
+        }
+
 
         .more-button:hover {
             opacity: 1;
@@ -392,10 +417,12 @@
     <div class="review-modal-inner-form">
         <p class="modal-title">리뷰 관리</p>
         <form>
+            <div class = "modal-center">
             <p class="modal-title">이름</p>
             <input type="text" class="modal-input" placeholder="이름" readonly>
             <p class="modal-title">리뷰 내용</p>
             <textarea class="inputbox" placeholder="리뷰내용" readonly></textarea>
+            </div>
             <div class="modal-image-container">
                 <!-- 이미지가 여기에 로드됩니다. -->
             </div>
@@ -422,7 +449,7 @@
         </div>
         <div class="modal-actions">
             <button class="form-btn approve-btn" onclick="updateReportStatus(currentRestaurantReportId)">승인</button>
-            <button class="form-btn delete-btn" onclick="deleteRestaurantReport(currentRestaurantReportId)">거부</button>
+            <button class="form-btn delete-btn" onclick="deleteRestaurantReport(currentRestaurantReportId)">삭제</button>
             <button class="form-btn close-btn" onclick="closeRestaurantReportModal()">닫기</button>
         </div>
     </div>
