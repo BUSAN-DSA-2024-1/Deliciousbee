@@ -158,6 +158,9 @@ public class ReviewService {
 				reportRepository.deleteById(reviewId);
 			}
 			fileRepository.deleteByReviewId(reviewId);
+
+			reviewRepository.deleteById(reviewId);
+
 			return true;
 		} catch (Exception e) {
 			log.error("Error deleting review with id: " + reviewId, e);
