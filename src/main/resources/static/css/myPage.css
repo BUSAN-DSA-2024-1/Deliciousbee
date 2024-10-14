@@ -561,8 +561,8 @@ body {
 }
 
 .image-modal-content img {
-	width: 250px; /* 이미지 너비 고정 */
-	height: 250px; /* 이미지 높이 고정 */
+	width: 400px; /* 이미지 너비 고정 */
+	height: 400px; /* 이미지 높이 고정 */
 	margin: 10px;
 	object-fit: cover; /* 이미지 비율 유지하며 채우기 */
 	border-radius: 5px; /* 이미지 테두리 둥글게 */

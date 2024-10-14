@@ -333,45 +333,57 @@
 					</div>
 					<div class="img-and-review">
 						<div class="image-box"
-							th:if="${review.attachedFile != null and !review.attachedFile.isEmpty()}">
-							<div th:if="${review.attachedFile.size() > 1}">
-								<img
-									th:src="@{'/review/display?filename='+${review.attachedFile[0].saved_filename}}"
-									alt="Review Image"
-									style="width: 160px; height: 160px; object-fit: cover;" >
-								<button class="image-more-button"
-									th:onclick="|showImageModal(${review.id})|">
-									사진 더보기 <span th:text="|+${review.attachedFile.size() - 1}|"></span>
-								</button>
-								<div class="image-modal" th:id="'imageModal' + ${review.id}">
-									<div class="image-modal-content">
-										<span class="close-modal"
-											th:onclick="|closeImageModal(${review.id})|">×</span>
-										<div th:each="file : ${review.attachedFile}">
-											<img
-												th:src="@{'/review/display?filename='+${file.saved_filename}}"
-												alt="Review Image"
-												th:onclick="|showLargeImageModal('@{'/review/display?filename='+${file.saved_filename}}', ${review.id})|">
-										</div>
-									</div>
-								</div>
+     th:if="${review.attachedFile != null and !review.attachedFile.isEmpty()}">
 
-								<!-- largeImageModal을 imageModal과 같은 레벨로 이동 -->
-								<div id="largeImageModal" class="modal">
-									<div class="large-image-modal-content">
-										<span class="close-modal" onclick="closeLargeImageModal()">×</span>
-										<img id="largeImage" src="" alt="Large Image">
-									</div>
-								</div>
-							</div>
-							<div th:unless="${review.attachedFile.size() > 1}">
-								<img
-									th:src="@{'/review/display?filename='+${review.attachedFile[0].saved_filename}}"
-									alt="Review Image"
-									style="width: 160px; height: 160px; object-fit: cover;"
-									th:onclick="|showLargeImageModal('@{'/review/display?filename='+${review.attachedFile[0].saved_filename}}')|">
-							</div>
-						</div>
+    <!-- 이미지가 여러 장일 경우 -->
+    <div th:if="${review.attachedFile.size() > 1}">
+        <img th:src="@{'/review/display?filename='+${review.attachedFile[0].saved_filename}}"
+             alt="Review Image"
+             style="width: 160px; height: 160px; object-fit: cover;">
+        <button class="image-more-button"
+                th:onclick="|showImageModal(${review.id})|">
+            사진 더보기 <span th:text="|+${review.attachedFile.size() - 1}|"></span>
+        </button>
+
+        <!-- 여러 장일 경우 이미지 모달 -->
+        <div class="image-modal" th:id="'imageModal' + ${review.id}">
+            <div class="image-modal-content">
+                <span class="close-modal" th:onclick="|closeImageModal(${review.id})|">×</span>
+                <div th:each="file : ${review.attachedFile}">
+                    <img th:src="@{'/review/display?filename='+${file.saved_filename}}"
+                         alt="Review Image"
+                         th:onclick="|showLargeImageModal('@{'/review/display?filename='+${file.saved_filename}}')|"
+                         >
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 이미지가 1장일 경우 -->
+    <div th:unless="${review.attachedFile.size() > 1}">
+        <img th:src="@{'/review/display?filename='+${review.attachedFile[0].saved_filename}}"
+             alt="Review Image"
+             style="width: 160px; height: 160px; object-fit: cover;"
+             th:onclick="|showImageModal(${review.id})|">
+
+        <!-- 1장일 경우에만 이미지 모달 -->
+        <div class="image-modal" th:id="'imageModal' + ${review.id}">
+            <div class="image-modal-content">
+                <span class="close-modal" th:onclick="|closeImageModal(${review.id})|">×</span>
+                <img th:src="@{'/review/display?filename='+${review.attachedFile[0].saved_filename}}"
+                     alt="Review Image">
+            </div>
+        </div>
+    </div>
+
+    <!-- 라지 이미지 모달 -->
+    <div id="largeImageModal" class="modal">
+        <div class="large-image-modal-content">
+            <span class="close-modal" onclick="closeLargeImageModal()">×</span>
+            <img id="largeImage" src="" alt="Large Image" style="max-width: 100%; max-height: 100%;">
+        </div>
+    </div>
+</div>
 						<div class="image-box"
 							th:unless="${review.attachedFile != null and !review.attachedFile.isEmpty()}">
 							<img src="/myPageImage/no-review-img.jpg" alt="No Review Image"
@@ -433,7 +445,7 @@
 			</div>
 
 			<div class="ranking">
-				<h2>리뷰왕👑</h2>
+				<h2 onclick="location.href='/member/myPageList'" style="cursor: pointer;">리뷰왕👑</h2>
 				<table class="table table-striped">
 					<thead>
 						<tr>

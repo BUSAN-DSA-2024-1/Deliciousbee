@@ -89,7 +89,7 @@ public class RestaurantRestController {
 
         // BeeMember를 데이터베이스에서 찾음
         BeeMember findMember = beeMemberService.findMemberById(loginMember.getMember_id());
-        System.out.println("Credentials path: " + this.getClass().getClassLoader().getResource("deliciousbee-acb114448e3c.json"));
+        System.out.println("Credentials path: " + this.getClass().getClassLoader().getResource("deliciousbee-8dc8626d1aad.json"));
 
         // 레스토랑 객체 생성 및 속성 설정
         Restaurant restaurant = new Restaurant();

@@ -28,7 +28,7 @@
 					if (menuItems.length > 3) {
 						menuItems[menuItems.length - 1].remove();
 					} else {
-						alert("제거할 수 없습니다.");
+						alert("최소한 하나의 메뉴와 가격대를 입력해야 합니다.");
 					}
 				}
 			});
@@ -102,22 +102,6 @@
 		        return;
 		    }
 
-		    // 메뉴와 가격 필드가 비어 있지 않은 것들만 FormData에 추가
-		    const menuNames = document.querySelectorAll('input[name="menu_name[]"]');
-		    const priceRanges = document.querySelectorAll('input[name="price_range[]"]');
-		    
-		    let validMenuCount = 0; // 유효한 메뉴 개수 카운트
-
-		    menuNames.forEach((menuName, index) => {
-		        const priceRange = priceRanges[index];
-		        // 메뉴 이름과 가격이 모두 입력된 경우만 추가
-		        if (menuName.value.trim() && priceRange.value.trim()) {
-		            formData.append('menu_name[]', menuName.value);
-		            formData.append('price_range[]', priceRange.value);
-		            validMenuCount++;
-		        }
-		    });
-		    
 			// 선택된 상세 카테고리들을 배열로 저장
 			const selectedCategories = [];
 			const checkboxes = document.querySelectorAll('input[name="category[]"]:checked');
@@ -284,7 +268,7 @@
     
 /* 메뉴 아이템 간 간격 조정 */
     #menu-container .menu-item {
-        margin-bottom: 10px; /* 메뉴 아이템 간에 10px 간격 추가 */
+        margin-bottom: 0px; /* 메뉴 아이템 간에 10px 간격 추가 */
     }
 
     /* 버튼 및 입력 필드 스타일 */
@@ -477,14 +461,6 @@ form::after {
     <div class="form-group menu-item d-flex align-items-center">
         <input type="text" class="form-control flex-grow-1" name="menu_name[]" placeholder="메뉴 이름" id="menu_name_1" style="margin-right: 10px;" />
         <input type="text" class="form-control flex-grow-1" name="price_range[]" placeholder="가격" id="price_range_1" />
-    </div>
-    <div class="form-group menu-item d-flex align-items-center">
-        <input type="text" class="form-control flex-grow-1" name="menu_name[]" placeholder="메뉴 이름" id="menu_name_2" style="margin-right: 10px;" />
-        <input type="text" class="form-control flex-grow-1" name="price_range[]" placeholder="가격" id="price_range_2" />
-    </div>
-    <div class="form-group menu-item d-flex align-items-center">
-        <input type="text" class="form-control flex-grow-1" name="menu_name[]" placeholder="메뉴 이름" id="menu_name_3" style="margin-right: 10px;" />
-        <input type="text" class="form-control flex-grow-1" name="price_range[]" placeholder="가격" id="price_range_3" />
     </div>
 </div>      
         </div>

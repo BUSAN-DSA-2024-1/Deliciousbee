@@ -13,7 +13,7 @@ package com.example.deliciousBee.config;
 //
 //    @Bean
 //    public Storage storage() throws IOException {
-//        GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream("src/main/resources/deliciousbee-acb114448e3c.json"));
+//        GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream("src/main/resources/deliciousbee-8dc8626d1aad.json"));
 //        return StorageOptions.newBuilder().setCredentials(credentials).build().getService();
 //    }
 //}

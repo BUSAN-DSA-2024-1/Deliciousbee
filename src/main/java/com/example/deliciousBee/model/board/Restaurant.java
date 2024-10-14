@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.Set;
 
 import com.example.deliciousBee.model.file.RestaurantAttachedFile;
+import com.example.deliciousBee.model.like.RtLike;
 import com.example.deliciousBee.model.member.BeeMember;
 import com.example.deliciousBee.model.menu.Menu;
 
 import com.example.deliciousBee.model.report.RestaurantReport;
+import com.example.deliciousBee.model.review.Review;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -20,7 +22,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"attachedFile", "menuList", "reports", "rtLikes"})
 @Entity
 public class Restaurant {
 
@@ -43,10 +45,10 @@ public class Restaurant {
     //레스토랑 좋아요(황)
     @Column(name = "like_count", nullable = false)
 	private Integer likeCount = 0;
-	
-    
-    
-	@ManyToOne
+
+
+
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private BeeMember member;
 	private String address;
@@ -83,18 +85,22 @@ public class Restaurant {
 	@Column(nullable = false)
 	private VerificationStatus verificationStatus; // 인증 상태 추가
 
-	@OneToMany(mappedBy = "restaurant")
+	@OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Menu> menuList;
+
+	@OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<RestaurantAttachedFile> attachedFile;
 
-	// 메뉴리스트 추가
-	@OneToMany(mappedBy =  "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Menu> menuList;
 
 
 	// 레스토랑과 관련된 신고
 	@OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference // 순환 참조 방지
 	private List<RestaurantReport> reports;
+
+	@OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference
+	private List<RtLike> rtLikes;
 
 	@PrePersist
 	protected void onCreate() {

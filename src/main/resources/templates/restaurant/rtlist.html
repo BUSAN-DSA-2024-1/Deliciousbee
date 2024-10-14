@@ -1145,29 +1145,23 @@ function loadRestaurants(append = false) {
             loadRestaurants(true); // append 모드로 추가 데이터 로드
         }
     }
-
+    // 레스토랑 렌더링 함수 수정
     function renderRestaurants(restaurants, append = false) {
         let html = '';
 
         restaurants.forEach(function(restaurant) {
+            // 이미 표시된 레스토랑인지 확인
             if (displayedRestaurantIds.has(restaurant.id)) {
-                return;
+                return; // 이미 표시된 경우 건너뜁니다.
             }
 
+            // 레스토랑 ID를 Set에 추가
             displayedRestaurantIds.add(restaurant.id);
-            restaurantCount++;
+
+            restaurantCount++; // 정렬 순서 번호 증가
             let imageUrl = restaurant.imageUrls && restaurant.imageUrls.length > 0
                 ? `/restaurant/display?filename=${restaurant.imageUrls[0]}`
                 : 'default_image_url.jpg';
-
-            let description = restaurant.description || '';
-            let truncatedDescription = description;
-            let needsReadMore = false;
-
-            if (description.length > 100) {
-                truncatedDescription = description.substring(0, 200);
-                needsReadMore = true;
-            }
 
             html += `
         <div class="col-12 mb-4">
@@ -1181,11 +1175,7 @@ function loadRestaurants(append = false) {
                     </a>
                     <h5 class="badge bg-primary"> # ${restaurant.categories} </h5>
                     <h4 class="text">${restaurant.address}</h4>
-                    <small class="text-muted description">
-                        <span class="truncated">${truncatedDescription}${needsReadMore ? '...' : ''}</span>
-                        ${needsReadMore ? `<a href="#" class="read-more">더보기</a>` : ''}
-                        ${needsReadMore ? `<span class="full-text">${description.substring(100)}</span>` : ''}
-                    </small>
+                    <small class="text-muted">${restaurant.description}</small>
                     <div class="card-footer">
                         <h3 class="card-text">★${restaurant.average_rating}
                         <div class="review-count">(${restaurant.review_count})</div></h3>
@@ -1196,6 +1186,7 @@ function loadRestaurants(append = false) {
         </div>
         `;
 
+            // 지도에 마커 추가
             addMarker(restaurant, restaurantCount);
         });
 
@@ -1204,21 +1195,6 @@ function loadRestaurants(append = false) {
         } else {
             $('#restaurantList').html(html);
         }
-
-        // "더보기" 클릭 이벤트 핸들러 추가
-        $('.read-more').off('click').on('click', function(e) {
-            e.preventDefault();
-            let $this = $(this);
-            let $fullText = $this.siblings('.full-text');
-
-            if ($fullText.is(':visible')) {
-                $fullText.hide();
-                $this.text('더보기');
-            } else {
-                $fullText.show();
-                $this.text('접기');
-            }
-        });
     }
 
     // 마커 추가 함수 수정

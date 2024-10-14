@@ -27,7 +27,7 @@ import net.minidev.json.annotate.JsonIgnore;
 @ToString
 public class MyPage {
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "member_id")
     private BeeMember beeMember;
 

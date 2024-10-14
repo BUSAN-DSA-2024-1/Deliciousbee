@@ -122,6 +122,7 @@ public class ReportController {
 		Map<String, Object> response = new HashMap<>();
 		try {
 			reportService.deleteReview(reviewId); // 리뷰와 관련된 리포트 삭제
+			reviewService.deleteReview(reviewId);
 			response.put("success", true);
 			response.put("message", "리뷰와 관련된 모든 리포트가 성공적으로 삭제되었습니다.");
 		} catch (Exception e) {
