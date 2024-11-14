@@ -7,7 +7,7 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://database-2.czoko0kccb4t.ap-northeast-2.rds.amazonaws.com:3306/deliciousbee
+    url: jdbc:mysql://deliciousbee2.czoko0kccb4t.ap-northeast-2.rds.amazonaws.com/deliciousbee
     username: root
     password: gogoroot
   jpa:
