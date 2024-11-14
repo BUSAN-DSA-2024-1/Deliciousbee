@@ -73,8 +73,7 @@ project image:
 ![image](https://github.com/user-attachments/assets/ac30dfd8-cbd1-41ec-8b64-4c0c511ed837)
 アドミンページおよびレポート機能
 
-![image](https://github.com/user-attachments/assets/4ef9f1b1-5e2c-485c-b77b-24de88887361)
-レビューページとレビュー作成モーダル
+
 
 CI/CD パイプライン
 ![image](https://github.com/user-attachments/assets/9a03e3ab-e34b-45a9-9a6f-ad5f58ccc0b8)
